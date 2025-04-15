@@ -14,7 +14,7 @@
 % set sdqbeamer options
 \titleimage{blender-render}
 \groupname{Algorithm Engineering}
-\grouplogo{ae}
+\grouplogo{ae_cycle}
 \selectlanguage{english}
 
 % define title etc.pp.
@@ -25,14 +25,14 @@
 
 % Existing KIT colors: kit-green, kit-blue, kit-red, kit-gray, kit-orange, kit-lightgreen, kit-brown, kit-purple, kit-cyan
 % configure appearance
-\setbeamercolor{block title}{bg=kit-blue}
-\setbeamercolor{block body}{bg=kit-blue!10}
-\setbeamercolor{block title example}{bg=kit-orange}
-\setbeamercolor{block body example}{bg=kit-orange!10}
-\setbeamertemplate{itemize item}{\color{kit-gray}\textbullet}
-\setbeamertemplate{itemize subitem}{\color{kit-gray}\textbullet}
-\setbeamercolor{item projected}{bg=kit-gray, fg=kit-gray}
-\renewcommand{\insertnavigation}[1]{} % remove navigation bar
+% \setbeamercolor{block title}{bg=kit-blue}
+% \setbeamercolor{block body}{bg=kit-blue!10}
+% \setbeamercolor{block title example}{bg=kit-orange}
+% \setbeamercolor{block body example}{bg=kit-orange!10}
+% \setbeamertemplate{itemize item}{\color{kit-gray}\textbullet}
+% \setbeamertemplate{itemize subitem}{\color{kit-gray}\textbullet}
+% \setbeamercolor{item projected}{bg=kit-gray, fg=kit-gray}
+% \renewcommand{\insertnavigation}[1]{} % remove navigation bar
 
 % define commands
 \input{l00-commands.tex}
@@ -40,12 +40,10 @@
 
 \begin{document}
 
-\begin{frame}
-	\thispagestyle{empty}
-	\titlepage{}
+\begin{frame}[title white horizontal, picture=logos/blender-render, kitlogo=rgb]
+	\titlepage
 \end{frame}
 
-\section{Organisational}
 \begin{frame}{Organisation}
 	\begin{itemize}\setlength{\itemsep}{1em}
 		\item 14 Lectures: Mondays at 3:45 pm, room 301 (starting today)
@@ -64,16 +62,16 @@
 
 \begin{frame}{Lecturers}
 \begin{itemize}\setlength{\itemsep}{1em}
-	\item Markus Iser, \href{mailto:markus.iser@kit.edu}{markus.iser@kit.edu}
-	\begin{itemize}
-		\item post-doc at ITI Sanders, involved in this lecture since 2020 (guest lectures before then)
-		\item expert on SAT solvers and benchmarks
-	\end{itemize}
-	\item Dominik Schreiber, \href{mailto:dominik.schreiber}{dominik.schreiber@kit.edu}
-	\begin{itemize}
-		\item young investigator group leader, involved in this lecture since 2023 (guest lectures before then)
-		\item expert on massively parallel SAT solving
-	\end{itemize}
+	\item \textbf{Dr. Markus Iser} (Post-doc at Algorithm Engineering Group)\\
+	Contact: \href{mailto:markus.iser@kit.edu}{markus.iser@kit.edu}\\[1ex]
+	Expert in Boolean Reasoning and Empirical Algorithmics\\[1ex]
+	Involved in this lecture since 2020 (guest lectures before then)\\[1ex]
+	\item \textbf{Dr. Dominik Schreiber} (SatRes, Young Investigators Group Leader)\\
+	Contact: \href{mailto:dominik.schreiber}{dominik.schreiber@kit.edu}\\[1ex]
+	Expert in Massively Parallel Boolean Reasoning\\[1ex]
+	Involved in this lecture since 2023 (guest lectures before then)\\[1ex]
+	\item \textbf{Previous Lecturers}: Prof. Carsten Sinz, Dr. Tom\'a\v{s} Balyo\\
+	Founders of the Practical SAT Solving Lecture at KIT in 2015
 \end{itemize}
 \end{frame}
 
@@ -108,8 +106,6 @@
 \end{block}
 \end{frame}
 
-
-\section{Basic Definitions}
 
 \begin{frame}{Basic Definitions}
 
@@ -246,7 +242,6 @@ Try it yourself: \url{http://www.cs.utexas.edu/~marijn/game/}
 	\includegraphics[height=.75\textheight]{figures/l01/SAT2022-grouppicture.jpg}
 \end{frame}
 
-\section{Introductory Examples}
 
 \begin{frame}{Applications of SAT Solving}
 \begin{minipage}{0.72\textwidth}
@@ -450,9 +445,6 @@ SAT solvers are command line applications that take as argument a text file with
 	\end{itemize}
 \end{alert}
 \end{frame}
-
-
-\section{Incremental SAT}
 
 \begin{frame}{Incremental SAT Solving}
 In many applications, we solve a sequence of similar SAT instances:\\[1ex]
