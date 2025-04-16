@@ -746,7 +746,7 @@
 \newcommand{\kittitlegrouplogo}{
   \ifdefined\@grouplogo
     \ifx\@grouplogo\empty \else
-      \includegraphics[width=37mm,height=20mm,keepaspectratio]{logos/\@grouplogo} 
+      \includegraphics[width=40mm,height=40mm,keepaspectratio]{logos/\@grouplogo} 
     \fi % falls \grouplogo{} aufgerufen wird, kein Gruppenlogo einbinden
     \else % falls \grouplogo gar nicht aufgerufen wurde, Text anzeigen
       \colorbox{kit-purple100!20}{\parbox[b][18mm][c]{35mm}{\color{kit-purple100}\scriptsize\centering 
