@@ -1,6 +1,6 @@
 # Lecture: Practical SAT Solving
 
-_Summer Term 2025 &bullet; [GitHub repository](https://github.com/satlecture/kit2025) &bullet; [Web page](https://satlecture.github.io/kit2025/) &bullet; Karlsruhe Institute of Technology (KIT)_
+_Summer Term 2025 • [GitHub repository](https://github.com/satlecture/kit2025) • [Web page](https://satlecture.github.io/kit2025/) • Karlsruhe Institute of Technology (KIT)_
 
 
 This lecture with exercises is offered by [Markus Iser (ITI Sanders)](https://ae.iti.kit.edu/english/3986.php) and [Dominik Schreiber (KASTEL-VADS SAtRes)](https://satres.kikit.kit.edu/schreiber).  
