@@ -13,15 +13,15 @@
 
 % set sdqbeamer options
 \titleimage{blender-render}
-\groupname{Algorithm Engineering}
-\grouplogo{ae_cycle}
+\groupname{} % rendered at the bottom center of each slide
+\grouplogo{ae+satres}
 \selectlanguage{english}
 
 % define title etc.pp.
-\title[SAT Solving]{Practical SAT Solving}
-\subtitle{Lecture 1}
+\title{Practical SAT Solving}
+\subtitle{Lecture 1 \unimp{\normalfont --  Organization, Introduction, Incremental SAT Solving}}
 \author{\underline{Markus Iser}, \underline{Dominik Schreiber}}
-\date{April 22, 2024}
+\date{April 22, 2025}
 
 % Existing KIT colors: kit-green, kit-blue, kit-red, kit-gray, kit-orange, kit-lightgreen, kit-brown, kit-purple, kit-cyan
 % configure appearance
@@ -46,8 +46,8 @@
 
 \begin{frame}{Organisation}
 	\begin{itemize}\setlength{\itemsep}{1em}
-		\item 14 Lectures: Mondays at 3:45 pm, room 301 (starting today)
-		\item 7 Exercises: Tuesdays at 3:45 pm, room 301 (starting Mai 6th, every other week)
+		\item 14 Lectures: Mondays at 3:45 pm, room 301
+		\item 7 Exercises: Tuesdays at 3:45 pm, room 301 (starting May 6, every other week)
 		\item Bring your laptop if you can!
 		\item Sign up:
 		\begin{itemize}
@@ -61,18 +61,18 @@
 \end{frame}
 
 \begin{frame}{Lecturers}
-\begin{itemize}\setlength{\itemsep}{1em}
-	\item \textbf{Dr. Markus Iser} (Post-doc at Algorithm Engineering Group)\\
-	Contact: \href{mailto:markus.iser@kit.edu}{markus.iser@kit.edu}\\[1ex]
-	Expert in Boolean Reasoning and Empirical Algorithmics\\[1ex]
-	Involved in this lecture since 2020 (guest lectures before then)\\[1ex]
-	\item \textbf{Dr. Dominik Schreiber} (SatRes, Young Investigators Group Leader)\\
-	Contact: \href{mailto:dominik.schreiber}{dominik.schreiber@kit.edu}\\[1ex]
-	Expert in Massively Parallel Boolean Reasoning\\[1ex]
-	Involved in this lecture since 2023 (guest lectures before then)\\[1ex]
-	\item \textbf{Previous Lecturers}: Prof. Carsten Sinz, Dr. Tom\'a\v{s} Balyo\\
-	Founders of the Practical SAT Solving Lecture at KIT in 2015
-\end{itemize}
+	\begin{itemize}\setlength{\itemsep}{1em}
+		\item \textbf{Dr. Markus Iser} (Post-doc at Algorithm Engineering Group)\\
+		Contact: \href{mailto:markus.iser@kit.edu}{markus.iser@kit.edu}\\[1ex]
+		Expert in Boolean Reasoning and Empirical Algorithmics\\[1ex]
+		Involved in this lecture since 2020 (guest lectures before then)\\[1ex]
+		\item \textbf{Dr. Dominik Schreiber} (Scalable Automated Reasoning (SatRes) group leader)\\
+		Contact: \href{mailto:dominik.schreiber@kit.edu}{dominik.schreiber@kit.edu}\\[1ex]
+		Expert in {parallel and distributed} SAT solving\\[1ex]
+		Involved in this lecture since 2023 (guest lectures before then)\\[1ex]
+		\item \textbf{Previous Lecturers}: Prof. Carsten Sinz, Dr. Tom\'a\v{s} Balyo\\
+		Founders of the Practical SAT Solving Lecture at KIT in 2015
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Homework, Competitions, and Oral Exam}
@@ -84,7 +84,7 @@
 		\item Contest winners will receive bonus points.
 	\end{itemize}
 	\item You must earn at least 60 points to participate in the oral exam.
-	\item Bonus points for homework will improve your grade.
+	\item Bonus points for homework can improve your grade.
 \end{itemize}
 \end{frame}
 
