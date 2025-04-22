@@ -3,8 +3,9 @@
 _Summer Term 2025 • [GitHub repository](https://github.com/satlecture/kit2025) • [Web page](https://satlecture.github.io/kit2025/) • Karlsruhe Institute of Technology (KIT)_
 
 
-This lecture with exercises is offered by [Markus Iser (ITI Sanders)](https://ae.iti.kit.edu/english/3986.php) and [Dominik Schreiber (KASTEL-VADS SAtRes)](https://satres.kikit.kit.edu/schreiber).  
-It provides a friendly and practical overview of the subject of propositional satisfiability (SAT) solving, including its theoretical background, important algorithms and techniques, parallelization, proofs, applications, and related tools (MaxSAT, SMT).  
+This lecture with exercises is offered by [Markus Iser (ITI Sanders)](https://ae.iti.kit.edu/english/3986.php) and [Dominik Schreiber (KASTEL-VADS SAtRes)](https://satres.kikit.kit.edu/schreiber).
+[Niccolò Rigi-Luperti (SAtRes)](https://satres.kikit.kit.edu/team/) acts as a co-manager of exercises.  
+The lecture provides a friendly and practical overview of the subject of propositional satisfiability (SAT) solving, including its theoretical background, important algorithms and techniques, parallelization, proofs, applications, and related tools (MaxSAT, SMT).  
 No particular prior knowledge beyond basic foundations of computer science is required.
 
 All lectures and exercises take place at **15:45 in building 50.34 room 301**.
