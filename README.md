@@ -17,7 +17,7 @@ The below lecture plan is tentative and subject to changes.
 We try to link each slide set here shortly before the lecture takes place.
 See also [the page from last year](https://github.com/satlecture/kit2024).
 
-* **Tuesday, April 22**: L1 - Organisation, Introduction, Applications, Encodings, IPASIR _[MI+DS]_
+* **Tuesday, April 22**: [L1 - Organisation, Introduction, Applications, Encodings, IPASIR](slides/l01-introduction.pdf) _[MI+DS]_
 * **Monday, April 28**: L2 - Tractable Subclasses, Tseitin Encoding, Cardinality Constraints, Finite Domain Encodings _[MI]_
 * **Monday, May 5**: L3 - Local Search, Resolution, DP Algorithm, DPLL Algorithm _[DS]_
 * **Monday, May 12**: L4 - Modern SAT Solving 1: Branching Heuristics, Restart Strategies, Backtracking, Clause Learning / CDCL _[MI]_
