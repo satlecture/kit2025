@@ -308,19 +308,21 @@ Try it yourself: \url{http://www.cs.utexas.edu/~marijn/game/}
 
 \begin{frame}{Pythagorean Triples}
 \begin{block}{Problem Definition}
-Is it possible to assign to each integer $1,2,\ldots,n$ one of two colors such that if
-$a^2+b^2=c^2$ then $a,b$ and $c$ do not all have the same color.
+Can we assign each integer $1,2,\ldots,n$\ \ to one of \highl{two colors} such that the following holds for all integers $a,b,c$:
+\\
+If \highl{$a^2+b^2=c^2$}, then $a,b$ and $c$ do not all have the same color.
 \end{block}
 \begin{itemize}
-	\item Solution: Nope
-	\item for $n=7825$ it is not possible
-	\item proof obtained by a SAT solver has 200 Terabytes -- back then the largest Math proof yet
+	\item Solution: \textbf{No!} Impossible for $n=7825$
+	\item Proof obtained by a SAT solver has \highl{200 Terabytes} -- back then the largest Math proof yet
 \end{itemize}
 \pause
+\vspace*{6mm}
 \begin{block}{How to encode this?}
+\pause
 \begin{itemize}
-	\item for each integer $i$ we have a Boolean variable $x_i$, $x_i=1$ if color of $i$ is 1, $x_i=0$ otherwise.
-	\item for each $a,b,c$ such that $a^2+b^2=c^2$ we have two clauses: $(x_a \vee x_b \vee x_c)$
+	\item For each integer $i$, we have a Boolean variable $x_i$ which represents the color of $i$.
+	\item For each $a,b,c$ such that $a^2+b^2=c^2$, encode two clauses: $(x_a \vee x_b \vee x_c)$
 	and $(\overline{x_a} \vee \overline{x_b} \vee \overline{x_c})$
 \end{itemize}
 \end{block}
@@ -329,15 +331,15 @@ $a^2+b^2=c^2$ then $a,b$ and $c$ do not all have the same color.
 
 \begin{frame}{Arithmetic Progressions}
 \begin{block}{Problem Definition}
-	Find a binary sequence $x_1, \dots, x_n$ that has no $k$ equally spaced 0s and no $k$ equally spaced 1s.
+	Find a binary sequence $x_1, \dots, x_n$ that has no $k$ equally spaced zeroes and no $k$ equally spaced ones.
 \end{block}
 \pause
 \begin{example}[$n=8, k=3$]
-Find a binary sequence $x_1,\dots,x_8$ that has no three equally spaced 0s and no three equally spaced 1s.
+Find a binary sequence $x_1,\dots,x_8$ that has no three equally spaced zeroes and no three equally spaced ones.
 \begin{itemize}
-\item<2-> What about 01001011? \uncover<3->{No, the 1s at $x_2, x_5, x_8$ are equally spaced.}
+\item<2-> What about 01001011? \uncover<3->{No, the ones at $x_2, x_5, x_8$ are equally spaced.}
 \item<4-> 6 Solutions: 00110011, 01011010, 01100110, 10011001, 10100101, 11001100.
-\item<5-> Extending the problem to 9 digits, no solutions remains. How can we show this with a SAT solver?
+\item<5-> Extending the problem to $n=9$ digits, \highl{no solution remains}. How can we show this with a SAT solver?
 \item<6-> Encode what's forbidden: $x_2 x_5 x_8 \neq 111$ is the same as
    $(\overline{x_2} \lor \overline{x_5} \lor \overline{x_8})$.
 \item<7-> Writing, e.g., $\bar 2 \bar 5 \bar 8$ for the clause $(\overline{x_2} \lor \overline{x_5} \lor \overline{x_8})$, we arrive
@@ -350,11 +352,13 @@ Find a binary sequence $x_1,\dots,x_8$ that has no three equally spaced 0s and n
 \end{frame}
 
 \begin{frame}{Background: Van der Waerden Numbers}
+Let's generalize our sequence to feature the numbers (``colors'') $\{0,1,\ldots,r-1\}$ \quad \unimp{(so far: $r=2$)}.
 \begin{block}{Theorem (van der Waerden)}
-If $n$ is sufficiently large, every sequence $x_1, \dots, x_n$ of numbers $0 \leq x_i < r$ contains a number that occurs at least $k$ times equally spaced.
+For any $r, k \in \mathbb{N}^+$, there exists some $n \in \mathbb{N}^+$ such that:\\
+Every sequence $x_1, \dots, x_n$ of numbers $0 \leq x_i < r$ has at least $k$ equally spaced positions with the same number.
 \begin{itemize}
-\item The smallest such number is the van der Waerden number $W(r,k)$.
-\item For larger $r, k$ the numbers are only partially known.
+\item The smallest such $n$ is the \highl{van der Waerden number} $W(r,k)$.
+\item For larger $r, k$, the numbers are only partially known.
 \end{itemize}
 \end{block}
 \pause
@@ -370,36 +374,35 @@ If $n$ is sufficiently large, every sequence $x_1, \dots, x_n$ of numbers $0 \le
 
 \begin{frame}{Graph Coloring}
 \begin{example}[McGregor Graph, 110 nodes, planar]
-	Claim: Cannot be colored with less than 5 colors. (Scientific American, 1975, Martin Gardner's column ``Mathematical Games'')
+	\textbf{Claim:} Cannot be colored with less than 5 colors. \unimp{(Scientific American, 1975, M.~Gardner's ``Mathematical Games'')}
 	\begin{center}
-		\includegraphics<1>[height=4.5cm]{figures/l01/macgregor-bw.jpg}
+		\includegraphics<1>[height=7.5cm]{figures/l01/macgregor-bw.jpg}
 		%\includegraphics<2>[height=4.5cm]{figures/l01/macgregor_arb.jpg}
-		\includegraphics<2>[height=4.5cm]{figures/l01/macgregor\_arb-colorblind-friendly.jpg}
+		\includegraphics<2>[height=7.5cm]{figures/l01/macgregor\_arb-colorblind-friendly.jpg}
 	\end{center}
 \end{example}
 \end{frame}
 
 \begin{frame}{Graph Coloring: SAT Encoding}
 \begin{block}{Definition: Graph Coloring Problem (GCP)}
-Given an undirected graph $G=(V,E)$ and a number $k$, a $k$-coloring assigns one of $k$ colors to each node, such that all adjacent nodes have a different color. The GCP asks whether a $k$-coloring for $G$ exists.
+Given an undirected graph $G=(V,E)$ and a number $k$, a \highl{$k$-coloring} assigns one of $k$ colors to each node\\
+such that all adjacent nodes have a different color. The \highl{GCP} asks whether a $k$-coloring for $G$ exists.
 \end{block}
 \pause
-\begin{alert}{SAT Encoding}
+\begin{block}{SAT Encoding}
+\textbf{Variables:} 
 \begin{itemize}
-\item<2-> Variables: 
-\begin{itemize}
-	\item<3-> use $k \cdot |V|$ Boolean variables $v_j$ for $v \in V$, where $v_j$ is true, if node $v$ gets color $j$ ~($1 \leq j \leq k$).
+	\item<3-> use $k \cdot |V|$ Boolean variables $v_j$ for $v \in V, 1 \leq j \leq k$;\ \ $v_j$ is true iff node $v$ gets color $j$.
 \end{itemize}
-\item<3-> Clauses: 
+\textbf{Clauses:}
 \begin{itemize}\setlength{\itemsep}{.5ex}
-	\item<4-> Every node gets a color: 
+	\item<4-> Every node gets some color: 
 	\item[]<5-> \quad $(v_1 \lor \cdots \lor v_k)\,$ for $v \in V$
 	\item<6-> Adjacent nodes have different colors: 
 	\item[]<7-> \quad $(\overline{u_j} \lor \overline{v_j})\,$ for ${u,v} \in E, 1 \leq j \leq k$
-	\item<8-> Suppress multiple colors for a node: At-most-one constraints
+	\item<8-> Suppress multiple colors for a node: \highl{at-most-one constraints}
 \end{itemize}
-\end{itemize}
-\end{alert}
+\end{block}
 \end{frame}
 
 \begin{frame}{Graph Coloring: Example}
@@ -414,7 +417,7 @@ Given an undirected graph $G=(V,E)$ and a number $k$, a $k$-coloring assigns one
 	$(u_1 \lor u_2 \lor u_3)$ \\
 	$\quad\vdots$ \\ 
 	$(y_1 \lor y_2 \lor y_3)$ \\ \vspace{0.5ex}
-	\textcolor{gray}{``adjacent nodes have different colors''}
+	\textcolor{gray}{``adjacent nodes have different colors''} \\
 	$(\overline{u_1} \lor \overline{v_1}) \land \cdots \land (\overline{u_3} \lor \overline{v_3})$ \\
 	$\quad\vdots$ \\
 	$(\overline{x_1} \lor \overline{y_1}) \land \cdots \land (\overline{x_3} \lor \overline{y_3})$
