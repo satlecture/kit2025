@@ -23,17 +23,6 @@
 \author{\underline{Markus Iser}, \underline{Dominik Schreiber}}
 \date{April 22, 2025}
 
-% Existing KIT colors: kit-green, kit-blue, kit-red, kit-gray, kit-orange, kit-lightgreen, kit-brown, kit-purple, kit-cyan
-% configure appearance
-% \setbeamercolor{block title}{bg=kit-blue}
-% \setbeamercolor{block body}{bg=kit-blue!10}
-% \setbeamercolor{block title example}{bg=kit-orange}
-% \setbeamercolor{block body example}{bg=kit-orange!10}
-% \setbeamertemplate{itemize item}{\color{kit-gray}\textbullet}
-% \setbeamertemplate{itemize subitem}{\color{kit-gray}\textbullet}
-% \setbeamercolor{item projected}{bg=kit-gray, fg=kit-gray}
-% \renewcommand{\insertnavigation}[1]{} % remove navigation bar
-
 % define commands
 \input{l00-commands.tex}
 
@@ -115,10 +104,21 @@
 \end{frame}
 
 
+\begin{frame}{Plan for Today}
+\begin{block}{Outline}
+\begin{itemize}\setlength{\itemsep}{1em}
+	\item Basic Definitions, History, and Complexity of SAT
+	\item Applications of SAT Solving
+	\item Examples from Mathematics and Computer Science
+	\item Incremental SAT Solving
+	\item Live Demo and Coding
+\end{itemize}
+\end{block}
+\end{frame}
+
+
 \begin{frame}{Basic Definitions}
-
 In this lecture, propositional formulas are given in \emph{conjunctive normal form} (CNF), and if not, we convert them.
-
 \begin{block}{CNF Formulas}
 	\begin{itemize}
 		\item A \emph{CNF formula} is a conjunction (and = $\wedge$) of clauses.
