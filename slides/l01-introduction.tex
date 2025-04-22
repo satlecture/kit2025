@@ -119,40 +119,35 @@ Tractable classes, instance structure, hardest instances, proof complexity, \dot
 
 
 \begin{frame}{Basic Definitions}
-In this lecture, propositional formulas are given in \emph{conjunctive normal form} (CNF), and if not, we convert them.
+In this lecture, propositional formulas are given in \emph{conjunctive normal form} (CNF), and if not, we convert them.\\[1em]
 \begin{block}{CNF Formulas}
-	\begin{itemize}
-		\item A \emph{CNF formula} is a conjunction (and = $\wedge$) of clauses.
-		\item A \emph{clause} is a disjunction (or = $\vee$) of literals.
-		\item A \emph{literal} is a Boolean variable $x$ (positive literal) or its negation $\overline{x}$ (negative literal).
-	\end{itemize}	
+\begin{itemize}
+	\item A \emph{CNF formula} is a conjunction (and = $\wedge$) of clauses.
+	\item A \emph{clause} is a disjunction (or = $\vee$) of literals.
+	\item A \emph{literal} is a Boolean variable $x$ (positive literal) or its negation $\overline{x}$ (negative literal).
+\end{itemize}	
 \end{block}
-
 \begin{example}[CNF Formula]
-	\vspace{-3ex}
-	\begin{align*}
-		F &= (\overline{x_1} \vee x_2) \wedge (\overline{x_1} \vee \overline {x_2} \vee x_3) \wedge (x_1)\\
-		\vars{F} &= \{x_1, x_2, x_3\}\\
-		\lits{F} &= \{x_1, \overline{x_1}, x_2, \overline{x_2}, x_3\}\\
-		\clss{F} &= \{ \{ \overline{x_1}, x_2 \}, \{ \overline{x_1}, \overline {x_2}, x_3 \}, \{ x_1 \} \}
-	\end{align*}
-	Typically, a CNF formula is given as a set of clauses, where each clause is a set of literals (as in $\clss{F}$).
+\vspace{-3ex}
+\begin{align*}
+	F &= (\lnot x_1 \vee x_2) \wedge (\lnot x_1 \vee \lnot x_2 \vee x_3) \wedge (x_1)\\[1ex]
+	\vars{F} &= \visible<2->{ \bigl\{ x_1, x_2, x_3 \bigr\} }\\[1ex]
+	\lits{F} &= \visible<2->{ \bigl\{ x_1, \lnot x_1, x_2, \lnot x_2, x_3 \bigr\} }\\[1ex]
+	\clss{F} &= \visible<2->{ \bigl\{ \{ \lnot x_1, x_2 \}, \{ \lnot x_1, \lnot x_2, x_3 \}, \{ x_1 \} \bigr\} }
+\end{align*}
 \end{example}
 \end{frame}
 
 \begin{frame}{Satisfiability}
-	The \emph{Satisfiability Problem} is to determine whether a given formula is satisfiable.\\
-	A CNF formula $F$ is \emph{satisfiable} iff there exists an assignment to $\vars{F}$ that satisfies $F$.
-	\begin{block}{Satisfying Assignment}
-		Given a CNF formula $F$ over variables $V := \vars{F}$, a \emph{truth assignment} $\phi : V \rightarrow \{ \top, \bot \}$ assigns a truth value $\top$ (True) or $\bot$ (False) to each Boolean variable in $V$.\\[1em]
-		We say that $\phi$ satisfies
-			\begin{itemize}
-				\item a CNF formula if it satisfies all of its clauses
-				\item a clause if it satisfies at least one of its literals
-				\item a positive literal $x$ if $\phi(x)=\top$
-				\item a negative literal $\overline{x}$ if $\phi(x)=\bot$
-			\end{itemize}
-	\end{block}
+The \emph{Satisfiability Problem} is to determine whether a given formula is satisfiable.\\[1ex]
+A CNF formula $F$ is \emph{satisfiable} iff there exists a truth assignment to $\vars{F}$ that satisfies $F$.\\[1ex]
+\begin{block}{Satisfying Assignment}
+Given a CNF formula over variables $V$, a \emph{truth assignment} $\phi : V \longrightarrow \{ \top, \bot \}$ satisfies \dots \\[1em]
+\dots~ a CNF formula if it satisfies all of its clauses \\[1ex]
+\dots~ a clause if it satisfies at least one of its literals \\[1ex]
+\dots~ a positive literal $x$ if $\phi(x)=\top$ (True)\\[1ex]
+\dots~ a negative literal $\lnot x$ if $\phi(x)=\bot$ (False)\\[1ex]
+\end{block}
 \end{frame}
 
 \begin{frame}{Satisfiability}
@@ -174,53 +169,55 @@ In this lecture, propositional formulas are given in \emph{conjunctive normal fo
 \end{frame}
 
 \begin{frame}{Satisfiability}
+\begin{columns}
+\column{\kitthreecolumns}
 	\begin{example}[Scheduling]
-		Schedule a meeting of Adam, Bridget, Charles, and Darren considering the following constraints
-		\begin{itemize}
-			\item Adam can only meet on Monday or Wednesday
-			\item Bridget cannot meet on Wednesday
-			\item Charles cannot meet on Friday
-			\item Darren can only meet on Thursday or Friday
-		\end{itemize}
-		\vspace*{-2ex}
-		\begin{align*}
-			\vars{F} &= \{ x_1, x_2, x_3, x_4, x_5 \}\\
-			F &= 
-			\visible<2->{(x_1 \vee x_3) \wedge (\overline{x_3}) \wedge (\overline{x_5}) \wedge (x_4 \vee x_5)\\}
-			\only<3>{&\wedge \operatorname{AtMostOne}(x_1, x_2, x_3, x_4, x_5) \\}
-			\only<4>{
-				&\wedge (\overline{x_1} \vee \overline{x_2}) \wedge (\overline{x_1} \vee \overline{x_3}) \wedge (\overline{x_1} \vee \overline{x_4}) \wedge (\overline{x_1} \vee \overline{x_5})\\
-				&\wedge (\overline{x_2} \vee \overline{x_3}) \wedge (\overline{x_2} \vee \overline{x_4}) \wedge (\overline{x_2} \vee \overline{x_5})\\
-				&\wedge (\overline{x_3} \vee \overline{x_4}) \wedge (\overline{x_3} \vee \overline{x_5}) \wedge (\overline{x_4} \vee \overline{x_5})
-			}
-		\end{align*}
+	Schedule a meeting of Adam, Bridget, Charles, and Darren considering the following constraints\\[1ex]
+	\begin{itemize}\itemsep1ex
+		\item Bridget cannot meet on Wednesday
+		\item Adam can only meet on Monday or Wednesday
+		\item Charles cannot meet on Friday
+		\item Darren can only meet on Thursday or Friday
+	\end{itemize}
 	\end{example}
-	\only<4>{Is this Scheduling Instance Satisfiable?}
+\column{\kitthreecolumns}	
+	\begin{example}[CNF Encoding]
+	\vspace{-2em}
+	\begin{align*}
+		\vars{F} = &\{ x_1, x_2, x_3, x_4, x_5 \}\\[1em]
+		F = &\bigl\{ \visible<1->{ \{ \lnot x_3 \}, } \visible<2->{ \{ x_1, x_3 \}, } \visible<3->{ \{ \lnot x_5 \}, } \visible<4->{ \{ x_4, x_5 \}, }\\[3pt]
+		% &\operatorname{AtMostOne}(x_1, x_2, x_3, x_4, x_5) \\[1ex]
+		&\visible<5->{ ~\{ \lnot x_1, \lnot x_2 \}, \{ \lnot x_1, \lnot x_3 \}, \{ \lnot x_1, \lnot x_4 \}, \{ \lnot x_1, \lnot x_5 \},\\
+		&~\{ \lnot x_2, \lnot x_3 \}, \{ \lnot x_2, \lnot x_4 \}, \{ \lnot x_2, \lnot x_5 \},\\
+		&~\{ \lnot x_3, \lnot x_4 \}, \{ \lnot x_3, \lnot x_5 \},\\ 
+		&~\{ \lnot x_4, \lnot x_5 \} } \bigr\}
+	\end{align*}
+	\end{example}~\\
+	\only<6>{\highlow{Is this Scheduling Instance Satisfiable?}}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Complexity of Propositional Satisfiability}
 \vspace*{-1em}
 A decision problem is NP-complete if it is in NP and every problem in NP can be reduced to it in polynomial time.
 \begin{block}{SAT is NP-complete (Cook-Levin Theorem)}
-\begin{itemize}\setlength{\itemsep}{.5ex}
+\begin{itemize}\itemsep1ex
 	\item SAT is in NP\\
 	\textbf{Proof:} solution can be checked in polynomial time
 	\item Every problem in NP can be reduced to SAT in polynomial time\\
 	\textbf{Proof:} encode the run of a non-deterministic Turing machine as a CNF formula
 \end{itemize}
-\end{block}
+\end{block}~\\
 \pause
 \begin{block}{Consequences of NP-completeness of SAT}
-\begin{itemize}
+\begin{itemize}\itemsep1ex
 	\item We do not have a polynomial algorithm for SAT (yet) ~\cChangey{0}
 	\item If $P \neq NP$ then we will never have a polynomial algorithm for SAT ~\cChangey{-1}
 	\item All the known algorithms for SAT have exponential runtime in the \textbf{worst case} ~\cChangey{-2}
 \end{itemize}
-\end{block}
-
-\begin{example}[Hardness]
-Try it yourself: \url{http://www.cs.utexas.edu/~marijn/game/}
-\end{example}
+\end{block}~\\
+\pause
+\highlow{Try it yourself:} \url{http://www.cs.utexas.edu/~marijn/game/}
 \end{frame}
 
 \begin{frame}{History of Propositional Satisfiability}
@@ -261,7 +258,6 @@ Try it yourself: \url{http://www.cs.utexas.edu/~marijn/game/}
 	\end{columns}
 	\centering%
 \end{frame}
-
 
 \begin{frame}{Applications of SAT Solving}
 \begin{minipage}{0.72\textwidth}
@@ -435,14 +431,14 @@ such that all adjacent nodes have a different color. The \highl{GCP} asks whethe
 \end{frame}
 
 \begin{frame}{Using a SAT Solver}
-SAT solvers are command line applications that take as argument a text file with a formula (DIMACS format).
-\begin{example}[Input]
+SAT solvers are command line applications that take as argument a text file with a formula.\\[1em]
+\begin{example}[Input: DIMACS CNF format]
 	\texttt{c comments, ignored by solver}\\
 	\texttt{p cnf 7 22}\\
 	\texttt{1 -2 7 0}\\
 	\texttt{...}\\
 	\texttt{-7 -3 -2 0}
-\end{example}
+\end{example}~\\
 \pause
 \begin{example}[Output]
 	\texttt{c comments, usually some statistics about the solving}\\
@@ -453,82 +449,60 @@ SAT solvers are command line applications that take as argument a text file with
 \end{frame}
 
 \begin{frame}{Running a SAT Solver}
-\begin{alert}{Let's try it!}
-	\begin{itemize}\setlength{\itemsep}{1em}
-		\item Download and Build a SAT solver:
-			\begin{itemize}
-				\item \href{https://github.com/arminbiere/cadical}{CaDiCaL}
-				\item Alternatives: \href{https://github.com/arminbiere/kissat}{Kissat}, \href{https://github.com/niklasso/minisat}{Minisat}, \href{https://github.com/msoos/cryptominisat}{CryptoMinisat}, \href{https://maplesat.github.io/}{Maplesat}, \dots
-			\end{itemize}
-		\item Download a CNF formula:
-			\begin{itemize}
-				\item \href{https://benchmark-database.de}{Global Benchmark Database}
-			\end{itemize}
-		\item Run the SAT solver with the CNF formula as input
+\highlow{Let's try it!}\\[1em]
+\begin{enumerate}\setlength{\itemsep}{1em}
+	\item Download and build a SAT solver:\\[1ex]
+	\href{https://github.com/arminbiere/cadical}{CaDiCaL}, \href{https://github.com/arminbiere/kissat}{Kissat}, \href{https://github.com/niklasso/minisat}{Minisat}, \href{https://github.com/msoos/cryptominisat}{CryptoMinisat}, \href{https://maplesat.github.io/}{Maplesat}, \dots\\[1ex]
+	In this lecture, we use: \href{https://github.com/arminbiere/cadical}{CaDiCaL}\\[1ex]
+	\begin{itemize}\setlength{\itemsep}{1ex}
+		\item Competitive performance
+		\item Originally written by Armin Biere
+		\item Highly educational, includes elaborate comments and references to the literature
+		\item Reference implementations of the standard SAT solver interface: IPASIR
 	\end{itemize}
-\end{alert}
+	\item Download a SAT formula:\\[1ex]
+	\href{https://benchmark-database.de}{Global Benchmark Database}
+	\item Determine its satisfiability
+\end{enumerate}
 \end{frame}
 
 \begin{frame}{Incremental SAT Solving}
-In many applications, we solve a sequence of similar SAT instances:\\[1ex]
-Planning, Bounded Model Checking, SMT, Scheduling, MaxSAT, \dots
-
+There are many applications that require us to solve a sequence of similar SAT instances:\\[1ex] 
+Software verification, planning, scheduling, MaxSAT, \dots\\[1em]
 \begin{block}{Incremental SAT Solving}
 \begin{itemize}\setlength{\itemsep}{1em}
-	\item The SAT solver is initialized once
-	\item Each call to \texttt{solve()} takes a set of assumptions as input\\
-		  $\rightarrow$ assumptions are literals that serve as a partial assignment to their variables
-	\item Like this also clauses can be activated/deactivated in the SAT solver
+	\item The SAT solver is initialized once with a formula
+	\item Assumptions can be added before each call to \texttt{solve()}\\[1ex]
+	$\rightarrow$ assumptions are literals that serve as a partial assignment to their variables
 	\item Between \texttt{solve()} calls, new clauses can be added
-	\item Advantages:
-	\begin{itemize}
-		\item<2-> solver remembers learned clauses, preprocessing, variable scores (heuristics), etc.
-		\item<2-> (de)initialization overheads removed
-	\end{itemize}
+	\item Advantage 1: (De-)Initialization overheads removed
+	\item Advantage 2: Keep preprocessed formula, learned clauses, dynamic heuristic parameters, \ldots
 \end{itemize}
 \end{block}
 \end{frame}
 
-\begin{frame}{IPASIR: Incremental Library Interface for SAT Solvers}
-IPASIR = Re-entrant Incremental Satisfiability Application Program Interface (acronym reversed)
-
+\begin{frame}{An Incremental SAT Solver Interface: IPASIR}
+\vspace{-1em}
+IPASIR = \textbf{R}e-entrant \textbf{I}ncremental \textbf{S}atisfiability \textbf{API} (acronym reversed)\\[1ex]
 \begin{block}{IPASIR}
 	\begin{itemize}\setlength{\itemsep}{1em}
-		\item Defined for the 2015 SAT Race to unify incremental SAT solver interfaces
+		\item Defined for \href{https://doi.org/10.1016/j.artint.2016.08.007}{SAT Race 2015} to unify incremental SAT solver interfaces
 		\item IPASIR has become a standard interface of incremental SAT solving
+		\item Extension by User Propagators (UP): \href{https://doi.org/10.4230/LIPIcs.SAT.2023.8}{IPASIR UP}
 		\item<2> Version 2 is in the works
 	\end{itemize}
-\end{block}~\\[.5em]
+\end{block}~\\
 \centering
-% \only<1>{\includegraphics[width=.23\textwidth]{figures/l01/ipa.jpeg}}
-\only<1>{\href{https://github.com/biotomas/ipasir}{\includegraphics[width=.23\textwidth]{logos/ipasir.png}}}%
-\only<2>{\href{https://github.com/ipasir2}{\includegraphics[width=.23\textwidth]{logos/ipasir2.png}}}%
-\end{frame}
-
-\begin{frame}{IPASIR Overview}
-\begin{itemize}\setlength{\itemsep}{1em}
-\item Clauses are added one literal at a time
-\begin{itemize}\setlength{\itemsep}{1ex}
-	\item To add $(x_1 \vee \overline{x_4})$ call \texttt{add(1); add(-4); add(0);}
-\end{itemize}
-\item You can call a SAT solver with a set of assumptions
-\begin{itemize}\setlength{\itemsep}{1ex}
-	\item Assumptions are basically temporary decision literals
-	\item Assumptions are cleared after each \texttt{solve()} call
-\end{itemize}
-\item Clause removal is controlled with activation literals
-\begin{itemize}\setlength{\itemsep}{1ex}
-	\item You must know ahead which clauses you will maybe want to remove
-	\item Add the clause with an additional fresh variable (activation literal)
-	\item Example: instead of $(x_1 \vee x_2)$ add $(x_1 \vee x_2 \vee a_1)$
-	\item solve with with assumption $\overline{a_1}$ to enforce $(x_1 \vee x_2)$
-\end{itemize}
-\end{itemize}
+\href{https://github.com/biotomas/ipasir}{\includegraphics[width=.23\textwidth]{logos/ipasir.png}}
+\qquad\qquad\qquad\qquad
+\visible<2>{\href{https://github.com/ipasir2}{\includegraphics[width=.23\textwidth]{logos/ipasir2.png}}}%
 \end{frame}
 
 \begin{frame}{IPASIR Functions}
 	\def\arraystretch{1.5}
-	\begin{tabularx}{\textwidth}{lX}
+	\begin{tabularx}{\textwidth}{p{7em}X}
+		\bf Function 	& \bf Description\\
+		\hline
 		\tt signature 	& return the name and version of the solver\\
 		\tt init    	& initialize the solver, the pointer it returns is used for the rest of the functions\\
 		\tt add 		& add clauses, one literal at a time\\
@@ -536,35 +510,35 @@ IPASIR = Re-entrant Incremental Satisfiability Application Program Interface (ac
 		\tt solve 		& solve the formula, return SAT, UNSAT or INTERRUPTED\\
 		\tt val 		& return the truth value of a variable (if SAT)\\
 		\tt failed 		& returns true if the given assumption was part of reason for UNSAT\\
+		\hline
 	\end{tabularx}~\\[1em]
-	For more details and examples of usage see \url{https://github.com/biotomas/ipasir}
+	For more details and examples of usage see \url{https://github.com/biotomas/ipasir}\\[1em]
+	\visible<2>{\highlow{How to delete a clause?}}
 \end{frame}
 
 \begin{frame}{IPASIR Solver States}
-\centering
-\includegraphics[height=.75\textheight]{figures/l01/ipasir.pdf}
+\vspace{-1ex}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\includegraphics[height=.7\textheight]{figures/l01/ipasir.pdf}
 \end{frame}
 
-\begin{frame}{Use Case: Essential Variables}
-Let a satisfiable formula $F$ be given.
-\begin{block}{Essential Variables}
+\begin{frame}{Code Demo: Essential Variables}
+Given a CNF formula $F$ over variables $V := \vars{F}$, satifying assignments to $F$ can be partial, i.e., some variables in $V$ are not assigned but still the formula is satisfied.\\[1ex]
+A variable $x$ is \emph{essential} if and only $x$ it has to be assigned (True or False) in each satisfying assignment.\\[1em]
+
+\begin{example}[Enumerating Essential Variables]
 \begin{itemize}\setlength{\itemsep}{1em}
-	\item Satifying assignments can be partial, i.e., some variables are not assigned but still the formula is satisfied.
-	\item A variable $x$ is \emph{essential} if and only $x$ it has to be assigned (True or False) in each satisfying assignment.
-\end{itemize}
-\end{block}
-\begin{block}{Task: find all the essential variables of a given satisfiable formula}
+	\item Create the \emph{Dual Rail Encoding} of $F$:\\[1ex]
 	\begin{itemize}\setlength{\itemsep}{1ex}
-		\item use \emph{Dual Rail Encoding} -- for each variable $x$ add two new variables $x_P$ and $x_N$,
-		replace each positive (negative) occurrence of $x$ with $x_P$ ($x_N$), add a clause
-		$(\overline{x_P} \vee \overline{x_N})$ (meaning $x$ cannot be both true and false).
-		\item for each variable $x$ solve the formula with the assumptions $\overline{x_P}$ and
-		$\overline{x_N}$. If the formula is UNSAT then $x$ is essential.
+		\item For each variable $x$, add two new variables $x_P$ and $x_N$
+		\item Replace each positive (negative) occurrence of $x$ with $x_P$ ($x_N$)
+		\item Add a clause $(\overline{x_P} \vee \overline{x_N})$ (meaning $x$ cannot be both true and false)
 	\end{itemize}
-\end{block}
-\begin{alert}{Let's implement it!}
-	
-\end{alert}
+	\item For each variable $x$, solve the formula with the assumptions $\overline{x_P}$ and $\overline{x_N}$.\\[1ex]
+	If the formula is UNSAT under these assumptions then $x$ is essential.
+\end{itemize}
+\end{example}~\\
+\highlow{Let's implement it!}\\[1em]
 \end{frame}
 
 \end{document}
