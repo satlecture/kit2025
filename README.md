@@ -46,4 +46,4 @@ This is our tentative plan for exercises:
 
 ## Code
 
-TBA
+* **Tuesday, April 22**: [Essential Variables](code/src/essential.cc)
