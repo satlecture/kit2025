@@ -421,15 +421,18 @@ The Tseitin-Encoding $\tseitin{F}$ of a propositional formula $F$ over connectiv
 	\end{block}
 \end{frame}
 
-\begin{frame}{Cardinality Constraints: Sequential Counter Encoding}{Idea: encode count-and-compare hardware circuit (cf.~\href{https://doi.org/10.1007/11564751\_73}{Sinz, 2005})}
-	\begin{tikzpicture}[remember picture, overlay]
-		\node[xshift=140pt,yshift=50pt] at (current page.center) {
-			\includegraphics[height=0.42\textheight]{figures/l02/seq-counter-1.pdf}
-		};
-		\node[xshift=-140pt,yshift=-120pt] at (current page.center) {
-			\includegraphics[height=0.4\textheight]{figures/l02/seq-counter-2.pdf}
-		};
-	\end{tikzpicture}
+\begin{frame}{Cardinality Constraints \unimp{$\bigl( \sum_i^n x_i \leq k \bigr)$}}
+\vspace{-2em}
+\begin{example}[Sequential Counter Encoding \href{https://doi.org/10.1007/11564751\_73}{Sinz, 2005}]
+\begin{tikzpicture}
+\node[xshift=160pt,yshift=50pt] at (current page.center) {
+	\includegraphics[height=0.42\textheight]{figures/l02/seq-counter-1.pdf}
+};
+\node[xshift=-140pt,yshift=-99pt] at (current page.center) {
+	\includegraphics[height=0.4\textheight]{figures/l02/seq-counter-2.pdf}
+};
+\end{tikzpicture}
+\end{example}
 \end{frame}
 
 \begin{frame}{Recap}
@@ -448,7 +451,6 @@ The Tseitin-Encoding $\tseitin{F}$ of a propositional formula $F$ over connectiv
 			\end{itemize}
 		\end{itemize}
 	\end{block}
-	\pause
 	\begin{block}{Next Up}
 		Finite Domain Encodings
 	\end{block}
@@ -491,25 +493,12 @@ The Tseitin-Encoding $\tseitin{F}$ of a propositional formula $F$ over connectiv
 	\end{itemize}
 	\end{block}
 	\begin{block}{Elementary Encodings}
-		\begin{itemize}\setlength{\itemsep}{1em}
-			\item Tseitin Transformation
-			\begin{itemize}\setlength{\itemsep}{1ex}
-				\item Tseitin encoding allows to carry over structure to CNF
-				\item Formula size linear in the number of subformulas (of bounded arity)
-			\end{itemize}
-			\item Cardinality Constraints
-			\begin{itemize}\setlength{\itemsep}{1ex}
-				\item Size of encoding vs. Complexity of consistency
-				\item Choice of encoding matters
-			\end{itemize}
-			\item Finite Domain Encodings
-			\begin{itemize}\setlength{\itemsep}{1ex}
-				\item One-hot encoding vs. Log encoding
-				\item One-hot often simpler w.r.t. interaction between encodings
-			\end{itemize}
-		\end{itemize}
+	\begin{itemize}\setlength{\itemsep}{1em}
+		\item Tseitin Transformation
+		\item Cardinality Constraints
+		\item Finite Domain Encodings
+	\end{itemize}
 	\end{block}
-	
 \end{frame}
 
 \end{document}
