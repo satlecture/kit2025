@@ -20,7 +20,7 @@ See also [the page from last year](https://github.com/satlecture/kit2024).
 * **Tuesday, April 22**: [L1 - Organisation, Introduction, Applications, Encodings, IPASIR](slides/l01-introduction.pdf) _[MI+DS]_
 * **Monday, April 28**: [L2 - Tractable Subclasses, Elementary Encoding Methods](slides/l02-encodings.pdf) _[MI]_
 * **Monday, May 5**: [L3 - Local Search, Resolution, DP Algorithm, DPLL Algorithm](slides/l03-sls-dpll.pdf) _[DS]_
-* **Monday, May 12**: L4 - Modern SAT Solving 1: Branching Heuristics, Restart Strategies, Backtracking, Clause Learning / CDCL _[MI]_
+* **Monday, May 12**: [L4 - Branching Heuristics, Restart Strategies, Clause Learning, Backtracking](slides/l04-heuristics.pdf) _[MI]_
 * **Monday, May 19**: L5 - Efficient Unit Propagation, Clause Forgetting, VSIDS, Community Structure, Algorithm Selection _[MI]_
 * **Monday, May 26**: L6 - Preprocessing: Subsumption, BVE, BCE, Gates _[MI]_
 * **Monday, June 2**: L7 - Propagation-based Redundancy and Proof Systems _[MI]_
