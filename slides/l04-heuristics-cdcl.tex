@@ -12,7 +12,7 @@
 
 \hypersetup{
 	colorlinks=true,
-	urlcolor=kit-green
+	urlcolor=kit-orange
 }
 
 % set sdqbeamer options
@@ -61,7 +61,7 @@
 	\end{block}
 \end{frame}
 
-\begin{frame}{DPLL Algorithm: Iterative Variant}\begin{block}{}
+\begin{frame}{DPLL Algorithm: Iterative Variant}
 \begin{columns}[T]
 \begin{column}{.3\linewidth}
 ~\\[1em]
@@ -94,30 +94,35 @@
 \end{algorithm}
 \end{column}
 \end{columns}
-\end{block}
 \end{frame}
 
-\begin{frame}{Decision Heuristics}
-\begin{block}{Properties of Decision Heuristics}
-	\begin{itemize}\setlength{\itemsep}{1em}
-		\item Desired properties:
-		\begin{itemize}\setlength{\itemsep}{1ex}
-			\item Fast to compute
-			\item Yields easy sub-problems\\
-			$\rightarrow$ Maximize unit propagations
-		\end{itemize}
-		\item Static vs. dynamic:
-		\begin{itemize}\setlength{\itemsep}{1ex}
-			\item Static: Based on formula statistics
-			\item Dynamic: Based on formula and current state
-		\end{itemize}
-		\item Separate vs. joint:
-		\begin{itemize}\setlength{\itemsep}{1ex}
-			\item Separate: Choose variable and value independently
-			\item Joint: Choose variable and value together
-		\end{itemize}
+\begin{frame}{Properties of Decision Heuristics}
+\textbf{Desired properties}\\[1ex]
+\begin{itemize}\setlength{\itemsep}{1ex}
+	\item Fast to compute
+	\item Gives easy sub-problems\\[3pt]
+	\pause
+	\begin{itemize}\setlength{\itemsep}{1ex}
+		\item Satisfy many clauses
+		\item Maximize unit propagation
 	\end{itemize}
-\end{block}
+\end{itemize}
+~\\
+\pause
+\textbf{Types of heuristics}\\[1ex]
+\pause
+\begin{itemize}\setlength{\itemsep}{1ex}
+	\item Static vs. Dynamic\\[3pt]
+	\begin{itemize}\setlength{\itemsep}{1ex}
+		\item Static: Based on formula statistics
+		\item Dynamic: Based on formula and current state
+	\end{itemize}
+	\item Separate vs. Joint\\[3pt]
+	\begin{itemize}\setlength{\itemsep}{1ex}
+		\item Separate: Choose variable and value independently
+		\item Joint: Choose variable and value together
+	\end{itemize}
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Decision Heuristics: Böhm's Heuristic}
@@ -125,8 +130,8 @@
 	\item $h_i(x)$: number of clauses of size $i$ containing literal $x$ which are \highl{not yet satisfied}
 	\item $H_i(x) := \alpha \operatorname{max}(h_i(x), h_i(\overline{x})) + \beta \operatorname{min}(h_i(x), h_i(\overline{x}))$ \quad (let $\alpha:=1$ and $\beta:=2$, for example)
 	\item Select literal $x$ with the \highl{maximal vector $(H_1(x),H_2(x),\dots)$} under lexicographic order
-\end{itemize}
-\begin{block}{Properties of Böhm's Heuristic}
+\end{itemize}~\\
+\begin{blueblock}{Properties of Böhm's Heuristic}
 Goal: \highl{satisfy or reduce size} of many and preferably short clauses\\[1ex]
 \begin{itemize}\setlength{\itemsep}{1em}
 	\item Separate polarity heuristic (note that $H_i(x) = H_i(\overline x)$)\\[1ex]
@@ -134,30 +139,30 @@ Goal: \highl{satisfy or reduce size} of many and preferably short clauses\\[1ex]
 	\item depends on literal occurrence counts over the not yet satisfied clauses
 	\item \href{https://stamm-wilbrandt.de/en/Report_on_a_SAT_competition.pdf}{SAT Competition 1992:} best heuristic for random instances
 \end{itemize}
-\end{block}
+\end{blueblock}
 \end{frame}
 	
 \begin{frame}{Decision Heuristics: Mom's Heuristic}{\textbf{M}aximum \textbf{O}ccurrences in clauses of \textbf{M}inimum \textbf{S}ize}
 \begin{itemize}\setlength{\itemsep}{1ex}
 	\item $f^*(x)$: how often $x$ occurs in the \highl{smallest not yet satisfied} clauses
 	\item Select variable $x$ with a maximum $S(x) = \bigl(f^*(x)+f^*(\overline{x})\bigr) \cdot 2^k + f^*(x) \cdot f^*(\overline{x})$ \quad (let $k:=10$, for example)
-\end{itemize}
-\begin{block}{Properties of Mom's Heuristic}
+\end{itemize}~\\
+\begin{blueblock}{Properties of Mom's Heuristic}
 Goal: assign variables with \highl{high occurrence in short clauses}\\[1ex]
 \begin{itemize}\setlength{\itemsep}{1em}
 	\item Separate polarity heuristic\\[1ex]
 		$\rightarrow$ for example, select $x$ if $f^*(\overline x) \geq f^*(x)$
 	\item depends on literal occurrence counts over the not yet satisfied clauses
-	\item Popular in the mid 90s (Find some variants in \href{https://satlecture.github.io/kit2024/references/1995_Freeman_Thesis.ps}{Freeman 1995})
+	\item Popular in the mid 90s (Find some variants in \href{https://satlecture.github.io/kit2024/references/1995_Freeman_Thesis.ps}{Freeman 1995, pages 39f.})
 \end{itemize}
-\end{block}
+\end{blueblock}
 \end{frame}
 	
 \begin{frame}{Decision Heuristics: Jeroslow-Wang Heuristic}
 \begin{itemize}\setlength{\itemsep}{1ex}
 	\item Choose the literal $x$ with a maximum $J(x) = \sum_{x \in c,\ c \in F} 2^{-|c|}$
-\end{itemize}
-\begin{block}{Properties of Jeroslow-Wang Heuristic}
+\end{itemize}~\\
+\begin{blueblock}{Properties of Jeroslow-Wang Heuristic}
 	Goal: assign variables with \highl{high occurrence in short clauses}\\[1ex]
 	\begin{itemize}\setlength{\itemsep}{1em}
 		\item Considers \highl{all clauses}, but shorter clauses are more important
@@ -167,22 +172,22 @@ Goal: assign variables with \highl{high occurrence in short clauses}\\[1ex]
 		$\rightarrow$ one-sided version works better
 	\item Much better experimental results than B{\"o}hm and MOMS
 \end{itemize}
-\end{block}
+\end{blueblock}
 \end{frame}
 	
 \begin{frame}{(R)DLCS and (R)DLIS Heuristics}{(\textbf{R}andomized) \textbf{D}ynamic \textbf{L}argest (\textbf{C}ombined | \textbf{I}ndividual) \textbf{S}um}
 \begin{itemize}\setlength{\itemsep}{1ex}
 	\item based on positive $C_P(x)$ and negative occurences $C_N(x)$ of variable $x$
 	\item used in the famous SAT solver \highl{GRASP} in 2000
-\end{itemize}
-\begin{block}{Properties of (R)DLCS and (R)DLIS Heuristics}
+\end{itemize}~\\
+\begin{blueblock}{Properties of (R)DLCS and (R)DLIS Heuristics}
 \begin{itemize}\setlength{\itemsep}{1em}
 	\item \highl{Dynamic}: Take the \highl{current partial assignment} into account
 	\item \highl{Combined}: select $x$ with maximal $C_P(x)+C_N(x)$
 	\item \highl{Individual}: select $x$ with maximal $\operatorname{max}(C_P(x),C_N(x))$
 	\item \highl{Randomized}: randomly select variable among the best
 \end{itemize}
-\end{block}
+\end{blueblock}
 \end{frame}
 	
 \iffalse
@@ -217,52 +222,52 @@ Goal: assign variables with \highl{high occurrence in short clauses}\\[1ex]
 \end{frame}
 		
 \begin{frame}{Restarts Strategies: Motivation}
-Given $n$ runs of \highl{randomized DPLL search}, what is the \highl{average number of backtracks} per run (relative to $n$)?
-\begin{block}{Heavy-tailed Distribution}
-\begin{minipage}{0.5\textwidth}
+\vspace{-1em}
+Given $n$ runs of \highl{randomized DPLL search}, what is the \highl{average number of backtracks} per run?\\[2em]
+\begin{columns}
+\begin{column}{0.5\textwidth}
 	\centering
 		\includegraphics[width=.7\textwidth]{figures/l04/heavy-tail-1}\\
-		\highlo{$\Rightarrow$ Heavy-tailed distribution}:
-		$P[X > x] \sim C \cdot x^{-\alpha}, \quad C > 0, \alpha \in (0,2)$
-\end{minipage}%
-\begin{minipage}{0.5\textwidth}
+		\only<1>{Heavy-tailed distribution\\}
+		\only<2>{\highlow{Heavy-tailed distribution}\\}
+		% $P[X > x] \sim C \cdot x^{-\alpha}, \quad C > 0, \alpha \in (0,2)$
+\end{column}
+\begin{column}{0.5\textwidth}
 	\centering
 	\includegraphics[width=.7\textwidth]{figures/l04/heavy-tail-2}\\
-	--- vs. Standard distribution: 
-	$P[X > x] \sim \frac{1}{x\sqrt{2\pi}}e^{-x^2/2}$\\[1ex]
-	\hfill\small\textcolor{gray}{[From: Gomes et al. 2000]}
-\end{minipage}
-\end{block}
+	Standard distribution\\
+	% $P[X > x] \sim \frac{1}{x\sqrt{2\pi}}e^{-x^2/2}$
+\end{column}
+\end{columns}~\\[2em]
+\hfill\small\href{https://doi.org/10.1023/A:1006314320276}{[Gomes et al. 2000]}
 \end{frame}
 
 \begin{frame}{Restart Strategies}
-Clear the partial assignment and backtrack to the root of the search tree.
-\begin{block}{Why Restart?}
+\vspace{-1em}
+Clear the partial assignment and backtrack to the root of the search tree.\\[1ex]
 \begin{itemize}\setlength{\itemsep}{1ex}
-	\item To recover from \highlo{bad branching decisions} and solve more instances
-	\item Might decrease performance on \highl{easy instances}
-\end{itemize}
-\end{block}
-\begin{block}{When to Restart?}
-\begin{itemize}\setlength{\itemsep}{1ex}
-	\item After \highl{some number of conflicts / backtracks}
-	\item The intervals between restarts should increase \highl{to guarantee completeness}
-	\item How much increase?
+	\item Recover from bad branching decisions
+	\item Solve more instances on average
+	\item Might decrease performance on easy instances
+\end{itemize}~\\[1ex]
+\begin{blueblock}{When to Restart?}
+\begin{itemize}\setlength{\itemsep}{1em}
+	\item After some number of conflicts / backtracks
+	\item The intervals between restarts should increase to guarantee \highlow{completeness}\\[1ex]
 	\begin{itemize}\setlength{\itemsep}{1ex}
-		\item Linear increase -- too slow
-		\item Exponential increase -- ok with small exponent
+		\item Linear increase: too slow
+		\item Exponential increase: ok, with small exponent
 		\item MiniSat: $k$-th restart happens after $100 \times 1.1^k$ conflicts
 	\end{itemize}
 \end{itemize}
-\end{block}
+\end{blueblock}
 \end{frame}
 
-\begin{frame}{Restart Strategies: Inner / Outer Pattern}
-\begin{block}{Inner / Outer Pattern (MiniSat)}
+\begin{frame}{Restart Strategies: Inner / Outer Pattern (MiniSat)}
 \begin{columns}[T]
 \begin{column}{0.5\textwidth}
 	\centering
-	\includegraphics[width=\textwidth]{figures/l04/restart-inout-legend}
+	\visible<2>{\includegraphics[width=\textwidth]{figures/l04/restart-inout-legend}}
 \end{column}
 \begin{column}{0.45\textwidth}
 \begin{algorithm}[H]
@@ -284,82 +289,75 @@ Clear the partial assignment and backtrack to the root of the search tree.
 \end{algorithm}
 \end{column}
 \end{columns}
-\end{block}
 \end{frame}
 
 \begin{frame}{Restart Strategies: Luby Sequence}
-\begin{theorem}[Luby, Sinclair, Zuckerman 1993]
-	Consider a \highl{Las Vegas} algorithm $A$ (i.e., correct but with \highlo{random run time}) and a \highl{restart strategy} $S = \langle t_1, t_2, \ldots \rangle$ (i.e., run $A$ for time $t_1$, then for time $t_2$, etc.).	
+\begin{blueblock}{Theorem \href{https://doi.org/10.1016/0020-0190(93)90029-9}{[Luby et al, 1993]}}
+	Consider a \highlow{Las Vegas} algorithm $A$ (i.e., correct but with \highlow{random run time}) and a restart strategy $S = \langle t_1, t_2, \ldots \rangle$ (i.e., run $A$ for time $t_1$, then for time $t_2$, etc.).	
 	Up to a constant factor, the Luby sequence is the \highl{best possible universal strategy} to minimize the \highl{expected run time} until a run is successful.
 	\begin{align*}
 		Luby = u \cdot (t_i)_{i \in \mathbb{N}} \quad \text{with} \quad t_i = \begin{cases}
 			2^{k-1} & \text{if $i = 2^k - 1$} \\
 			t_{i-2^{k-1}+1} & \text{if $2^{k-1} \leq i \leq 2^k -1$} \\
 		\end{cases}
-	\end{align*}
-\end{theorem}
-\begin{example}[Luby Sequence]
-$1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8, \dots$
-\end{example}
+	\end{align*}~\\[1em]
+	\textbf{Example: }$1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8, \dots$
+\end{blueblock}
 \end{frame}
 		
 \begin{frame}{Restart Strategies: Luby Sequence}
-\begin{block}{Luby Sequence: Naive Implementation}
-	\begin{columns}[T]
-	\begin{column}{0.45\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{figures/l04/restart-luby-legend}
-	\end{column}
-	\begin{column}{0.5\textwidth}
-	\begin{algorithm}[H]
-		\DontPrintSemicolon
-		\caption{Luby Sequence}
-		\KwIn{int i}
-		\BlankLine
-		\For {$k = 1$ \KwTo $32$} {
-			\If {$i == (1 \ll k) - 1$} {
-				\Return $1 \ll (k-1)$
-			}
+\begin{columns}[T]
+\begin{column}{0.45\textwidth}
+	\centering
+	\includegraphics[width=\textwidth]{figures/l04/restart-luby-legend}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{algorithm}[H]
+	\DontPrintSemicolon
+	\caption{Luby Sequence}
+	\KwIn{int i}
+	\BlankLine
+	\For {$k = 1$ \KwTo $32$} {
+		\If {$i == (1 \ll k) - 1$} {
+			\Return $1 \ll (k-1)$
 		}
-		\For {$k = 1$ \KwTo $\infty$} {
-			\If {$(1 \ll (k-1)) \leq i \leq (1 \ll k) - 1$} {
-				\Return Luby($i - (1 \ll (k-1)) + 1$)
-			}
+	}
+	\BlankLine
+	\For {$k = 1$ \KwTo $\infty$} {
+		\If {$(1 \ll (k-1)) \leq i \leq (1 \ll k) - 1$} {
+			\Return Luby($i - (1 \ll (k-1)) + 1$)
 		}
-	\end{algorithm}~\\[1ex]
-	run DPLL() with conflict-limit $512 \cdot$ \text{Luby}(++restarts)
-	\end{column}
-	\end{columns}
-\end{block}
+	}
+\end{algorithm}~\\[1ex]
+run DPLL() with conflict-limit $512 \cdot$ \text{Luby}(++restarts)
+\end{column}
+\end{columns}
 \end{frame}
 		
 \begin{frame}{Restart Strategies: Luby Sequence}
-\begin{block}{Luby Sequence: Reluctant Doubling}
-A \highl{more efficient implementation} of the Luby sequence invented by Donald Knuth\\[1ex]
+\begin{blueblock}{Luby Sequence: Reluctant Doubling}
+A more efficient implementation of the Luby sequence invented by Donald Knuth\\[1ex]
 Use the $v_n$ of the following pairs $(u_n, v_n)$:\\[1ex]
 \texttt{($u_1$, $v_1$) = (1, 1);}\\
-\texttt{($u_{n+1}$, $v_{n+1}$) = $u_n$ \& -$u_n$ == $v_n$\ ?\ ($u_n$+1, 1) :\ ($u_n$, 2$v_n$);}
-\end{block}
-\begin{example}[Luby Sequence]
-(1,1), (2,1), (2,2), (3,1), (4,1), (4,2), (4,4), (5,1), \ldots
-\end{example}
+\texttt{($u_{n+1}$, $v_{n+1}$) = $u_n$ \& -$u_n$ == $v_n$\ ?\ ($u_n$+1, 1) :\ ($u_n$, 2$v_n$);}~\\[1em]
+\textbf{Example: }$(1,1), (2,1), (2,2), (3,1), (4,1), (4,2), (4,4), (5,1), \ldots$
+\end{blueblock}
 \end{frame}
 
 
-		
 \begin{frame}{Branching Polarity: Phase Saving}
-Observation: Frequent {restarts} \highlo{decrease performance} on some satisfiable instances\\[1em]
-\begin{block}{Assignment Caching}
-Idea: Remember \highl{last assignment of each variable} and use it \highl{first} in branching
+Observation: Frequent {restarts} decrease performance on some satisfiable instances\\[1em]
+\begin{blueblock}{Phase Saving / Assignment Caching}
+Idea: Remember \highlow{last assignment of each variable} and use it first in branching\\[1ex]
 \begin{columns}[T]
-\begin{column}{0.55\textwidth}
+\begin{column}{0.7\textwidth}
 \begin{itemize}\setlength{\itemsep}{1em}
 	\item First implemented in \href{http://reasoning.cs.ucla.edu/rsat/}{RSAT (2006)}
-	\item Result: \highl{Phase saving} stabilizes positive effect of restarts
-	\item Best results in combination with \highl{non-chronological backtracking}
+	\item Result: Phase saving stabilizes positive effect of restarts
+	\item Best results in combination with non-chronological backtracking (follows)
 \end{itemize}
 \end{column}
-\begin{column}{0.4\textwidth}
+\begin{column}{0.3\textwidth}
 \centering
 \begin{tikzpicture}[every node/.style = {draw, minimum width=1cm, minimum height=0.6cm}]
 	\node (A) [ellipse, fill=green] {A};
@@ -368,10 +366,10 @@ Idea: Remember \highl{last assignment of each variable} and use it \highl{first}
 	\node (D) [draw=none, ellipse, below=0.5cm of A] {F};
 	\node (F) [ellipse, fit=(A) (B) (D)] {};
 \end{tikzpicture}~\\
-Example: $A$ and $B$ are satisfied, search works on component $C$
+Example: $A$ and $B$ are satisfied,\\ searching in component $C$
 \end{column}
 \end{columns}
-\end{block}
+\end{blueblock}
 \end{frame}
 
 \begin{frame}{Recap}
@@ -390,8 +388,7 @@ Example: $A$ and $B$ are satisfied, search works on component $C$
 \end{frame}
 
 
-\begin{frame}{DPLL: Backtracking}
-\begin{exampleblock}{Example: Chronological Backtracking}
+\begin{frame}{DPLL: Chronological Backtracking}
 \begin{columns}[T]
 \begin{column}{.45\textwidth}
 	\begin{flalign*}
@@ -402,11 +399,11 @@ Example: $A$ and $B$ are satisfied, search works on component $C$
 	\only<2>{ & \highlo{A, B, C, \neg X}, Z \tag{Trail} &&\\[1em]}
 	\only<1>{& \color{myred} \{\neg A, \neg Y, \neg Z \} && \tag{Conflicting Clause}}
 	\only<2>{& \color{myred} \{\neg A, X, \neg Z\} && \tag{Conflicting Clause}}
-	\end{flalign*}~\\[-4em]
+	\end{flalign*}~\\[-2em]
 	\only<3>{
 	\textbf{Observation:}
 	Conflicting clauses $\{\neg A, \neg Y, \neg Z \}$, $\{\neg A, X, \neg Z\}$ constrain only a fraction of the trail ($B$ and $C$ irrelevant)\\[1em]
-	How to find out which assignments on the trail are \highlo{relevant for the actual conflict} \highl{and immediately backtrack to $A$}?
+	How to find out which assignments on the trail are \highlow{relevant for the actual conflict} and immediately backtrack to $A$?
 	}
 \end{column}
 \begin{column}{.45\textwidth} 
@@ -431,8 +428,8 @@ Example: $A$ and $B$ are satisfied, search works on component $C$
 			\node[right=4em of x1] (x2) { X };
 			\node[right=1ex of z0] (l0) {\blitz};
 			\node[right=1ex of l0] (l1) {\blitz};
-			\node[right=1ex of l1] (l2) {\blitz};
-			\node[right=1ex of l2] (l3) {\blitz};
+			\node[right=3ex of l1] (l2) {\blitz};
+			\node[right=2ex of l2] (l3) {\blitz};
 			\draw[->] (c0) -- (x1) node [near start, right] {0} -- (l0) node [near start, left] {1};
 			\draw[->] (c0) -- (x1) node [near start, right] {0} -- (l1) node [near start, right] {0};
 			\draw[->] (b0) -- (c1) node [near start, right] {0} -- (x2) -- (l2) node [near start, left] {1};
@@ -447,31 +444,27 @@ Example: $A$ and $B$ are satisfied, search works on component $C$
 	\end{tikzpicture}
 \end{column}
 \end{columns}
-\end{exampleblock}
 \end{frame}
 
 
 \begin{frame}{Implication Graph}
-Given: Formula $F$, assignment trail $T$ and conflicting clause $C$.
-
-\begin{block}{Definition: Implication Graph}
-The implication graph is a DAG $G=(V \cup \{ \text{\blitz} \},E)$ of \\[1ex]
+\begin{blueblock}{Definition: Implication Graph}
+Given a formula $F$, assignment trail $T$, and conflicting clause $C$,\\
+the implication graph is a DAG $G=(V \cup \{ \text{\blitz} \},E)$ of \\[1ex]
 \begin{itemize}\setlength{\itemsep}{1em}
 	\item vertices $[\ell_i,d_i]$ for each literal $\ell_i$ with decision level $d_i$ on the trail
 	\item vertex \blitz{} representing the conflicting assignment\\[1ex] Note: all literals of $C$ have edges to \blitz{}
 	\item edges $\bigl([\ell_i, d_i], [u_{i,j}, d_i]\bigr)$ for each propagated literal $u_{i,j}$ at decision level $d_i$
 \end{itemize}
-\end{block}
-\textbf{Observations:}\\[1ex]
+\end{blueblock}~\\[1em]
 The sink is always the \highlo{conflicting assignment}, and the sources are the \highlo{desicion literals} involved in the conflict.\\[1ex]
 We can use this to determine the \highlo{reasons for the conflict}.
 \end{frame}
 
 
-\begin{frame}{Conflict Analysis}
-\begin{exampleblock}{Example: Implication Graph}
+\begin{frame}{Example: Implication Graph}
 Implication graph for the conflicting state under the trail $A, B, C, X, Y, Z$.\\
-The edge labels denote \highlo{clauses}, node labels indicate a variable assignment and its \highl{decision level}.\\
+The edge labels denote \highlo{clauses}, node labels indicate a variable assignment and its \highlow{decision level}.\\
 \begin{columns}[T]
 \begin{column}{0.3\textwidth}
 ~\\[1ex]
@@ -482,21 +475,21 @@ The edge labels denote \highlo{clauses}, node labels indicate a variable assignm
 \end{column}
 \begin{column}{0.35\textwidth} 
 \begin{tikzpicture}[->, thick, node distance=0.7cm]
-\node (A) [circle] { $_{\color{myblue} 1}A=1$ };
-\node (B) [circle, below=of A, yshift=1cm] { $_{\color{myblue} 2}B=1$ }; 
-\node (C) [circle, below=of B, yshift=1cm] { $_{\color{myblue} 3}C=1$ };
-\node (X) [circle, below=of C, yshift=1cm] { $_{\color{myblue} 4}X=1$ };
-\node (Y) [circle, right=of X, yshift=0.9cm] { $_{\color{myblue} 4}Y=1$ };
-\node (Z) [circle, right=of Y, yshift=0.9cm] { $_{\color{myblue} 4}Z=1$ };
+\node (A) [circle] { $_{\highlow 1}A=1$ };
+\node (B) [circle, below=of A, yshift=1cm] { $_{\highlow 2}B=1$ }; 
+\node (C) [circle, below=of B, yshift=1cm] { $_{\highlow 3}C=1$ };
+\node (X) [circle, below=of C, yshift=1cm] { $_{\highlow 4}X=1$ };
+\node (Y) [circle, right=of X, yshift=0.9cm] { $_{\highlow 4}Y=1$ };
+\node (Z) [circle, right=of Y, yshift=0.9cm] { $_{\highlow 4}Z=1$ };
 \node (empty) [circle, right=of Z] { \blitz };
 
-\draw (A) -- (Y) node [midway, above] {\color{myred} 3 };
-\draw (A) -- (Z) node [midway, below] {\color{myred} 5 };
-\draw (A) -- (empty) node [midway, above] {\color{myred} 7 };
-\draw (Y) -- (Z) node [midway, above] {\color{myred} 5 };
-\draw (Z) -- (empty) node [midway, above] {\color{myred} 7 };
-\draw (X) -- (Y) node [midway, above] {\color{myred} 3 };
-\draw (Y) -- (empty) node [near start, below] {\color{myred} 7 };
+\draw (A) -- (Y) node [midway, above] {\highlo 3 };
+\draw (A) -- (Z) node [midway, below] {\highlo 5 };
+\draw (A) -- (empty) node [midway, above] {\highlo 7 };
+\draw (Y) -- (Z) node [midway, above] {\highlo 5 };
+\draw (Z) -- (empty) node [midway, above] {\highlo 7 };
+\draw (X) -- (Y) node [midway, above] {\highlo 3 };
+\draw (Y) -- (empty) node [near start, below] {\highlo 7 };
 \end{tikzpicture}%
 \end{column}%
 \begin{column}{.25\textwidth} 
@@ -510,17 +503,16 @@ The edge labels denote \highlo{clauses}, node labels indicate a variable assignm
 & \{\neg A, \neg Y, \neg Z \} \}\tag{\highlo{7}}
 \end{align*}%
 \end{column}%
-\end{columns}%
-\end{exampleblock}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Conflict Analysis: Implementation}
-Implement trail as \highl{stack of literals} together with a pointer to the \highlo{reason clause} (nullptr for decisions) and the \highlo{decision level}. On each conflict, use the trail to trace back the implications to the conflict sources.
-\begin{example}[Trail with conflicting clause $\{\lnot A, \lnot Y, \lnot Z \}$]
-~\\[1ex]
+Implement trail as \highlo{stack of literals} together with a pointer to the \highlo{reason clause} (\emph{null} for decisions) and the \highlo{decision level}. On each conflict, use the trail to trace back the implications to the conflict sources.\\[1em]
+\textbf{Example:} Trail with conflicting clause $\{\lnot A, \lnot Y, \lnot Z \}$\\[1ex]
 \begin{columns}[T]
 \begin{column}{.3\linewidth}
 	\begin{tabular}{ccl}
+	\textbf{Var.} & \textbf{Lvl.} & \textbf{Reason} \\
 	\blitz & 4 & $\{\lnot A, \lnot Y, \lnot Z \}$ \\
 	Z & 4 & $\{\lnot A, \lnot Y, Z \}$ \\
 	Y & 4 & $\{\lnot A, \lnot X, Y \}$ \\
@@ -537,20 +529,18 @@ Implement trail as \highl{stack of literals} together with a pointer to the \hig
 	\item $\{\lnot A, \lnot Y, \lnot Z\}\!\otimes_Z\!\{\lnot A, \lnot Y, Z\}\!=\!\{\lnot A, \lnot Y\}$
 	\item $\{\lnot A, \lnot Y\}\!\otimes_Y\!\{\lnot A, \lnot X, Y \}\!=\!\{\lnot A, \lnot X\}$
 	\item Conflict Clause $C = \{\lnot A, \lnot X\}$
-	\item Backtrack Level $b = 1$
+	% \item Backtrack Level $b = 1$
 	\end{itemize} 
 \end{column}
 \end{columns}
-\end{example}
 \end{frame}
 
 
 \begin{frame}{Conflict Analysis: Unit Implication Points (UIP)}
-\begin{block}{Several possibilities to learn a clause from an implication graph}
 \begin{columns}[T]
-\begin{column}{0.5\textwidth}
-	~\\[1ex]
-	\begin{itemize}\setlength{\itemsep}{1ex}
+\begin{column}{0.45\textwidth}
+Several possibilities to learn a clause from an implication graph exist.\\[1em]
+	\begin{itemize}\setlength{\itemsep}{1em}
 		\item UIP is a dominator in the implication graph (restricted to variables assigned at the current
 		decision level)
 		\item A node $v$ is a dominator for \blitz, if all paths to \blitz contain $v$
@@ -559,29 +549,31 @@ Implement trail as \highl{stack of literals} together with a pointer to the \hig
 \end{column}
 \begin{column}{0.5\textwidth}
 	\includegraphics[width=\linewidth]{figures/l04/implicationgraphcuts.png}
-	\hfill*\footnotesize{[From: Beame et al. 2003]}
 \end{column}
-\end{columns}
-\end{block}%
+\end{columns}~\\[1em]
+\hfill\href{http://ijcai.org/Proceedings/03/Papers/171.pdf}{[Beame et al, 2003]}
 \end{frame}
 			
 			
-\begin{frame}{Conflict Analysis: Unit Implication Points (UIP)}
-\begin{block}{1-UIP Learning}
+\begin{frame}{Conflict Analysis: 1-UIP Learning}
 \begin{itemize}\setlength{\itemsep}{1em}
-\item FirstUIP-clause: resolve conflicting clause and reason clauses until only a single literal of the current decision level remains 
-\item Advantage: Stopping at a UIP always leads to an asserting clause. Algorithm becomes easier: backtrack until clause becomes asserting
-\item The assertion level is the second highest level in a conflict clause
+\item FirstUIP Clause:\\[1ex]
+Resolve the conflicting clause and reason clauses until only a single literal of the current decision level remains.
+\item Advantage:\\[1ex]
+\begin{itemize}\itemsep1ex
+	\item Stopping at a UIP always leads to an asserting clause.
+	\item A clause is asserting if all literals are false except one, which is unassigned.
+	\item Algorithm becomes simpler: backtrack until clause becomes asserting.
 \end{itemize}
-\end{block}
+\item In 1-UIP learning, the backtrack level is always the second highest level in a conflict clause.
+\end{itemize}
 \end{frame}
 
 
-\begin{frame}{Backtracking with Clause Learning}
-1-UIP learning changes the decision tree in our example like this:
-
-\begin{exampleblock}{Example: Non-chronological Backtracking}
-\begin{minipage}{0.4\textwidth} 
+\begin{frame}{Non-chronological Backtracking}
+1-UIP learning changes the decision tree in our example like this:~\\[1ex]
+\begin{columns}[T]
+\begin{column}{0.4\textwidth} 
 \begin{tikzpicture}[node distance=2em]
 \begin{scope}[node distance=1.5em]
 \node at (current page.north east) (a) { A };
@@ -626,8 +618,8 @@ Implement trail as \highl{stack of literals} together with a pointer to the \hig
 }
 \end{scope}
 \end{tikzpicture}
-\end{minipage}%
-\begin{minipage}{0.6\textwidth} 
+\end{column}%
+\begin{column}{0.6\textwidth} 
 \begin{align*}
 F = \{ & \{A, B\}, \{B, C\}, \\
 & \{\neg A, \neg X, Y \}, \\
@@ -646,24 +638,33 @@ Conflicting Clause:
 \only<1>{\color{myred} $\{\neg A, \neg Y, \neg Z \}$}
 \only<2>{{\color{myred} $\{\neg A, X, \neg Z\}$}}
 {\only<1>{\\ {\color{black} Conflict Clause (1UIP): }{\color{myred} $\{\neg A, \neg Y \}$ }}}
-\end{minipage}
-\end{exampleblock}
+\end{column}
+\end{columns}
 \end{frame}
+
+
+\begin{frame}{Clause Learning: Further Reading}
+\begin{itemize}\itemsep1em
+	\item \href{https://doi.org/10.1007/978-3-030-51825-7_3}{Clause Size Reduction with all-UIP Learning (Feng and Bacchus, 2020)}
+	\item \href{https://doi.org/10.1007/978-3-030-80223-3\_12}{Efficient All-UIP Learned Clause Minimization (Fleury and Biere, 2021)}
+\end{itemize}
+\end{frame}
+
 			
 \begin{frame}{Resolution Proof}
-\begin{block}{Properties of conflict clause C}
+\begin{blueblock}{Properties of conflict clause C}
 \begin{itemize}\setlength{\itemsep}{1em}
 	\item $F \models C$ 
 	\item $F \cup \lnot C \vdash_{UP} \bot$
-	\item $D \notin F, \forall D \subseteq C$
+	\item $\forall D \subseteq C, D \notin F$
 \end{itemize}
-\end{block}
-\begin{block}{Certificates for Unsatisfiability}
+\end{blueblock}~\\
+\begin{blueblock}{Certificates for Unsatisfiability}
 \begin{itemize}\setlength{\itemsep}{1em}
 	\item sequence of learned clauses serves as a \highlo{proof of unsatisfiability}
-	\item can be used to validate the correctness of the SAT result in \highlo{high risk applications} (e.g., verification)
+	\item can be used to validate the correctness of the SAT result in \highlo{high risk applications}
 \end{itemize}
-\end{block}
+\end{blueblock}
 \end{frame}
 
 \begin{frame}{The End.}
@@ -680,8 +681,8 @@ Conflicting Clause:
 		\begin{itemize}\setlength{\itemsep}{1ex}
 			\item Inner / Outer Pattern
 			\item Luby Sequence / Reluctant Doubling
+			\item Branching Heuristic: Phase Saving
 		\end{itemize}
-		\item Branching Polarity: Phase Saving
 		\item Conflict Analysis, Clause Learning
 	\end{itemize}
 \end{block}
