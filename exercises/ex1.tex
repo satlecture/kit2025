@@ -1,0 +1,72 @@
+\documentclass[a4paper]{article}
+
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{tikzsymbols}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+\usepackage[margin=2cm]{geometry}
+
+\usepackage{titlesec}
+\titleformat*{\section}{\large\bfseries}
+
+\definecolor{kit-blue}{RGB}{70, 100, 170}
+\input{../slides/l00-commands.tex}
+
+\begin{document}
+\exhead{1}{2025-05-06}{2024-05-20}
+
+\section{Competition: Graph Coloring (5(+7) Points)}
+
+Implement a SAT-based graph vertex coloring solver.
+Your application should take as a single command line argument a DIMACS file with a graph.
+It needs to find the smallest number of colors needed to color the graph such that no adjacent vertices share the same color.
+The application should output the number of colors required.
+The fastest solver gets \highl{seven bonus points}.
+
+\vspace*{3mm}
+\noindent
+\textbf{Code skeleton:} \url{https://github.com/satlecture/kit2025/blob/main/code/src/graphcol.cc}
+
+\noindent
+\textbf{Benchmark instances:} \url{https://github.com/satlecture/kit2024/tree/main/exercises/coloring}
+
+\section{Pythagorean Triples (3+3 Points)}
+
+(a) Find a coloring for the numbers $1 \leq i \leq 1000$ such that no Pythagorean triple is monochromatic.
+
+\noindent
+(b) Estimate the number of variables and clauses in the Pythagorean triples encoding from the lecture (as a function of $n$).
+
+\section{Recognizing Hidden Horn (6 Points)}
+
+Let $F$ be an arbitrary CNF formula.
+Let $R_F$ be a 2-SAT formula that contains the clause $\{l_1, l_2\}$ iff there is a clause $C \in F$ such that $\{l_1,l_2\} \subseteq C$.
+Prove that if $R_F$ is satisfiable, then $F$ is a Hidden Horn formula.
+
+\section{Tseitin Encoding (3+3 Points)}
+
+Encode the following formula into CNF using (a) the Tseitin encoding and (b) the Plaisted-Greenbaum encoding.
+\begin{align*}
+(\overline{x_1} \wedge \overline{(x_3 \Leftrightarrow x_2)}) \vee ((x_3 \rightarrow \overline{x_4}) \wedge (x_1 \rightarrow (x_2 \wedge \overline{x_3})) \wedge (x_4))
+\end{align*}
+
+\section{Resolution (3 Points)}
+
+Construct a resolution refutation (i.e., proof of unsatisfiability) for the following formula.
+\vspace*{-1ex}
+\begin{align*}
+	\bigl\{
+	\{x_{3}, x_{4}, \overline x_{1}, x_{5} \}, 
+	\{\overline x_{3}, x_{4}, x_{5} \}, 
+	\{x_{3}, \overline x_{4}, \overline x_{1} \}, 
+	\{x_{1}, x_{2} \}, 
+	\{x_{1}, \overline x_{2} \},  
+	\{\overline x_{1}, \overline x_{5} \}, 
+	\{\overline x_{3}, \overline x_{4}, x_{5}\}
+	\bigr\}
+\end{align*}
+
+\end{document}
