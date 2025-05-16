@@ -17,7 +17,7 @@
 \input{../slides/l00-commands.tex}
 
 \begin{document}
-\exhead{2}{2025-05-20}{2024-06-}
+\exhead{2}{2025-05-20}{2024-06-03}
 
 \newcommand{\statetilled}{T}
 \newcommand{\statetobetilled}{$+$}
@@ -60,12 +60,12 @@ The solver should output a line ``\texttt{s SOLUTION k}'', where $k$ is the mini
 	\begin{minipage}{0.33\textwidth}
 		\begin{verbatim}
 			s SOLUTION 6
-			gold    0 0 0
-			gold    0 5 1
-			iron   90 3 0
-			copper 90 3 1
-			base    0 0 3
-			base    0 7 4
+			v gold    0 0 0
+			v gold    0 5 1
+			v iron   90 3 0
+			v copper 90 3 1
+			v base    0 0 3
+			v base    0 7 4
 		\end{verbatim}
 	\end{minipage}%
 	\begin{minipage}{0.33\textwidth}
@@ -86,14 +86,10 @@ The best performing solution is awarded double the points.
 
 \vspace*{3mm}
 \noindent
-\textbf{Code skeleton:} \url{https://github.com/satlecture/kit2025/blob/main/code/src/TODO}
+\textbf{Code skeleton:} \url{https://github.com/satlecture/kit2025/blob/main/code/src/sdvstp.cc}
 
 \noindent
-\textbf{Benchmark instances:} \url{https://github.com/satlecture/kit2025/tree/main/exercises/TODO}
-
-\noindent
-\textbf{Output validator:} \url{https://github.com/satlecture/kit2025/blob/main/code/src/TODO}
-
+\textbf{Benchmark instances:} \url{https://github.com/satlecture/kit2025/tree/main/exercises/sdvstp}
 
 
 \end{document}

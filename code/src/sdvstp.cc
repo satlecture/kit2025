@@ -24,6 +24,7 @@ const Pattern P_IRIDIUM {3, 6};
 
 // Template for a single action. "p" should be one of the five patterns above,
 // then "rotate" indicates whether the pattern should still be rotated.
+// (x,y) is the coordinate of the top left corner of the pattern (after rotating).
 struct Action { Pattern p; bool rotate; int x; int y; };
 
 // Class for the problem grid
@@ -38,8 +39,8 @@ public:
     CellState& at(int x, int y) {return states[y][x];}
     bool applicable(Action a) const {
         if (a.rotate) a.p.rotate(); // rotate pattern if necessary
-        return a.x + a.p.width < width()
-            && a.y + a.p.height < height();
+        return a.x + a.p.width <= width()
+            && a.y + a.p.height <= height();
     }
     void apply(Action a) {
         if (!applicable(a)) throw std::runtime_error("Action not applicable!");
@@ -131,9 +132,7 @@ int main(int argc, char* argv[]) {
 
     // Obtain the grid resulting from applying all actions.
     auto vGrid = grid;
-    for (auto a : solution) {
-        vGrid.apply(a);
-    }
+    for (auto a : solution) vGrid.apply(a);
     vGrid.print();
 
     // Validate the soundness (not optimality!) of the solution.
@@ -149,16 +148,16 @@ int main(int argc, char* argv[]) {
             }
         }   
     }
-    std::cout << "Solution passed soundness check." << std::endl;
+    std::cout << "c Solution passed soundness check." << std::endl;
 
     // Output the solution.
     std::cout << "s SOLUTION " << solution.size() << std::endl;
     for (auto a : solution) {
-        if (a.p == P_BASE)    std::cout << "base ";
-        if (a.p == P_COPPER)  std::cout << "copper ";
-        if (a.p == P_IRON)    std::cout << "iron ";
-        if (a.p == P_GOLD)    std::cout << "gold ";
-        if (a.p == P_IRIDIUM) std::cout << "iridium ";
+        if (a.p == P_BASE)    std::cout << "v base ";
+        if (a.p == P_COPPER)  std::cout << "v copper ";
+        if (a.p == P_IRON)    std::cout << "v iron ";
+        if (a.p == P_GOLD)    std::cout << "v gold ";
+        if (a.p == P_IRIDIUM) std::cout << "v iridium ";
         std::cout << (a.rotate ? "90" : "0") << " " << a.x << " " << a.y << std::endl;
     }
 }
