@@ -27,7 +27,7 @@
 
 Consider the well-known and industrially relevant \textit{Stardew Valley Soil Tilling Problem} (SDVSTP), which we also talked about (in a slightly simpler form) in the 0th exercise.
 \\
-We have a $w \times h$ 2D grid of ``soil'' cells. Each of the $w\cdot h$ cells is in exactly one of the following states: \emph{tilled} (\statetilled), \emph{should be tilled} (\statetobetilled), or \emph{must not be tilled} (\statenottobetilled).
+We have a $w \times h$ 2D grid $G$ of ``soil'' cells. Each of the $w\cdot h$ cells is in exactly one of the following states: \emph{tilled} (\statetilled), \emph{should be tilled} (\statetobetilled), or \emph{must not be tilled} (\statenottobetilled).
 We also define the following five \textit{patterns} (corresponding to five increasing \textit{charging levels} of a hoe):
 
 \begin{figure}[h!]
@@ -36,10 +36,10 @@ We also define the following five \textit{patterns} (corresponding to five incre
 \end{figure}
 \noindent
 We further define \emph{action} $a = (p,r,x,y)$ as follows: Rotate the pattern $p \in \{$base, copper, iron, gold, iridium$\}$ by $r \in \{0^\circ, 90^\circ\}$ and then align its \textit{upper left corner} with grid position $(x,y)$.
-Then $a$ is \textit{applicable} if the pattern is fully contained within the grid, and
-applying $a$ changes all cells under the pattern to state \statetilled.
+Then $a$ is \textit{applicable} if the pattern is fully contained within $G$.
+Applying $a$ changes all cells in $G$ under the pattern to state \statetilled.
 
-A \textit{solution} is a set of applicable actions $A = \{ a_1, a_2, \ldots, a_k \}$ such that applying exactly the actions $A$ results in a grid where all cells that were initially in state \statetobetilled{} are in state \statetilled{} and all cells that were initially in state \statenottobetilled{} are still in state \statenottobetilled{}.
+A \textit{solution} for $G$ is a set of applicable actions $A = \{ a_1, a_2, \ldots, a_k \}$ such that applying each action in $A$ transforms $G$ into the grid $G'$ where all cells that were initially in state \statetobetilled{} are in state \statetilled{} and all cells that were initially in state \statenottobetilled{} are still in state \statenottobetilled{}.
 The objective is to find a solution that minimizes $k$.
 
 Devise a SAT-based SDVSTP solver.
