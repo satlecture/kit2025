@@ -28,5 +28,6 @@ target_link_libraries(pigeonhole cadical)
 add_executable(graphcol src/graphcol.cc)
 target_link_libraries(graphcol cadical)
 
-add_executable(sdvstp src/sdvstp.cc)
+add_executable(sdvstp src/sdvstp/sdvstp.cc)
+add_executable(sdvstp_gen src/sdvstp/sdvstp_gen.cc)
 target_link_libraries(sdvstp cadical)
