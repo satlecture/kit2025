@@ -27,14 +27,15 @@
 
 Consider the well-known and industrially relevant \textit{Stardew Valley Soil Tilling Problem} (SDVSTP), which we also talked about (in a slightly simpler form) in the 0th exercise.
 \\
-We have a $w \times h$ 2D grid of ``soil'' cells. Each of the $w\cdot h$ cells is in exactly one of the following states: \emph{tilled} (\statetilled), \emph{to be tilled} (\statetobetilled), or \emph{not to be tilled} (\statenottobetilled); and five \textit{patterns} (corresponding to the \textit{charging levels} of a hoe):
+We have a $w \times h$ 2D grid of ``soil'' cells. Each of the $w\cdot h$ cells is in exactly one of the following states: \emph{tilled} (\statetilled), \emph{should be tilled} (\statetobetilled), or \emph{must not be tilled} (\statenottobetilled).
+We also define the following five \textit{patterns} (corresponding to five increasing \textit{charging levels} of a hoe):
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.475\textwidth]{figures/sdvstp-patterns.pdf}
 \end{figure}
 \noindent
-We define \emph{action} $a = (p,r,x,y)$ as follows: Rotate the pattern $p \in \{$base, copper, iron, gold, iridium$\}$ by $r \in \{0^\circ, 90^\circ\}$ and then align its \textit{upper left corner} with grid position $(x,y)$.
+We further define \emph{action} $a = (p,r,x,y)$ as follows: Rotate the pattern $p \in \{$base, copper, iron, gold, iridium$\}$ by $r \in \{0^\circ, 90^\circ\}$ and then align its \textit{upper left corner} with grid position $(x,y)$.
 Then $a$ is \textit{applicable} if the pattern is fully contained within the grid, and
 applying $a$ changes all cells under the pattern to state \statetilled.
 
