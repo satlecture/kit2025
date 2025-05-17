@@ -1,20 +1,46 @@
 
 #include <cassert>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <vector>
 
 // Helper classes and methods for SDVSTP. Look inside sdvstp.h for the entire interface.
 #include "sdvstp.h"
 
+// Potentially useful includes
+#include "../util/VariableAllocator.h"
+#include "../util/cardinality/cardinality_encoding.h"
+#include "../util/cardinality/warners_adder.h"
+extern "C" {
+    #include "../ipasir.h"
+}
+
+// TODO Implement a SAT-based SDVSTP solver that finds an optimal solution.
 std::vector<Action> solveSDVSTP(const Grid& grid) {
 
-    // TODO: Implement a SAT-based SDVSTP solver to retrieve a solution.
     // void* solver = ipasir_init();
-    // VariableAllocator va = ...
-    // ...
-    // int res = ipasir_solve(solver);
+    // VariableAllocator va;
     // ...
 
+    // If you need to encode an at-most-k constraint, you can use the provided utility:
+    // std::vector<int> literalsToConstrain = ...;
+    // std::unique_ptr<CardinalityEncoding> enc;
+    // enc.reset(new WarnersAdder(va, literalsToConstrain));
+    // enc->setClauseCollector([&](int lit) {ipasir_add(solver, lit);});
+    // enc->setAssumptionCollector([&](int lit) {ipasir_assume(solver, lit);});
+    // enc->encodeConstraints(0, literalsToConstrain.size()); // adds clauses;  args = value range to encode
+    // ...
+    // int kToTest;
+    // enc->enforceUpperBound(kToTest); // sets assumptions
+    // int res = ipasir_solve(solver);
+    // ...
+    // kToTest = ...;
+    // enc->enforceUpperBound(kToTest); // sets assumptions
+    // res = ipasir_solve(solver);
+    // ...
+
+    // Dummy return value.
     // Each item in the returned vector must feature one of the five patterns P_*.
     return {
         {P_GOLD,   false, 0, 0},
