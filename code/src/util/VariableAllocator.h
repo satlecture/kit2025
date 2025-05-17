@@ -4,6 +4,8 @@
  * @license MIT
  */
 
+#pragma once
+
 class VariableAllocator {
     unsigned next = 1;
 

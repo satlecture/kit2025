@@ -15,7 +15,13 @@ enum CellState { TO_BE_TILLED = '+', NOT_TO_BE_TILLED = '-', TILLED = 'T' };
 struct Pattern {
     int width; int height;
     void rotate() {std::swap(width, height);}
+    Pattern getRotated() const {Pattern p = *this; p.rotate(); return p;}
     bool operator==(const Pattern& other) const {return width == other.width && height == other.height;}
+    bool operator<(const Pattern& other) const {
+        if (height < other.height) return true;
+        if (height == other.height && width < other.width) return true;
+        return false;
+    }
 };
 
 // The five basic tilling patterns we are dealing with.
