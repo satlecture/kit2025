@@ -75,7 +75,6 @@
 			\item Efficient Unit Propagation
 			\item Clause Forgetting
 			\item Modern Decision Heuristics
-			\item Preprocessing
 		\end{itemize}
 	\end{block}
 \end{frame}
@@ -97,7 +96,6 @@
     \item Efficient Unit Propagation
     \item Clause Forgetting
     \item Modern Decision Heuristics
-    \item Preprocessing
 \end{itemize}
 \end{column}
 \begin{column}{.6\linewidth}
@@ -105,7 +103,7 @@
     \DontPrintSemicolon
     \caption{CDCL(CNF Formula $F$, \&Assignment A $\leftarrow \emptyset$)}
     
-    \SetKwFunction{propagation}{\highlo{UNIT PROPAGATION}}
+    \SetKwFunction{propagation}{UNIT PROPAGATION}
     \SetKwFunction{branching}{\highlo{BRAN}\highl{CHING}}
     \SetKwFunction{conflictanalysis}{\highl{CONFLICT-ANALYSIS}}
     \SetKwFunction{restart}{\highl{RESTART}}
@@ -190,7 +188,7 @@
     \doubleclin
     \rowcolor<3-4>{kit-green} \only<3->{2} & \only<3->{c} & \only<3->{$\bot$} \\
     \doubleclin
-    \rowcolor<4>{kit-green} \only<4->{2} & \only<4->{b} & \only<4->{\addr{2}} \\
+    \rowcolor<5>{kit-green} \only<5->{2} & \only<5->{b} & \only<5->{\addr{2}} \\
     \cline{2-3}
     \end{tabularx}
 \end{column}
@@ -209,7 +207,7 @@
     \doublecline
     $c$	& \addr{3} & \addr{1} & \\
     \doublecline
-    \rowcolor<3-4>{kit-green} $\lnot c$ & \addr{2} & ~~~ & \\
+    \rowcolor<4->{kit-green} $\lnot c$ & \addr{2} & ~~~ & \\
     \cline{2-4}
     \end{tabularx}~\\[1em]
 \end{column}
@@ -236,8 +234,9 @@
     \begin{tabularx}{\linewidth}{l|c|L}
         \bf heat & $\varnothing~per~sec.$\footnote{Order of magnitude of average event count per second (in runs of Cadical on a large combined benchmark set)} & 
         \multirow[t]{3}{\linewidth}{%
-\textbf{Idea:} Reduced occurrence tracking by only keeping the following \highl{\bf invariant:}\\[1ex]
-\highl{\bf Each yet unsatisfied clause is \highlo{watched by}, i.e., in the occurrence list of, \highlo{two of its unassigned literals.}}\\[1ex]
+\textbf{Idea:} Reduced occurrence tracking by only keeping the following invariant:\\[1ex]
+Each yet unsatisfied clause is \highlo{watched by}, i.e., in the occurrence list of,\\
+\highlo{two of its unassigned literals.}\\[1ex]
 \textbf{Reasoning:} less literals watched $\rightarrow$ shorter occurrence lists $\rightarrow$ less clause accesses $\rightarrow$ fast unit propagation\\[1em]
 \begin{itemize}\setlength{\itemsep}{1pt}
     \item<2-> Why do two watched literals per clause suffice?
@@ -341,10 +340,14 @@ $\bm{\rightarrow}$ Skip clause access if that literal is satisfied
 
 \begin{frame}{Recap}
 \begin{block}{Unit Propagation}
-\begin{itemize}
+\begin{itemize}\itemsep1em
     \item Hottest path in CDCL solvers
-    \item Two watched literals per clause suffice for unit propagation (and conflict detection)
-    \item Other optimizations: keep watched literals first in clause, keep a literal of each clause directly in occurrence list
+    \item Two watched literals per clause suffice (for unit propagation and conflict detection)
+    \item Further optimizations:\\[1ex]
+    \begin{itemize}\itemsep1ex
+        \item \textbf{Invariant:} the two first literals in each clause are the watched ones
+        \item \textbf{Blocking literals:} keep a literal of each clause directly in occurrence list
+    \end{itemize}
 \end{itemize}
 \end{block}
 \begin{block}{Next Up}
@@ -355,14 +358,14 @@ Clause Forgetting
 
 \begin{frame}{Clause Forgetting}
 \begin{blueblock}{Motivation}
-Clause learning is most important pruning strategy in CDCL solvers.\footnote{\href{https://doi.org/10.1007/978-3-642-21581-0_27}{``Empirical Study of the Anatomy of Modern Sat Solvers'', Katebi et al., 2013}}\\[1ex]
+Clause learning is most important pruning strategy in CDCL solvers.\footnote{\href{https://doi.org/10.1007/978-3-642-21581-0_27}{``Empirical Study of the Anatomy of Modern SAT Solvers'', Katebi et al., 2013}}\\[1ex]
 \textbf{Problem:}
-\begin{itemize}
+\begin{itemize}\itemsep1ex
     \item Slows down unit propagation
     \item Risk of running out of memory
-\end{itemize}
+\end{itemize}~\\
 \textbf{Solution:}
-\begin{itemize}
+\begin{itemize}\itemsep1ex
     \item Periodically forget some learned clauses
     \item Keep only ``the best'' learned clauses
     \item<2> \textbf{How to figure out which learned clauses are ``the best''?}
@@ -376,10 +379,11 @@ Clause learning is most important pruning strategy in CDCL solvers.\footnote{\hr
     \item \textbf{Clause Size}\\[1ex]
     Keep short clauses
     \item \textbf{Least Recently Used (LRU)}\\[1ex]
-    Keep clauses which where reasons in recent conflicts: clause activity (moving average)
-    \item \textbf{Literal Block Distance (LBD)}\\[1ex]
+    Keep clauses which where reasons in recent conflicts: clause activity (EMA)
+    \item<2-> \textbf{Literal Block Distance (LBD)}\\[1ex]
     Keep clauses with a low number of decision levels%
-    \footnote{\href{https://www.ijcai.org/Proceedings/09/Papers/074.pdf}{Predicting Learnt Clauses Quality in Modern SAT Solvers, Audemard \& Simon (IJCAI 2009)}}
+    \only<2->\footnote{\href{https://www.ijcai.org/Proceedings/09/Papers/074.pdf}{Predicting Learnt Clauses Quality in Modern SAT Solvers, Audemard \& Simon (IJCAI 2009)}}\\[1em]
+    \only<3>{\highlow{Why is low LBD good?}}
 \end{itemize}
 \end{blueblock}
 \end{frame}
@@ -401,20 +405,21 @@ Clause learning is most important pruning strategy in CDCL solvers.\footnote{\hr
     
 \begin{frame}{Clause Forgetting: Modern Hybrid Approach}
 \begin{blueblock}{Manage clauses differently in three tiers}
-    \begin{tabularx}{\linewidth}{l|l|X}
+    \centering
+    \begin{tabularx}{.95\linewidth}{l|l|X}
         \bf Tier & \bf Strategy & \bf Description\\
         \hline
-        \texttt{core} & LBD & Permanently store clauses of LBD $\leq k$ (core-cut value, $3$ in practice)\\
-        \texttt{mid-tier} & LRU & Clauses stay here if used in recent conflicts\\
+        \texttt{core} & LBD & Permanently store clauses of LBD $\leq k$ (core-cut value, $3$ in practice)\\[5pt]
+        \texttt{mid-tier} & LRU & Clauses stay here if used in recent conflicts\\[5pt]
         \texttt{local} & LRU & Keep fixed number of clauses (say $5000$) of highest activity
     \end{tabularx}
-\end{blueblock}
+\end{blueblock}~\\
 \begin{blueblock}{History}
-    \begin{itemize}
+    \begin{itemize}\itemsep1ex
     \item \texttt{core} and \texttt{local} tier introduced in SWDiA5BY (Chanseok Oh, 2014)
     \item \texttt{mid-tier} introduced in CoMinisatPS (Chanseok Oh, 2015)
     \item \href{https://link.springer.com/chapter/10.1007/978-3-319-24318-4_23}{``Between SAT and UNSAT: The Fundamental Difference in CDCL SAT'' (Chanseok Oh, 2015)}
-    \item Note: MapleCOMSPS (2016) is a CoMinisatPS fork
+    \item Note: The award-winning SAT solver \texttt{MapleCOMSPS (2016)} is a CoMinisatPS fork
     \end{itemize}
 \end{blueblock}
 \end{frame}
@@ -431,7 +436,7 @@ Clause learning is most important pruning strategy in CDCL solvers.\footnote{\hr
 
 \graphicspath{ {satvizpdf/} }
 
-\begin{frame}{Visualized Instance: Aprove (Termination Analysis, SAT)}{
+\begin{frame}{Instance from Termination Analysis, SAT}{
     \only<1>{initial layout, recently active variables after 1000 conflicts}
     \only<2>{initial layout, recently active variables after 1690 conflicts}
     \only<3>{initial layout, recently active variables after 3090 conflicts}
@@ -461,7 +466,7 @@ Clause learning is most important pruning strategy in CDCL solvers.\footnote{\hr
 }
 \end{frame}
 
-\begin{frame}{Visualized Instance: Newton SMT (SV Competition, SAT)}{
+\begin{frame}{Instance from SV Competition, SAT}{
     \only<1>{initial layout}
     \only<2>{after 10000 conflicts}
     \only<3>{after 1000000 conflicts}
@@ -491,11 +496,7 @@ Clause learning is most important pruning strategy in CDCL solvers.\footnote{\hr
 \begin{block}{So far}
 \begin{itemize}\setlength{\itemsep}{1em}
     \item Efficient Unit Propagation
-    \item Clause Forgetting Heuristics:
-    \begin{itemize}\setlength{\itemsep}{1ex}
-        \item Size, LRU, LBD
-        \item Three-Tier Clause Management
-    \end{itemize}
+    \item Clause Forgetting Heuristics
 \end{itemize}
 \end{block}
 \begin{block}{Next Up}
@@ -561,7 +562,6 @@ Modern Decision Heuristics
 \end{frame}
     
 \begin{frame}{{\bf V}ariable {\bf S}tate {\bf I}ndependent {\bf D}ecaying {\bf S}um {\bf (VSIDS)}}
-Keep list of variables sorted by scores
 \begin{blueblock}{Common implementation: Binary Heap}
     \setcolsep{1em}
     \setrowsep{1.5}
@@ -578,37 +578,50 @@ Keep list of variables sorted by scores
     
 \begin{frame}{{\bf V}ariable {\bf S}tate {\bf I}ndependent {\bf D}ecaying {\bf S}um {\bf (VSIDS)}}
 \vspace*{-1ex}
-\begin{exampleblock}{VSIDS Variants}
+\begin{blueblock}{Historic Implementations}~\\[-1em]
+\begin{minipage}{.45\linewidth}
 \textbf{Chaff (2001)}
-\begin{itemize}
-    \item decay: half scores every 256 conflicts
-    \item sort priority queue after each decay only
-\end{itemize}
+    \begin{itemize}
+        \item decay: half scores every 256 conflicts
+        \item sort priority queue after each decay only
+    \end{itemize}
+\end{minipage}
+\quad
+\begin{minipage}{.45\linewidth}
 \textbf{Berkmin (2002)}
-\begin{itemize}
-    \item bump all literals in implication graph
-    \item divide scores by 4
-\end{itemize}
-\textbf{Minisat (2003)}
-\begin{itemize}
-    \item Exponential VSIDS (EVSIDS)
-    \item Reason-side Bumping
-\end{itemize}
+    \begin{itemize}
+        \item bump all literals in implication graph
+        \item divide scores by 4
+    \end{itemize}
+\end{minipage}
+\end{blueblock}
+\begin{exampleblock}{\textbf{Minisat (2003)}: Exponential VSIDS (EVSIDS)}
+\textbf{Idea:} Exponential decay of scores $s(v)$ with damping factor $0 < f < 1$\\
+$$
+s'(v) := \begin{cases}
+    f \cdot s(v) + (1 - f) & \text{if } v \text{ is to be bumped}\\
+    f \cdot s(v) & \text{otherwise}
+\end{cases}
+$$\\[1ex]
+\textbf{Theory:} Exponential Moving Average (EMA)\\[1ex]
+\textbf{Implementation:} Score increment by $g^i$, with $i$ denoting the conflict-index and $g = \frac{1}{f}$ \quad (no decay)\\[2ex]
+Reason-side Bumping: Also bump variables in the reason clauses of the conflict
 \end{exampleblock}
 %
-\begin{blueblock}{Alternatives}
-\textbf{Siege (2004)}: Variable Move To Front (VMTF) \qquad \textbf{HaifaSAT (2008)}: Clause Move To Front (CMTF)
-\end{blueblock}
 \end{frame}
     
-\begin{frame}{\href{https://doi.org/10.1007/978-3-319-24318-4_29}{``Evaluating CDCL Variable Scoring Schemes''}}{\href{https://doi.org/10.1007/978-3-319-24318-4_29}{Biere \& Fröhlich, 2015}}
-\vspace*{-3em}
+\begin{frame}{}{}
+\href{https://doi.org/10.1007/978-3-319-24318-4_29}{Evaluating CDCL Variable Scoring Schemes (Biere \& Fröhlich, 2015)}\hfill\\[1em]
 \centering
 \includegraphics[width=.56\linewidth]{figures/l06/evsids-vmtf-acids-froehlich2015.png}
 \end{frame}
     
-\begin{frame}{Recent Hybrid Approaches}
-\begin{blueblock}{Hybrid Approaches} 
+\begin{frame}{Alternative and Hybrid Approaches}
+\begin{blueblock}{Alternatives}
+\textbf{Siege (2004)}: Variable Move To Front (VMTF)\\[1ex]
+\textbf{HaifaSAT (2008)}: Clause Move To Front (CMTF)
+\end{blueblock}~\\
+\begin{blueblock}{Recent Hybrid Approaches} 
 \begin{itemize}\setlength{\itemsep}{1em}
 \item {\bf Warmup Phase}:
 \begin{itemize}\setlength{\itemsep}{1ex}
@@ -625,21 +638,79 @@ Keep list of variables sorted by scores
 \end{frame}
 
 
+\begin{frame}{Modern Branching: Local Search Intergration}
+\href{https://doi.org/10.1613/jair.1.13666 }{Better Decision Heuristics in CDCL through Local Search and Target Phases (Cai et al., 2022)}\\[1em]
+\textbf{Branching:}\\
+\begin{itemize}\itemsep1em
+    \item Target Phases: cache and use the phases which led to the previously \highlo{largest} assignment
+    \item Integrate Sprints of Local Search: use unit-propagation to \highlo{complete} the assignment (ignoring all conflicts)
+    \item Rephasing: save the \highlo{best assignment found} during local search for phase selection (diversification)
+\end{itemize}~\\
+\textbf{Ordering:}\\
+\begin{itemize}
+    \item Import \highlo{Statistics}: use frequency of appearing in unsatisfied clauses to modify the variables VSIDS score
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{Recap}
-    \begin{block}{So far}
-        \begin{itemize}
-            \item Unit Propagation
-            \item Clause Forgetting
-            \item Modern Branching Heuristics
-            \begin{itemize}
-                \item Mostly VSIDS
-                \item Hybrid approaches: warmup VSIDS scores, reinforcement learning
-            \end{itemize}
-        \end{itemize}
-    \end{block}
-    % \begin{block}{Next Up}
-    %     Preprocessing
-    % \end{block}
+\vspace*{-1em}
+\begin{columns}[T]
+\begin{column}{.3\linewidth}
+~\\[1em]
+\highl{Recap}
+\begin{itemize}
+    \item Efficient Unit Propagation
+    \item Clause Forgetting
+    \item Modern Decision Heuristics
+\end{itemize}~\\
+\highlo{Next Time}
+\begin{itemize}
+    \item Preprocessing
+\end{itemize}
+\end{column}
+\begin{column}{.6\linewidth}
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \caption{CDCL(CNF Formula $F$, \&Assignment A $\leftarrow \emptyset$)}
+    
+    \SetKwFunction{propagation}{\highl{UNIT PROPAGATION}}
+    \SetKwFunction{branching}{\highl{BRANCHING}}
+    \SetKwFunction{conflictanalysis}{CONFLICT-ANALYSIS}
+    \SetKwFunction{restart}{RESTART}
+    \SetKwFunction{cleanup}{\highl{CLEANUP}}
+    \SetKwFunction{preprocessing}{\highlo{PREPROCESSING}}
+
+    \SetKwData{UNSAT}{UNSAT}
+    \SetKwData{SAT}{SAT}
+    
+    \lIf {not \preprocessing} {
+        \Return \UNSAT
+    }
+    \While {A is not complete} {
+        \propagation\;
+        \If {A falsifies a clause in $F$} {
+            \lIf {decision level is $0$} {
+                \Return \UNSAT
+            }
+            \Else {
+                (clause, level) $\leftarrow$ \conflictanalysis\;
+                add clause to $F$ and backtrack to level\;
+                \textbf{continue}\;
+            }
+        }
+        \lIf {\restart} {
+            backtrack to level $0$
+        }
+        \lIf {\cleanup} {
+            forget some learned clauses
+        }
+        \branching\;
+    }
+    \Return \SAT\;
+\end{algorithm}
+\end{column}
+\end{columns}
 \end{frame}
     
 % \begin{frame}{Preprocessing}
