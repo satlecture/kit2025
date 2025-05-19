@@ -47,11 +47,15 @@ public:
     int width() const {assert(states.size() > 0); return states[0].size();}
     CellState at(int x, int y) const {return states[y][x];}
     CellState& at(int x, int y) {return states[y][x];}
+    // Checks whether the provided action is applicable in the sense that it is entirely
+    // contained in the grid.
     bool applicable(Action a) const {
         if (a.rotate) a.p.rotate(); // rotate pattern if necessary
         return a.x + a.p.width <= width()
             && a.y + a.p.height <= height();
     }
+    // Apply the action, transforming all concerned cells into the provided state
+    // (TILLED by default).
     void apply(Action a, CellState targetState = TILLED) {
         if (!applicable(a)) throw std::runtime_error("Action not applicable!");
         if (a.rotate) a.p.rotate(); // rotate pattern if necessary
@@ -62,6 +66,8 @@ public:
             }
         }
     }
+    // Output the grid to the provided output stream (std::cout by default).
+    // If "comment" is true, prepend "c " to each line and add a header also beginning with "c ".
     void print(std::ostream* osPtr = &std::cout, bool comment = true) const {
         auto& os = *osPtr;
         if (comment) os << "c Grid (" << width() << " x " << height() << "):" << std::endl;

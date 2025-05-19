@@ -1,17 +1,15 @@
 
 #include <cassert>
 #include <iostream>
-#include <map>
 #include <memory>
 #include <vector>
 
 // Helper classes and methods for SDVSTP. Look inside sdvstp.h for the entire interface.
 #include "sdvstp.h"
 
-// Potentially useful includes
 #include "../util/VariableAllocator.h"
-#include "../util/cardinality/cardinality_encoding.h"
-#include "../util/cardinality/warners_adder.h"
+#include "../util/pb/cardinality_encoding.h"
+#include "../util/pb/warners_adder.h"
 extern "C" {
     #include "../ipasir.h"
 }
@@ -19,25 +17,26 @@ extern "C" {
 // TODO Implement a SAT-based SDVSTP solver that finds an optimal solution.
 std::vector<Action> solveSDVSTP(const Grid& grid) {
 
-    // void* solver = ipasir_init();
-    // VariableAllocator va;
+    // Here's some initial example code you can but don't need to use.
+
+    void* solver = ipasir_init();
+    VariableAllocator va;
     // ...
 
-    // If you need to encode an at-most-k constraint, you can use the provided utility:
-    // std::vector<int> literalsToConstrain = ...;
-    // std::unique_ptr<CardinalityEncoding> enc;
-    // enc.reset(new WarnersAdder(va, literalsToConstrain));
-    // enc->setClauseCollector([&](int lit) {ipasir_add(solver, lit);});
-    // enc->setAssumptionCollector([&](int lit) {ipasir_assume(solver, lit);});
-    // enc->encodeConstraints(0, literalsToConstrain.size()); // adds clauses;  args = value range to encode
+    // If you need to encode an at-most-k constraint, you may use the following utility
+    // which implements a rather basic adder tree.
+    // (Feel free to write different/better encoders and add them as a new sub-class of CardinalityEncoding.)
+    std::vector<int> literalsToConstrain; // = ...;
+    std::unique_ptr<CardinalityEncoding> enc {new WarnersAdder(solver, va, literalsToConstrain)};
+    enc->encodeConstraints(0, literalsToConstrain.size()); // adds clauses;  args = value range to encode
     // ...
-    // int kToTest;
-    // enc->enforceUpperBound(kToTest); // sets assumptions
-    // int res = ipasir_solve(solver);
+    int kToTest; // = ...;
+    enc->enforceUpperBound(kToTest); // sets assumptions
+    int res = ipasir_solve(solver);
     // ...
     // kToTest = ...;
-    // enc->enforceUpperBound(kToTest); // sets assumptions
-    // res = ipasir_solve(solver);
+    enc->enforceUpperBound(kToTest); // sets assumptions
+    res = ipasir_solve(solver);
     // ...
 
     // Dummy return value.
