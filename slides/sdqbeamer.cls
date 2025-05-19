@@ -1,81 +1,36 @@
 %% Vorlage für Präsentationen mit LaTeX Beamer im KIT-Design
-%% entsprechend den Gestaltungsrichtlinien vom 1. August 2020
+%% entsprechend den Gestaltungsrichtlinien vom Februar 2025
 %%
-%% Siehe https://sdqweb.ipd.kit.edu/wiki/Dokumentvorlagen
+%% Siehe https://sdq.kastel.kit.edu/wiki/Dokumentvorlagen
 
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{sdqbeamer}[2022-05-03 v3.1.3 SDQ Beamer class]
+\ProvidesClass{sdqbeamer}[2025-03-01 v4.0.0 SDQ Beamer class]
 
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
 
+\newif\ifsectionnavigationoption
 \newif\ifsectionnavigation
-\newif\ifnavbarinfoot
-\newif\ifnavbarinline
-\newif\ifnavbarside
-\newif\iffourtothree
-\newif\ifsixteentonine
-\newif\ifsixteentoten
+\sectionnavigationoptiontrue
 \newif\ifgerman
+\newif\iffranklin
 \newif\ifsmallfooterfont
+\newif\ifkitgrid
 
-\def\kitslogan#1{\def\@kitslogan{#1}}
-\def\kitlogo#1{\def\@kitlogo{#1}}
 \def\groupname#1{\def\@groupname{#1}}
 \def\groupnamewidth#1{\def\@groupnamewidth{#1}}
 
 % siehe README.md
 \DeclareOption{de}{
-  \kitslogan{KIT -- Die Forschungsuniversität in der Helmholtz-Gemeinschaft}
-  \kitlogo{kitlogo_de_rgb}
   \germantrue
   \PassOptionsToPackage{autostyle}{csquotes}
   }
 \DeclareOption{en}{
-  \kitslogan{KIT -- The Research University in the Helmholtz Association}
-  \kitlogo{kitlogo_en_rgb}
   \germanfalse
   }
-\DeclareOption{4:3}{
-  \fourtothreetrue
-  \sixteentoninefalse
-  \sixteentotenfalse
-}
-\DeclareOption{16:9}{
-	\fourtothreefalse
-	\sixteentoninetrue
-	\sixteentotenfalse
-}
-\DeclareOption{16:10}{
-	\fourtothreefalse
-	\sixteentoninefalse
-	\sixteentotentrue
-}
-\DeclareOption{navbarside}{
-  \sectionnavigationtrue
-  \navbarsidetrue
-  \navbarinlinefalse
-  \navbarinfootfalse
-}
-\DeclareOption{navbarinline}{
-  \sectionnavigationtrue
-  \navbarsidefalse
-  \navbarinlinetrue
-  \navbarinfootfalse
-}
-\DeclareOption{navbarinfooter}{
-  \sectionnavigationtrue
-  \navbarsidefalse
-  \navbarinlinefalse
-  \navbarinfoottrue
-}
 \DeclareOption{navbaroff}{
-  \sectionnavigationfalse
-}
-\DeclareOption{navbarkit}{
-  \sectionnavigationfalse
-  \smallfooterfonttrue
+  \sectionnavigationoptionfalse
 }
 \DeclareOption{smallfoot}{
   \smallfooterfonttrue
@@ -83,14 +38,39 @@
 \DeclareOption{bigfoot}{
   \smallfooterfontfalse
 }
+\DeclareOption{helvet}{
+  \franklinfalse
+}
+\DeclareOption{franklin}{
+  \franklintrue
+}
+\DeclareOption{kitgrid}{
+  \kitgridtrue
+}
 
-\ExecuteOptions{de,16:9,navbarinline,bigfoot}
+\ExecuteOptions{de,bigfoot,franklin}
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
 
 \ProcessOptions\relax
 
-\LoadClass[10pt,utf8]{beamer}
+% In der PowerPoint-Vorlage ist die Schrift 16 pt groß. Dies wird von LaTeX aber standardmäßig nicht angeboten.
+% Daher wurden 17 pt als Standardschriftgröße gewählt. Das ergibt:
+%
+% \tiny         = 10pt
+% \scriptsize   = 11pt
+% \footnotesize = 12pt
+% \small        = 14pt
+% \normalsize   = 17pt
+% \large        = 20pt
+% \Large        = 25pt
+% \LARGE        = 30pt
+% \huge         = 36pt
+% \Huge         = 48pt
+% \HUGE         = 60pt 
+%
+% onlytextwidth läßt Spalten nur innerhalb der Ränder erscheinen.
+\LoadClass[17pt,utf8,onlytextwidth]{beamer}
 
 % Babel-Paket wird nur bei deutscher Sprache benötigt
 \ifgerman
@@ -100,850 +80,1188 @@
 \RequirePackage{hyperref}
 \RequirePackage[absolute,overlay]{textpos}
 
-%% ---------------
-%% | Typographie |
-%% ---------------
+%% ┏━━━━━━━━━━━━━┓
+%% ┃ Typographie ┃
+%% ┗━━━━━━━━━━━━━┛
 
 \RequirePackage{microtype}
 
-\RequirePackage[scaled=.92]{helvet}
-\RequirePackage[scaled=.78]{beramono}
+\RequirePackage{helvet}
+\RequirePackage[scaled=.92]{beramono}
 \RequirePackage{libertineRoman}
 
-\setbeamerfont{title}{series=\bfseries,size=\Large}
-\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
-\setbeamerfont{framesubtitle}{series=\bfseries,size=\normalsize}
+% Semibold
+\DeclareRobustCommand{\sbseries}{\fontseries{sb}\selectfont}
+\DeclareTextFontCommand{\textsb}{\sbseries}
 
-%% -----------------
-%% | Folien-Layout |
-%% -----------------
+% Überschriften in Franklin (nur wenn Paket-Option gesetzt, sonst auch Helvetica)
+\iffranklin
+  \setbeamerfont{title}{family*=LibreFranklin-TLF,series=\sbseries,size=\Huge}
+  \setbeamerfont{frametitle}{family*=LibreFranklin-TLF,series=\sbseries,size=\huge}
+  \setbeamerfont{framesubtitle}{family*=LibreFranklin-TLF,series=\sbseries,size=\LARGE}
+  \setbeamerfont{section in toc}{family*=LibreFranklin-TLF}
+\else
+  \setbeamerfont{title}{series=\bfseries,size=\Huge}
+  \setbeamerfont{frametitle}{series=\bfseries,size=\huge}
+  \setbeamerfont{framesubtitle}{series=\bfseries,size=\LARGE}
+\fi
+
+\setbeamerfont{subtitle}{family*=phv,series=\bfseries,size=\normalsize}
+\setbeamerfont{author}{family*=phv,series=\mdseries,size=\normalsize}
+\setbeamerfont{date}{family*=phv,series=\mdseries,size=\normalsize}
+
+% Aufzählungen
+\setbeamertemplate{itemize items}[square]
+
+% Boxen
+\setbeamerfont{highlight box}{series=\bfseries, size=\normalsize}
+\setbeamerfont{standard box}{series=\bfseries, size=\normalsize}
+
+
+%% ┏━━━━━━━━━━━━━━┓
+%% ┃ /Typographie ┃
+%% ┗━━━━━━━━━━━━━━┛
+
+%% ┏━━━━━━━━━━━━━━━┓
+%% ┃ Folien-Layout ┃
+%% ┗━━━━━━━━━━━━━━━┛
 
 % Seitenverhältnis
 %
-% Die Folien sind auf die Standardhöhe in LaTeX Beamer (9,6 cm) normiert.
-% Die Maße der KIT-Gestaltungsrichtlinien (Folienhöhe 14,3 cm) wurden durch
-% den Quotienten 1,5 geteilt.
+% Die Folien benutzen dieselbe Geometrie wie die PowerPoint-Vorlagen des KIT.
 
 \RequirePackage{geometry}
-\iffourtothree
-	\geometry{papersize={12.8cm,9.6cm}}
-\fi
-\ifsixteentoten
-	\geometry{papersize={15.36cm,9.6cm}}
-\fi
-\ifsixteentonine
-	\geometry{papersize={17.07cm,9.6cm}}
-\fi
+\geometry{papersize={33.867cm,19.05cm}}
 
-% Ränder laut Gestaltungsrichtlinen; 3 mm -> 2 mm, 11 mm -> 7,3 mm
+% Ränder laut pptx: 1,03 cm
 \newlength{\kitoutermargin}
-\setlength{\kitoutermargin}{2mm}
-\newlength{\kitinnermargin}
-\setlength{\kitinnermargin}{7.3mm}
-\newlength{\kitbottommargin}
-\setlength{\kitbottommargin}{\kitinnermargin}
+\setlength{\kitoutermargin}{1.03cm}
+% Höhe der Fußzeile laut pptx: 1,62cm
+\newlength{\kitbottom}
+\setlength{\kitbottom}{1.62cm}
+% Abstände im Raster
+\newlength{\kitcolumn}
+\setlength{\kitcolumn}{4.8cm}
+\newlength{\kitcolumnsep}
+\setlength{\kitcolumnsep}{0.6cm}
+\newlength{\kitrow}
+\setlength{\kitrow}{2.8cm}
+\newlength{\kitrowsep}
+\setlength{\kitrowsep}{0.6cm}
+
+% Position der vertikalen Hilfslinien
+\newlength{\kitcolumnoneleft}
+\setlength{\kitcolumnoneleft}{\kitoutermargin}
+\newlength{\kitcolumnoneright}
+\setlength{\kitcolumnoneright}{\dimexpr\kitoutermargin+\kitcolumn\relax}
+
+\newlength{\kitcolumntwoleft}
+\setlength{\kitcolumntwoleft}{\dimexpr\kitoutermargin+\kitcolumn+\kitcolumnsep\relax}
+\newlength{\kitcolumntworight}
+\setlength{\kitcolumntworight}{\dimexpr\kitoutermargin+2\kitcolumn+\kitcolumnsep\relax}
+
+\newlength{\kitcolumnthreeleft}
+\setlength{\kitcolumnthreeleft}{\dimexpr\kitoutermargin+2\kitcolumn+2\kitcolumnsep\relax}
+\newlength{\kitcolumnthreeright}
+\setlength{\kitcolumnthreeright}{\dimexpr\kitoutermargin+3\kitcolumn+2\kitcolumnsep\relax}
+
+\newlength{\kitcolumnfourleft}
+\setlength{\kitcolumnfourleft}{\dimexpr\kitoutermargin+3\kitcolumn+3\kitcolumnsep\relax}
+\newlength{\kitcolumnfourright}
+\setlength{\kitcolumnfourright}{\dimexpr\kitoutermargin+4\kitcolumn+3\kitcolumnsep\relax}
+
+\newlength{\kitcolumnfiveleft}
+\setlength{\kitcolumnfiveleft}{\dimexpr\kitoutermargin+4\kitcolumn+4\kitcolumnsep\relax}
+\newlength{\kitcolumnfiveright}
+\setlength{\kitcolumnfiveright}{\dimexpr\kitoutermargin+5\kitcolumn+4\kitcolumnsep\relax}
+
+\newlength{\kitcolumnsixleft}
+\setlength{\kitcolumnsixleft}{\dimexpr\kitoutermargin+5\kitcolumn+5\kitcolumnsep\relax}
+\newlength{\kitcolumnsixright}
+\setlength{\kitcolumnsixright}{\dimexpr\kitoutermargin+6\kitcolumn+5\kitcolumnsep\relax}
+
+% Position der horizontalen Hilfslinien
+\newlength{\kitrowonetop}
+\setlength{\kitrowonetop}{\kitoutermargin}
+\newlength{\kitrowonebottom}
+\setlength{\kitrowonebottom}{\dimexpr\kitoutermargin+\kitrow\relax}
+
+\newlength{\kitrowtwotop}
+\setlength{\kitrowtwotop}{\dimexpr\kitoutermargin+\kitrow+\kitrowsep\relax}
+\newlength{\kitrowtwobottom}
+\setlength{\kitrowtwobottom}{\dimexpr\kitoutermargin+2\kitrow+\kitrowsep\relax}
+
+\newlength{\kitrowthreetop}
+\setlength{\kitrowthreetop}{\dimexpr\kitoutermargin+2\kitrow+2\kitrowsep\relax}
+\newlength{\kitrowthreebottom}
+\setlength{\kitrowthreebottom}{\dimexpr\kitoutermargin+3\kitrow+2\kitrowsep\relax}
+
+\newlength{\kitrowfourtop}
+\setlength{\kitrowfourtop}{\dimexpr\kitoutermargin+3\kitrow+3\kitrowsep\relax}
+\newlength{\kitrowfourbottom}
+\setlength{\kitrowfourbottom}{\dimexpr\kitoutermargin+4\kitrow+3\kitrowsep\relax}
+
+\newlength{\kitrowfivetop}
+\setlength{\kitrowfivetop}{\dimexpr\kitoutermargin+4\kitrow+4\kitrowsep\relax}
+\newlength{\kitrowfivebottom}
+\setlength{\kitrowfivebottom}{\dimexpr\kitoutermargin+5\kitrow+4\kitrowsep\relax}
+
+% Breite von Elementen, die mehrere Spalten umfassen
+\newlength{\kitonecolumn}
+\setlength{\kitonecolumn}{\kitcolumn}
+\newlength{\kittwocolumns}
+\setlength{\kittwocolumns}{\dimexpr2\kitcolumn+\kitcolumnsep\relax}
+\newlength{\kitthreecolumns}
+\setlength{\kitthreecolumns}{\dimexpr3\kitcolumn+2\kitcolumnsep\relax}
+\newlength{\kitfourcolumns}
+\setlength{\kitfourcolumns}{\dimexpr4\kitcolumn+3\kitcolumnsep\relax}
+\newlength{\kitfivecolumns}
+\setlength{\kitfivecolumns}{\dimexpr5\kitcolumn+4\kitcolumnsep\relax}
+\newlength{\kitsixcolumns}
+\setlength{\kitsixcolumns}{\dimexpr6\kitcolumn+5\kitcolumnsep\relax}
+
+% Breite von Elementen, die mehrere Zeilen umfassen
+\newlength{\kitonerow}
+\setlength{\kitonerow}{\kitrow}
+\newlength{\kittworows}
+\setlength{\kittworows}{\dimexpr2\kitrow+\kitrowsep\relax}
+\newlength{\kitthreerows}
+\setlength{\kitthreerows}{\dimexpr3\kitrow+2\kitrowsep\relax}
+\newlength{\kitfourrows}
+\setlength{\kitfourrows}{\dimexpr4\kitrow+3\kitrowsep\relax}
+\newlength{\kitfiverows}
+\setlength{\kitfiverows}{\dimexpr5\kitrow+4\kitrowsep\relax}
+
+% Hintergrund-Raster sichtbar
+% Nach Vorlagen-pptx
+\defbeamertemplate{background canvas}{kitgrid}{
+  \begin{pgfpicture}{0pt}{0pt}{\paperwidth}{\paperheight}
+    % horizontal
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowonetop}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowonetop}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowonebottom}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowonebottom}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowtwotop}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowtwotop}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowtwobottom}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowtwobottom}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowthreetop}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowthreetop}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowthreebottom}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowthreebottom}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowfourtop}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowfourtop}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowfourbottom}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowfourbottom}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowfivetop}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowfivetop}}
+    \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\kitrowfivebottom}}
+    \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\kitrowfivebottom}}
+    % vertikal
+    \pgfpathmoveto{\pgfpoint{\kitcolumnoneleft}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnoneleft}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnoneright}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnoneright}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumntwoleft}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumntwoleft}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumntworight}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumntworight}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnthreeleft}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnthreeleft}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnthreeright}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnthreeright}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnfourleft}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnfourleft}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnfourright}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnfourright}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnfiveleft}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnfiveleft}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnfiveright}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnfiveright}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnsixleft}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnsixleft}{\paperheight}}
+    \pgfpathmoveto{\pgfpoint{\kitcolumnsixright}{0cm}}
+    \pgfpathlineto{\pgfpoint{\kitcolumnsixright}{\paperheight}}
+    % zeichnen
+    \pgfsetstrokecolor{kit-orange50}
+    \pgfusepath{stroke}
+  \end{pgfpicture}%
+}
 
 % Ränder außen
-\setbeamersize{text margin left=\kitinnermargin,text margin right=\kitinnermargin} 
+\setbeamersize{text margin left=\kitoutermargin,text margin right=\kitoutermargin} 
 
 % keine Navigationssymbole
 \setbeamertemplate{navigation symbols}{}
 \setbeamercovered{invisible}
-\useinnertheme{rounded}
 \beamer@compresstrue % Miniframes (Navigations-Punkte) für Subsections immer in einer Zeile, ohne Umbrüche
 
-% Folientitel
-\setbeamertemplate{frametitle}{
-  \ifbeamer@plainframe\else%
-    % Unterkante Titeltext: 22,5 mm -> 15 mm von Seitenkopf
-    \begin{textblock*}{\dimexpr\paperwidth-30mm-2\kitinnermargin}[0,1](\kitinnermargin,15mm)%
-      \usebeamerfont{frametitle}\insertframetitle%
-      \ifx\insertframesubtitle\@empty\else\\[.1em]\fi
-      \usebeamerfont{framesubtitle}\insertframesubtitle%
-    \end{textblock*}%
-    \begin{textblock*}{20mm}[1,1](\dimexpr\paperwidth-\kitinnermargin\relax,15mm)%j
-        \includegraphics[width=20mm]{logos/\@kitlogo}%
-    \end{textblock*}%
-  \fi
-% Rand oben (ergibt Beginn des Textes bei 34 mm -> 22,7 mm)
-  \vspace {18mm}
+% Mehrere Folienlayouts erlauben
+% siehe https://stackoverflow.com/questions/3158665/having-multiple-slide-templates-in-latex-beamer
+
+%%
+%% Standard-Layout
+%%
+
+\BeforeBeginEnvironment{frame}{%
+  \restoregeometry
+  % Section-Navigation wieder auf Paketoption zurücksetzen
+  \ifsectionnavigationoption\sectionnavigationtrue\else\sectionnavigationfalse\fi
+  % KIT-Logo bunt
+  \footlinelogo{rgb}
+  \setbeamertemplate{frametitle}[KIT 2025]{\paperwidth}
+  \setbeamertemplate{footline}[KIT 2025]
+  \setbeamertemplate{background}[default]
+  \setbeamertemplate{logo}{}
+  \ifkitgrid\setbeamertemplate{background canvas}[kitgrid]\fi
 }
 
-%% Fußzeile
-\newlength{\kitbottom}
-  % Navbar in Footer: Schmale Fußzeile
-\ifnavbarinfoot
-  % Bei Navbar in Footer immer kleiner Font in der Fußzeile
-  \setbeamerfont{footer}{size=\fontsize{6pt}{7.2pt}\selectfont}
-  \setlength{\kitbottom}{4mm}
-\else
-  % Ansonsten kleiner Text nur, wenn "smallfoot" gewählt
-  \ifsmallfooterfont
-    \setbeamerfont{footer}{size=\fontsize{6pt}{7.2pt}\selectfont}
-  \else
+% ┌───────────┐
+% │ Kopfzeile │
+% └───────────┘
+
+% #1 = Breite
+\defbeamertemplate{frametitle}{KIT 2025}[1]{
+  % Oberkante Titeltext
+  \begin{textblock*}{#1}[0,0](\kitoutermargin,\kitoutermargin)%
+    {\usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\insertframetitle}%
+    \ifx\insertframesubtitle\@empty\else\\\fi
+    {\usebeamercolor[fg]{framesubtitle}\usebeamerfont{framesubtitle}\insertframesubtitle}%
+  \end{textblock*}%
+  % Rand oben entsprechend KIT-Vorlage
+  \vspace{37mm}%
+}
+
+% #1 = logo
+\defbeamertemplate{logo}{KIT 2025 title/toc}[1]{
+  \begin{textblock*}{24mm}(297.5mm,\kitoutermargin)
+  \includegraphics[width=24mm]{logos/#1} 
+  \end{textblock*}
+  \vspace{37mm}%
+}
+
+% ┌────────────┐
+% │ /Kopfzeile │
+% └────────────┘
+
+% ┌──────────┐
+% │ Fußzeile │
+% └──────────┘
+
+% Anpassung der Fußzeile für zweizeilige Titel
+\newlength{\kitfooterbaselinecorrection}
+
+% KIT-Logo (rgb, white, black)
+\def\footlinelogo#1{\def\@footlinelogo{#1}}
+
+% kleiner Text nur, wenn "smallfoot" gewählt
+\ifsmallfooterfont
+    % 11pt wie in offiziellen Vorlage
     \setbeamerfont{footer}{size=\scriptsize}
-  \fi
-  \setlength{\kitbottom}{\kitbottommargin}
+    \setlength{\kitfooterbaselinecorrection}{2pt}
+  \else
+    % 12pt, besser lesbar
+    \setbeamerfont{footer}{size=\footnotesize}
+    \setlength{\kitfooterbaselinecorrection}{3pt}
 \fi
+
+%
+% Section-Punkte, die mit der Schriftgröße skalieren
+%
+% angepaßt von https://tex.stackexchange.com/questions/292070/beamer-navigation-bar-too-long
+\defbeamertemplate{mini frame}{scaled circle}
+{%
+  \usebeamerfont{footer}%
+  \begin{pgfpicture}{0pt}{0pt}{1ex}{1ex}
+    \pgfsetlinewidth{.13ex}
+    \pgfpathcircle{\pgfpoint{.5ex}{.5ex}}{.5ex}
+    \pgfusepath{fill,stroke}
+  \end{pgfpicture}%
+}
+[action]
+{
+  \usebeamerfont{footer}%
+  \setbeamersize{mini frame size=1.4ex,mini frame offset=.4ex}
+}
+
+\defbeamertemplate{mini frame in current section}{scaled circle}
+{%
+  \usebeamerfont{footer}%
+  \begin{pgfpicture}{0pt}{0pt}{1ex}{1ex}
+    \pgfsetlinewidth{.13ex}
+    \pgfpathcircle{\pgfpoint{.5ex}{.5ex}}{.5ex}
+    \pgfusepath{stroke}
+  \end{pgfpicture}%
+}
+
+\defbeamertemplate{mini frame in current subsection}{scaled circle}
+{%
+  \usebeamerfont{footer}%
+  \begin{pgfpicture}{0pt}{0pt}{1ex}{1ex}
+    \pgfsetlinewidth{.13ex}
+    \pgfpathcircle{\pgfpoint{.5ex}{.5ex}}{.5ex}
+    \pgfusepath{stroke}
+  \end{pgfpicture}%
+}
+
+\defbeamertemplate{mini frame}{scaled rectangle}
+{%
+  \usebeamerfont{footer}%
+  \begin{pgfpicture}{0pt}{0pt}{1ex}{1ex}
+    \pgfsetlinewidth{.1ex}
+    \pgfpathrectangle{\pgfpoint{0ex}{0ex}}{\pgfpoint{1ex}{1ex}}
+    \pgfusepath{fill,stroke}
+  \end{pgfpicture}%
+}
+[action]
+{
+  \usebeamerfont{footer}%
+  \setbeamersize{mini frame size=1.4ex,mini frame offset=.4ex}
+}
+
+\defbeamertemplate{mini frame in current section}{scaled rectangle}
+{%
+  \usebeamerfont{footer}%
+  \begin{pgfpicture}{0pt}{0pt}{1ex}{1ex}
+    \pgfsetlinewidth{.1ex}
+    \pgfpathrectangle{\pgfpoint{0ex}{0ex}}{\pgfpoint{1ex}{1ex}}
+    \pgfusepath{stroke}
+  \end{pgfpicture}%
+}
+
+\defbeamertemplate{mini frame in current subsection}{scaled rectangle}
+{%
+  \usebeamerfont{footer}%
+  \begin{pgfpicture}{0pt}{0pt}{1ex}{1ex}
+    \pgfsetlinewidth{.1ex}
+    \pgfpathrectangle{\pgfpoint{0ex}{0ex}}{\pgfpoint{1ex}{1ex}}
+    \pgfusepath{stroke}
+  \end{pgfpicture}%
+}
+
+\setbeamertemplate{mini frame}[scaled circle]
+\setbeamertemplate{mini frame in current section}[scaled circle]
+\setbeamertemplate{mini frame in current subsection}[scaled circle]
+
+%%
+%% /Section-Punkte, die mit der Schriftgröße skalieren
+%%
+
 \setbeamerfont{page number in head/foot}{series=\bfseries}
 
 \newlength{\kitbottomdepth}
 \newlength{\kitbottomheight}
 \newlength{\kitfootergroupwidth}
 
-\setbeamertemplate{footline}{%
-\setlength{\kitbottomdepth}{\dimexpr.5\kitbottom-.5em\relax}%
-\setlength{\kitbottomheight}{\dimexpr.5\kitbottom+.5em\relax}%
+% Standardfußzeile Vollbreite
+\defbeamertemplate{footline}{KIT 2025}{%
   %% die "%" am Ende sind nötig, damit keine Abstände eingefügt werden
-  %
   % Falls kein Gruppenname angegeben, die ganze Breite der Fußzeile für den Titel nutzen.
   \ifdefined\@groupname%
     \ifx\@groupname\empty%
       \setlength{\kitfootergroupwidth}{0mm}%
       \else%
-      % Falls die Breite des Gruppenlogos definiert ist, diese nehmen, sonst 50 mm
+      % Falls die Breite des Gruppennamens definiert ist, diese nehmen, sonst 89 mm
       \ifdefined\@groupnamewidth%
         \setlength{\kitfootergroupwidth}{\@groupnamewidth}%
         \else%
-        \setlength{\kitfootergroupwidth}{50mm}%
+        \setlength{\kitfootergroupwidth}{89mm}%
       \fi%
     \fi%
-  \else
+  \else%
       \setlength{\kitfootergroupwidth}{0mm}%
-  \fi
+  \fi%
   \usebeamerfont{footer}%
+  % Baseline so setzen, dass Text ungefähr mittig
+  \setlength{\kitbottomdepth}{\dimexpr.5\kitbottom-.3\baselineskip\relax}%
+  \setlength{\kitbottomheight}{\dimexpr.5\kitbottom+.7\baselineskip\relax}%
+  %
+  % Ränder rechts und links optisch durch Ausprobieren gesetzt
   \ifsectionnavigation%
-    % Option "navbarinline"
-    \ifnavbarinline%
-      \begin{beamercolorbox}[wd=\paperwidth, leftskip=2mm, rightskip=2mm]{}
-        \insertnavigation{\dimexpr\paperwidth-4mm\relax}
-        \vspace{1mm}
-      \end{beamercolorbox}%
-    \fi%
-    % Option "navbarinfooter"
-    \ifnavbarinfoot%
-      % Punkte für Subsections deaktivieren
-      \setbeamertemplate{mini frames}{}%
-      \begin{beamercolorbox}[wd=\paperwidth, leftskip=1mm, rightskip=1mm]{}%
-        \insertsectionnavigationhorizontal{\dimexpr\paperwidth-\kitoutermargin\relax}{}{}
-      \end{beamercolorbox}%
-    \fi%
+    \begin{beamercolorbox}[wd=\paperwidth, leftskip=7.5mm, rightskip=7.5mm]{}%
+      \insertnavigation{\dimexpr\paperwidth-15mm\relax}%
+    \end{beamercolorbox}%
   \fi%
   \leavevmode%
-  \begin{beamercolorbox}[wd=13mm, ht=\kitbottomheight, dp=\kitbottomdepth, leftskip=4mm]{}
+  \kitfootlinepagenumber%
+  \kitfootlinedate%
+  % Die Boxen mit dem Titel und dem Gruppennamen sind vertikal zentriert, damit auch zweizeilige Texte schön aussehen
+  % Daher müssen sie um \kitbottomdepth nach unten verschoben werden
+  \raisebox{-\kitbottomdepth}{%
+    % Die Box hat daher auch Höhe \kitbottom und Tiefe 0mm
+    \kitfootlinetitle{\dimexpr251mm-\kitfootergroupwidth\relax}%
+    \ifdefined\@groupname%
+      \kitfootlinegroupname%
+    \fi% 
+  }%
+  % KIT logo
+  \ifdefined\@footlinelogo\else\footlinelogo{rgb}\fi
+  \kitfootlinelogo{kitlogo_\@footlinelogo}%
+}
+
+% Fußzeile variabler Breite für Folien mit vollflächigem Bild-Anteil: ohne Section-Navigation, ohne Gruppennamen
+\defbeamertemplate{footline}{KIT 2025 picture}[1]{%
+  \usebeamerfont{footer}%
+  % Baseline so setzen, dass Text ungefähr mittig
+  \setlength{\kitbottomdepth}{\dimexpr.5\kitbottom-.3\baselineskip\relax}%
+  \setlength{\kitbottomheight}{\dimexpr.5\kitbottom+.7\baselineskip\relax}%
+  \leavevmode%
+  \kitfootlinepagenumber%
+  \kitfootlinedate%
+  % Die Box mit dem Titel ist sind vertikal zentriert, damit auch zweizeilige Texte schön aussehen
+  % Daher müssen sie um \kitbottomdepth nach unten verschoben werden
+  \raisebox{-\kitbottomdepth}{%
+    % Die Box hat daher auch Höhe \kitbottom und Tiefe 0mm
+    \kitfootlinetitle{#1}%
+  }%
+  % Kein Gruppenname
+  \hskip\dimexpr251mm-#1\relax%
+  % KIT logo
+  \ifdefined\@footlinelogo\else\footlinelogo{rgb}\fi
+  \kitfootlinelogo{kitlogo_\@footlinelogo}%
+}
+
+% Seitennummer
+\newcommand{\kitfootlinepagenumber}{%
+  \begin{beamercolorbox}[wd=\dimexpr\kitoutermargin+16mm\relax, ht=\kitbottomheight, dp=\kitbottomdepth, leftskip=\kitoutermargin]{footer}
       \usebeamerfont{page number in head/foot}%
       \strut\insertframenumber{}/\inserttotalframenumber%
   \end{beamercolorbox}%
-  \begin{beamercolorbox}[wd=20mm, ht=\kitbottomheight, dp=\kitbottomdepth]{}
+}
+
+% Datum
+\newcommand{\kitfootlinedate}{%
+  \begin{beamercolorbox}[wd=31mm, ht=\kitbottomheight, dp=\kitbottomdepth]{footer}%
       \usebeamerfont{date in head/foot}%
       \strut\insertshortdate%
   \end{beamercolorbox}%
-  % Die Boxen mit dem Titel und dem Gruppennamen sind vertikal zentriert, damit auch zweizeilige Texte schön aussehen
-  % Daher müssen sie um \kitbottomdepth nach unten verschoben werden
-  \raisebox{-\kitbottomdepth}{
-    % Die Box hat daher auch Höhe \kitbottom und Tiefe 0mm
-    \begin{beamercolorbox}[wd=\dimexpr\paperwidth-37mm-\kitfootergroupwidth, ht=\kitbottom, dp=0mm]{}%
+}
+
+% Autor/Titel in Breite #1
+\newcommand{\kitfootlinetitle}[1]{%
+    \begin{beamercolorbox}[wd=#1, ht=\kitbottom, dp=0mm]{footer}%
         % Inhalt vertikal zentrieren; Anpassung um 1.5 pt, damit bei einzeiligem Inhalt genau die Baseline der Blöcke mit Seitenzahl und Datum getroffen wird
-        \vbox to\kitbottom{\vfill\vskip1.5pt%
-          \beamer@shortauthor\ifx\beamer@shortauthor\empty\else: \fi\beamer@shorttitle%
+        \vbox to\kitbottom{\vfill\vskip\kitfooterbaselinecorrection%
+          \strut\beamer@shortauthor\ifx\beamer@shortauthor\empty\else: \fi\beamer@shorttitle%
         \vfill}%
     \end{beamercolorbox}%
-    \ifdefined\@groupname%
-    \begin{beamercolorbox}[wd=\kitfootergroupwidth, ht=\kitbottom, dp=0mm, rightskip=\kitinnermargin]{}
-        \vbox to\kitbottom{\vfill\vskip1.5pt%
-          \raggedleft\@groupname%
+}
+
+% Gruppenname
+\newcommand{\kitfootlinegroupname}{%
+    \begin{beamercolorbox}[wd=\kitfootergroupwidth, ht=\kitbottom, dp=0mm]{footer}
+        \vbox to\kitbottom{\vfill\vskip\kitfooterbaselinecorrection%
+          \strut\@groupname%
         \vfill}%
     \end{beamercolorbox}%
-    \fi% 
-  }%
 }
 
-%% Option "navbarside"
-\ifnavbarside
-\useoutertheme[height=0cm,width=3.5cm,left]{sidebar}
-
-\setbeamerfont{title in sidebar}{family=\sffamily,series=\mdseries,size={\fontsize{10pt}{11pt}}}
-\setbeamerfont{section in sidebar}{family=\sffamily,series=\mdseries,size={\fontsize{9pt}{9.9pt}}}
-\setbeamerfont{subsection in sidebar}{family=\sffamily,series=\mdseries,size={\fontsize{8pt}{8.8pt}}}
-
-\setbeamertemplate{sidebar \beamer@sidebarside}
-  {\vskip1.5cm%
-   \hskip6.5mm%
-   \advance\beamer@sidebarwidth by -5mm%
-   \insertverticalnavigation{\beamer@sidebarwidth}%
-  }%
-\fi
-
-%% Hintergrund
-\usebackgroundtemplate{
-  % Trennlinie nicht bei "plain"-Frames
-  \ifbeamer@plainframe\else\kitseparationline\fi
+% KIT-Logo, Dateiname #1
+\newcommand{\kitfootlinelogo}[1]{%
+    \begin{beamercolorbox}[wd=18mm, ht=\kitbottomheight, dp=\kitbottomdepth]{footer}
+      \raisebox{-4pt}{
+        \includegraphics[width=\linewidth]{logos/#1}
+      }
+    \end{beamercolorbox}%
 }
 
-% Trennlinie
-\newcommand{\kitseparationline}{
-  \begin{pgfpicture}{0mm}{0mm}{\paperwidth}{\paperheight}
-    \pgfsetstrokecolor{black!15} 
-    \pgfsetlinewidth{.5pt}
-    \pgfpathmoveto{\pgfpoint{\kitoutermargin}{\kitinnermargin}}
-    \pgfpathlineto{\pgfpoint{\paperwidth-\kitoutermargin}{\kitinnermargin}}
-    \pgfusepath{stroke} 
-  \end{pgfpicture}%
+% ┌───────────┐
+% │ /Fußzeile │
+% └───────────┘
+
+% ┌─────────────────┐
+% │ Spezial-Layouts │
+% └─────────────────┘
+
+% Text/Bild vertikal geteilt
+\define@key{beamerframe}{picture 33 vertical}[true]{%
+  \kitpicturevertical{\kitcolumnfiveleft}
 }
 
+\define@key{beamerframe}{picture 50 vertical}[true]{%
+  \kitpicturevertical{\kitcolumnfourleft}
+}
 
-%% --------------
-%% | Titelseite |
-%% --------------
+\define@key{beamerframe}{picture 66 vertical}[true]{%
+  \kitpicturevertical{\kitcolumnthreeleft}
+}
+
+\define@key{beamerframe}{picture vertical}[51]{%
+  \kitpicturevertical{\dimexpr\paperwidth*(100-#1)/100\relax}
+}
+
+\newcommand{\kitpicturevertical}[1]{
+  \setbeamertemplate{frametitle}[KIT 2025]{\dimexpr#1-\kitoutermargin-\kitcolumnsep\relax}
+  \setbeamertemplate{footline}[KIT 2025 picture]{\dimexpr#1-\kitoutermargin-\kitcolumn\relax}
+  \newgeometry{top=0.5cm,bottom=0cm,left=\kitoutermargin,right=\dimexpr\paperwidth-#1+\kitcolumnsep\relax}
+  \setbeamertemplate{background}{\hskip#1\includegraphics[height=\paperheight]{\@titleimage}}
+}
+ 
+% Inhaltsverzeichnis
+
+\define@key{beamerframe}{tableofcontents}[green]{%
+  \setbeamertemplate{background}{
+    \begin{beamercolorbox}[ht=\paperheight,wd=\kitcolumnsixleft]{#1 block}
+    \end{beamercolorbox}
+  }
+  \setbeamercolor{section in toc}{fg=white}
+  \setbeamercolor{subsection in toc}{fg=white}
+  \setbeamertemplate{logo}[KIT 2025 title/toc]{kitlogo_rgb}
+  \setbeamertemplate{frametitle}[KIT 2025 title in toc]
+  \setbeamertemplate{footline}{}
+}
+
+\defbeamertemplate{frametitle}{KIT 2025 title in toc}{
+    \begin{textblock*}{\kitcolumn}(\kitoutermargin,\kitoutermargin)
+      \begin{beamercolorbox}[wd=\kitcolumn]{}
+        \usebeamerfont*{frametitle}{\large\color{white}\insertframetitle}
+      \end{beamercolorbox}
+    \end{textblock*}
+}
+
+% siehe README.md
+\define@key{beamerframe}{picture}{%
+  \titleimage{#1}
+}
+
+\define@key{beamerframe}{kitlogo}[rgb]{%
+  \titlelogo{#1}
+  \footlinelogo{#1}
+}
+
+% ┌──────────────────┐
+% │ /Spezial-Layouts │
+% └──────────────────┘
+
+%% ┏━━━━━━━━━━━━━━━━┓
+%% ┃ /Folien-Layout ┃
+%% ┗━━━━━━━━━━━━━━━━┛
+
+%% ┏━━━━━━━━━━━━┓
+%% ┃ Titelseite ┃
+%% ┗━━━━━━━━━━━━┛
 
 \def\titleimage#1{\def\@titleimage{#1}}
+\def\titlelogo#1{\def\@titlelogo{#1}}
 \def\grouplogo#1{\def\@grouplogo{#1}}
 
-\newcommand{\KITtitleframe}{
-  \begin{frame}[plain]
-  \titlepage
-  \end{frame}
+%% Frame-Optionen
+
+% vertikale Layouts
+\define@key{beamerframe}{title white vertical}[true]{%
+  \setbeamercolor*{title}{parent=title on green}
+  \setbeamercolor*{subtitle}{parent=subtitle on green}
+  \setbeamercolor*{title text box}{parent=green block}
+  \setbeamercolor*{title logo box}{parent=white block}
+  \setbeamertemplate{background}[KIT 2025 title vertical]
+  \setbeamertemplate{logo}[KIT 2025 title/toc]{kitlogo_rgb}
+  \setbeamertemplate{title page}[KIT 2025 vertical]
+  \setbeamertemplate{frametitle}{}
+  \setbeamertemplate{footline}{}
 }
 
-\newlength{\kittitleimageheight}
-\setbeamertemplate{title page}{
-  % From textpos documentation (https://ctan.org/pkg/textpos)
-  %
-  % \begin{textblock}{<hsize>}[<ho>,<vo>](<hpos>,<vpos>)
-  %   The coordinates <ho> and <vo> are fractions of the width and height of the text
-  %   box, respectively, and state that the box is to be placed so that the reference point
-  %   (<ho>,<vo>) within the box is to be placed at the point (<hpos>,<vpos>) on the page.
+\define@key{beamerframe}{title blue vertical}[true]{%
+  \setbeamercolor*{title}{parent=title on green}
+  \setbeamercolor*{subtitle}{parent=subtitle on green}
+  \setbeamercolor*{title text box}{parent=green block}
+  \setbeamercolor*{title logo box}{parent=blue block}
+  \setbeamertemplate{background}[KIT 2025 title vertical]
+  \setbeamertemplate{logo}[KIT 2025 title/toc]{kitlogo_white}
+  \setbeamertemplate{title page}[KIT 2025 vertical]
+  \setbeamertemplate{frametitle}{}
+  \setbeamertemplate{footline}{}
+}
 
-  % KIT-Logo
-  \begin{textblock*}{30mm}(\kitinnermargin,6.7mm)
-  \includegraphics[width=30mm]{logos/\@kitlogo} 
+% horizontale Layouts
+\define@key{beamerframe}{title green horizontal}[true]{%
+  \setbeamercolor*{title}{parent=title on green}
+  \setbeamercolor*{subtitle}{parent=subtitle on green}
+  \setbeamercolor*{title logo box}{parent=green block}
+  \setbeamercolor*{title text box}{parent=green block}
+  \setbeamertemplate{background}[KIT 2025 title horizontal]
+  \setbeamertemplate{frametitle}[KIT 2025 title horizontal]
+  \setbeamertemplate{footline}[KIT 2025 title horizontal]
+  % KIT-Logo nach Definition, sonst bunt
+  \ifdefined\@titlelogo\else\titlelogo{rgb}\fi
+  \setbeamertemplate{logo}[KIT 2025 title/toc]{kitlogo_\@titlelogo}
+  \setbeamertemplate{title page}[KIT 2025 horizontal]
+}
+
+\define@key{beamerframe}{title white horizontal}[true]{%
+  \setbeamercolor*{title}{parent=title on white}
+  \setbeamercolor*{subtitle}{parent=subtitle on white}
+  \setbeamercolor*{title logo box}{parent=white block}
+  \setbeamercolor*{title text box}{parent=white block}
+  \setbeamertemplate{background}[KIT 2025 title horizontal]
+  \setbeamertemplate{frametitle}[KIT 2025 title horizontal]
+  \setbeamertemplate{footline}[KIT 2025 title horizontal]
+  % KIT-Logo nach Definition, sonst bunt
+  \ifdefined\@titlelogo\else\titlelogo{rgb}\fi
+  \setbeamertemplate{logo}[KIT 2025 title/toc]{kitlogo_\@titlelogo}
+  \setbeamertemplate{title page}[KIT 2025 horizontal]
+}
+
+%%
+%% Absolut positionierte Elemente
+%%
+%
+% From textpos documentation (https://ctan.org/pkg/textpos)
+%
+% \begin{textblock}{<hsize>}[<ho>,<vo>](<hpos>,<vpos>)
+%   The coordinates <ho> and <vo> are fractions of the width and height of the text
+%   box, respectively, and state that the box is to be placed so that the reference point
+%   (<ho>,<vo>) within the box is to be placed at the point (<hpos>,<vpos>) on the page.
+
+% KIT-Logo
+\newcommand{\kittitlekitlogo}[1]{
+  \begin{textblock*}{24mm}(297.5mm,\kitoutermargin)
+  \includegraphics[width=24mm]{logos/#1} 
   \end{textblock*}
-  
-  % Gruppenlogo
+}
+
+% Titel auf vertikaler Höhe #1 mit Breite #2
+\newcommand{\kittitletitle}[2]{
+  \begin{textblock*}{#2}(\kitoutermargin,#1)
+    \begin{beamercolorbox}[wd=#2]{title}
+      \usebeamerfont*{title}\inserttitle
+    \end{beamercolorbox}
+  \end{textblock*}
+}
+
+% Untertitel/Autor/Datum an Unterkante mit Breite #1
+\newcommand{\kittitlesubtitle}[1]{
+  \begin{textblock*}{#1}[0,1](\kitoutermargin,\dimexpr\paperheight-\kitbottom\relax)
+    \begin{beamercolorbox}[wd=#1]{subtitle}
+      \usebeamerfont*{subtitle}\insertsubtitle \ifx\@author\@empty\else\\[.2em]\fi %
+      \usebeamerfont*{author}\insertauthor \ifx\@date\@empty\else~\textbar~\fi %
+      \usebeamerfont*{date}\insertdate %
+    \end{beamercolorbox}
+  \end{textblock*}
+}
+
+%%
+%% Gruppenlogo
+%%
+
+\newcommand{\kittitlegrouplogo}{
   \ifdefined\@grouplogo
     \ifx\@grouplogo\empty \else
-      \begin{textblock*}{20mm}(\dimexpr\paperwidth-24mm\relax,6.7mm)
-      \includegraphics[width=20mm,height=20mm,keepaspectratio]{logos/\@grouplogo} 
-      \end{textblock*}
+      \includegraphics[width=40mm,height=40mm,keepaspectratio]{logos/\@grouplogo} 
     \fi % falls \grouplogo{} aufgerufen wird, kein Gruppenlogo einbinden
-    \else
-      \begin{textblock*}{20mm}(\dimexpr\paperwidth-24mm\relax,6.7mm)
-      \colorbox{kit-purple100!20}{\parbox[t][12mm][c]{19mm}{\color{kit-purple100}\scriptsize\centering 
+    \else % falls \grouplogo gar nicht aufgerufen wurde, Text anzeigen
+      \colorbox{kit-purple100!20}{\parbox[b][18mm][c]{35mm}{\color{kit-purple100}\scriptsize\centering 
         \ifgerman
         Bitte Logo über \texttt{\textbackslash grouplogo\{\}} festlegen.
         \else
         Please set a logo using \texttt{\textbackslash grouplogo\{\}}.
         \fi
         }}
-      \end{textblock*}
   \fi 
-  
-  % Titel
-  \begin{textblock*}{\dimexpr\paperwidth-8mm\relax}[0,.5](\kitinnermargin,28mm)
-  \usebeamerfont*{title}\inserttitle
-  \end{textblock*}
-  
-  % Untertitel
-  \begin{textblock*}{\dimexpr\paperwidth-8mm\relax}(\kitinnermargin,36mm)
-  \small\textbf{\insertsubtitle}
-  \end{textblock*}
-  
-  % Autor
-  \begin{textblock*}{\dimexpr\paperwidth-8mm\relax}(\kitinnermargin,41mm)
-  \small\insertauthor~\textbar~\insertdate
-  \end{textblock*}
-
-  % Titelbild
-  \setlength{\kittitleimageheight}{40mm}
-  \begin{textblock*}{\paperwidth}(\kitoutermargin,\dimexpr\paperheight-\kitbottommargin-\kittitleimageheight)
-  \begin{pgfpicture}{0mm}{0mm}{\paperwidth}{\kittitleimageheight}
-    % Clipping-Pfad um titelbild
-    \pgfsetstrokecolor{black!15} 
-    \pgfsetlinewidth{1pt}
-    \pgfsetcornersarced{\pgfpoint{3mm}{3mm}}
-    \pgfpathmoveto{\pgfpoint{\paperwidth-2\kitoutermargin}{0mm}}
-    \pgfpathlineto{\pgfpoint{\paperwidth-2\kitoutermargin}{\kittitleimageheight}}
-    \pgfsetcornersarced{\pgfpointorigin}
-    \pgfpathlineto{\pgfpoint{0mm}{\kittitleimageheight}}
-    \pgfsetcornersarced{\pgfpoint{3mm}{3mm}}
-    \pgfpathlineto{\pgfpointorigin}
-    \pgfsetcornersarced{\pgfpointorigin}
-    \pgfpathclose
-    \pgfusepath{stroke,clip} 
-    \pgfsetstrokecolor{black} 
-    
-    % Titelbild
-    \ifdefined\@titleimage
-      \ifx\@titleimage\empty \else%
-        \pgftext[at=\pgfpoint{.5\paperwidth}{0mm},center,bottom]{%
-          \includegraphics[height=40mm]{logos/\@titleimage}
-        }
-        \fi % Bei Aufruf von \titleimage{} leeren Rahmen anzeigen.
-      \else 
-        \pgftext[at=\pgfpoint{.5\paperwidth}{.5\kittitleimageheight},center,base]{%
-          \colorbox{kit-purple100!20}{\parbox[c][\kittitleimageheight][c]{\paperwidth}{\color{kit-purple100}\centering Bitte Titelbild über \texttt{\textbackslash titleimage\{\}} festlegen.
-          }}%
-        }
-    \fi
-    
-
-  \end{pgfpicture}%
-  \end{textblock*}
-
-  
-  % KIT slogan
-  \begin{textblock*}{80mm}[0,.5](\kitoutermargin,\dimexpr\paperheight-.5\kitbottommargin)
-      \fontsize{5.5pt}{5.5pt}\selectfont\@kitslogan
-  \end{textblock*}
-  
-  \begin{textblock*}{30mm}[1,.5](\dimexpr\paperwidth-\kitoutermargin\relax,\dimexpr\paperheight-.5\kitbottommargin)
-      \fontsize{11pt}{11pt}\selectfont\bfseries\raggedleft%
-      {\href{https://www.kit.edu}{www.kit.edu}}
-  \end{textblock*}
-  
 }
-%% ---------------
-%% | /Titelseite |
-%% ---------------
 
-%% ----------
-%% | Farben |
-%% ----------
+%%
+%% Template-Definitionen
+%%
+
+\defbeamertemplate{title page}{KIT 2025 vertical}{
+  \kittitletitle{\kitoutermargin}{\dimexpr\kitthreecolumns-\kitcolumnsep\relax}
+  \kittitlesubtitle{\dimexpr\kitthreecolumns-\kitcolumnsep\relax}
+}
+
+% vertikales Layout
+
+\defbeamertemplate{background}{KIT 2025 title vertical}{
+    \begin{beamercolorbox}[ht=\paperheight,wd=\kitcolumnthreeright]{title text box}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[ht=\paperheight,wd=\dimexpr2\kitcolumn+3\kitcolumnsep\relax]{title logo box}%
+    \ifdefined\@titleimage%
+      \ifx\@titleimage\empty\else%
+      \includegraphics[height=\paperheight]{\@titleimage}%
+      \fi%
+    \fi%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[ht=\paperheight,wd=\dimexpr\kitcolumn+\kitoutermargin\relax,right,rightskip=\kitoutermargin]{title logo box}
+      \kittitlegrouplogo
+      \vskip\kitbottom
+    \end{beamercolorbox}
+}
+
+% horizontales Layout
+
+\defbeamertemplate{title page}{KIT 2025 horizontal}{
+  \kittitletitle{\kitrowfourtop}{\kitfivecolumns}
+  \kittitlesubtitle{\kitfivecolumns}
+  \frametitle{none} % Damit die obere Hälfte gerendert wird
+}
+
+% Im horizontalen Modus ist der Frametitle die obere Hälfte des Titels
+\defbeamertemplate{frametitle}{KIT 2025 title horizontal}{
+    \begin{beamercolorbox}[ht=\kitrowthreebottom,wd=\paperwidth]{title logo box}%
+    \ifdefined\@titleimage%
+      \ifx\@titleimage\empty\else%
+      \includegraphics[width=\paperwidth]{\@titleimage}%
+      \fi%
+    \fi%
+    \end{beamercolorbox}%
+}
+
+% Im horizontalen Modus ist die Footline die untere Hälfte des Titels
+\defbeamertemplate{footline}{KIT 2025 title horizontal}{
+    \begin{beamercolorbox}[ht=\dimexpr2\kitrowsep+2\kitrow+\kitbottom\relax,wd=\paperwidth,right,rightskip=\kitoutermargin]{title logo box}%
+      \kittitlegrouplogo%
+      \vskip\kitbottom
+    \end{beamercolorbox}%
+}
+
+%% ┏━━━━━━━━━━━━━┓
+%% ┃ /Titelseite ┃
+%% ┗━━━━━━━━━━━━━┛
+
+%% ┏━━━━━━━━┓
+%% ┃ Farben ┃
+%% ┗━━━━━━━━┛
 %% KIT-Farbschema
 
 % KIT color  green :
 \definecolor{kit-green}{RGB}{0, 150, 130}
-\definecolor{kit-green100}{RGB}{0, 150, 130}
-\definecolor{kit-green90}{rgb}{0.1, 0.6294, 0.5588}
-\definecolor{kit-green80}{rgb}{0.2, 0.6706, 0.6078}
-\definecolor{kit-green75}{rgb}{0.25, 0.6912, 0.6324}
-\definecolor{kit-green70}{rgb}{0.3, 0.7118, 0.6569}
-\definecolor{kit-green60}{rgb}{0.4, 0.7529, 0.7059}
-\definecolor{kit-green50}{rgb}{0.5, 0.7941, 0.7549}
-\definecolor{kit-green40}{rgb}{0.6, 0.8353, 0.8039}
-\definecolor{kit-green30}{rgb}{0.7, 0.8765, 0.8529}
-\definecolor{kit-green25}{rgb}{0.75, 0.8971, 0.8775}
-\definecolor{kit-green20}{rgb}{0.8, 0.9176, 0.902}
-\definecolor{kit-green15}{rgb}{0.85, 0.9382, 0.9265}
-\definecolor{kit-green10}{rgb}{0.9, 0.9588, 0.951}
-\definecolor{kit-green5}{rgb}{0.95, 0.9794, 0.9755}
+\colorlet{kit-green100}{kit-green}
+\colorlet{kit-green90}{kit-green!90!white}
+\colorlet{kit-green80}{kit-green!80!white}
+\colorlet{kit-green70}{kit-green!70!white}
+\colorlet{kit-green60}{kit-green!60!white}
+\colorlet{kit-green50}{kit-green!50!white}
+\colorlet{kit-green40}{kit-green!40!white}
+\colorlet{kit-green30}{kit-green!30!white}
+\colorlet{kit-green25}{kit-green!25!white}
+\colorlet{kit-green20}{kit-green!20!white}
+\colorlet{kit-green15}{kit-green!15!white}
+\colorlet{kit-green10}{kit-green!10!white}
+\colorlet{kit-green5}{kit-green!5!white}
 
 % KIT color blue:
 \definecolor{kit-blue}{RGB}{70, 100, 170}
-\definecolor{kit-blue100}{RGB}{70, 100, 170}
-\definecolor{kit-blue90}{rgb}{0.3471, 0.4529, 0.7}
-\definecolor{kit-blue80}{rgb}{0.4196, 0.5137, 0.7333}
-\definecolor{kit-blue75}{rgb}{0.4559, 0.5441, 0.75}
-\definecolor{kit-blue70}{rgb}{0.4922, 0.5745, 0.7667}
-\definecolor{kit-blue60}{rgb}{0.5647, 0.6353, 0.8}
-\definecolor{kit-blue50}{rgb}{0.6373, 0.6961, 0.8333}
-\definecolor{kit-blue40}{rgb}{0.7098, 0.7569, 0.8667}
-\definecolor{kit-blue30}{rgb}{0.7824, 0.8176, 0.9}
-\definecolor{kit-blue25}{rgb}{0.8186, 0.848, 0.9167}
-\definecolor{kit-blue20}{rgb}{0.8549, 0.8784, 0.9333}
-\definecolor{kit-blue15}{rgb}{0.8912, 0.9088, 0.95}
-\definecolor{kit-blue10}{rgb}{0.9275, 0.9392, 0.9667}
-\definecolor{kit-blue5}{rgb}{0.9637, 0.9696, 0.9833}
+\colorlet{kit-blue100}{kit-blue}
+\colorlet{kit-blue90}{kit-blue!90!white}
+\colorlet{kit-blue80}{kit-blue!80!white}
+\colorlet{kit-blue70}{kit-blue!70!white}
+\colorlet{kit-blue60}{kit-blue!60!white}
+\colorlet{kit-blue50}{kit-blue!50!white}
+\colorlet{kit-blue40}{kit-blue!40!white}
+\colorlet{kit-blue30}{kit-blue!30!white}
+\colorlet{kit-blue25}{kit-blue!25!white}
+\colorlet{kit-blue20}{kit-blue!20!white}
+\colorlet{kit-blue15}{kit-blue!15!white}
+\colorlet{kit-blue10}{kit-blue!10!white}
+\colorlet{kit-blue5}{kit-blue!5!white}
+
+\definecolor{kit-royalblue}{RGB}{0, 45, 76}
+\colorlet{kit-royalblue100}{kit-royalblue}
+\colorlet{kit-royalblue90}{kit-royalblue!90!white}
+\colorlet{kit-royalblue80}{kit-royalblue!80!white}
+\colorlet{kit-royalblue70}{kit-royalblue!70!white}
+\colorlet{kit-royalblue60}{kit-royalblue!60!white}
+\colorlet{kit-royalblue50}{kit-royalblue!50!white}
+\colorlet{kit-royalblue40}{kit-royalblue!40!white}
+\colorlet{kit-royalblue30}{kit-royalblue!30!white}
+\colorlet{kit-royalblue25}{kit-royalblue!25!white}
+\colorlet{kit-royalblue20}{kit-royalblue!20!white}
+\colorlet{kit-royalblue15}{kit-royalblue!15!white}
+\colorlet{kit-royalblue10}{kit-royalblue!10!white}
+\colorlet{kit-royalblue5}{kit-royalblue!5!white}
+
+% Powerpoint-"Eisblau"
+\definecolor{kit-iceblue100}{RGB}{30, 53, 69}
+\definecolor{kit-iceblue70}{RGB}{68, 94, 111}
+\definecolor{kit-iceblue50}{RGB}{168, 185, 196}
+\definecolor{kit-iceblue30}{RGB}{218, 225, 230}
 
 % KIT color  red :
 \definecolor{kit-red}{RGB}{162, 34, 35}
-\definecolor{kit-red100}{RGB}{162, 34, 35}
-\definecolor{kit-red90}{rgb}{0.6718, 0.22, 0.2235}
-\definecolor{kit-red80}{rgb}{0.7082, 0.3067, 0.3098}
-\definecolor{kit-red75}{rgb}{0.7265, 0.35, 0.3529}
-\definecolor{kit-red70}{rgb}{0.7447, 0.3933, 0.3961}
-\definecolor{kit-red60}{rgb}{0.7812, 0.48, 0.4824}
-\definecolor{kit-red50}{rgb}{0.8176, 0.5667, 0.5686}
-\definecolor{kit-red40}{rgb}{0.8541, 0.6533, 0.6549}
-\definecolor{kit-red30}{rgb}{0.8906, 0.74, 0.7412}
-\definecolor{kit-red25}{rgb}{0.9088, 0.7833, 0.7843}
-\definecolor{kit-red20}{rgb}{0.9271, 0.8267, 0.8275}
-\definecolor{kit-red15}{rgb}{0.9453, 0.87, 0.8706}
-\definecolor{kit-red10}{rgb}{0.9635, 0.9133, 0.9137}
-\definecolor{kit-red5}{rgb}{0.9818, 0.9567, 0.9569}
+\colorlet{kit-red100}{kit-red}
+\colorlet{kit-red90}{kit-red!90!white}
+\colorlet{kit-red80}{kit-red!80!white}
+\colorlet{kit-red70}{kit-red!70!white}
+\colorlet{kit-red60}{kit-red!60!white}
+\colorlet{kit-red50}{kit-red!50!white}
+\colorlet{kit-red40}{kit-red!40!white}
+\colorlet{kit-red30}{kit-red!30!white}
+\colorlet{kit-red25}{kit-red!25!white}
+\colorlet{kit-red20}{kit-red!20!white}
+\colorlet{kit-red15}{kit-red!15!white}
+\colorlet{kit-red10}{kit-red!10!white}
+\colorlet{kit-red5}{kit-red!5!white}
 
 % KIT color  yellow :
 \definecolor{kit-yellow}{RGB}{252, 229, 0}
-\definecolor{kit-yellow100}{RGB}{252, 229, 0}
-\definecolor{kit-yellow90}{rgb}{0.9894, 0.9082, 0.1}
-\definecolor{kit-yellow80}{rgb}{0.9906, 0.9184, 0.2}
-\definecolor{kit-yellow75}{rgb}{0.9912, 0.9235, 0.25}
-\definecolor{kit-yellow70}{rgb}{0.9918, 0.9286, 0.3}
-\definecolor{kit-yellow60}{rgb}{0.9929, 0.9388, 0.4}
-\definecolor{kit-yellow50}{rgb}{0.9941, 0.949, 0.5}
-\definecolor{kit-yellow40}{rgb}{0.9953, 0.9592, 0.6}
-\definecolor{kit-yellow30}{rgb}{0.9965, 0.9694, 0.7}
-\definecolor{kit-yellow25}{rgb}{0.9971, 0.9745, 0.75}
-\definecolor{kit-yellow20}{rgb}{0.9976, 0.9796, 0.8}
-\definecolor{kit-yellow15}{rgb}{0.9982, 0.9847, 0.85}
-\definecolor{kit-yellow10}{rgb}{0.9988, 0.9898, 0.9}
-\definecolor{kit-yellow5}{rgb}{0.9994, 0.9949, 0.95}
+\colorlet{kit-yellow100}{kit-yellow}
+\colorlet{kit-yellow90}{kit-yellow!90!white}
+\colorlet{kit-yellow80}{kit-yellow!80!white}
+\colorlet{kit-yellow70}{kit-yellow!70!white}
+\colorlet{kit-yellow60}{kit-yellow!60!white}
+\colorlet{kit-yellow50}{kit-yellow!50!white}
+\colorlet{kit-yellow40}{kit-yellow!40!white}
+\colorlet{kit-yellow30}{kit-yellow!30!white}
+\colorlet{kit-yellow25}{kit-yellow!25!white}
+\colorlet{kit-yellow20}{kit-yellow!20!white}
+\colorlet{kit-yellow15}{kit-yellow!15!white}
+\colorlet{kit-yellow10}{kit-yellow!10!white}
+\colorlet{kit-yellow5}{kit-yellow!5!white}
 
 % KIT color  orange :
 \definecolor{kit-orange}{RGB}{223, 155, 27}
-\definecolor{kit-orange100}{RGB}{223, 155, 27}
-\definecolor{kit-orange90}{rgb}{0.8871, 0.6471, 0.1953}
-\definecolor{kit-orange80}{rgb}{0.8996, 0.6863, 0.2847}
-\definecolor{kit-orange75}{rgb}{0.9059, 0.7059, 0.3294}
-\definecolor{kit-orange70}{rgb}{0.9122, 0.7255, 0.3741}
-\definecolor{kit-orange60}{rgb}{0.9247, 0.7647, 0.4635}
-\definecolor{kit-orange50}{rgb}{0.9373, 0.8039, 0.5529}
-\definecolor{kit-orange40}{rgb}{0.9498, 0.8431, 0.6424}
-\definecolor{kit-orange30}{rgb}{0.9624, 0.8824, 0.7318}
-\definecolor{kit-orange25}{rgb}{0.9686, 0.902, 0.7765}
-\definecolor{kit-orange20}{rgb}{0.9749, 0.9216, 0.8212}
-\definecolor{kit-orange15}{rgb}{0.9812, 0.9412, 0.8659}
-\definecolor{kit-orange10}{rgb}{0.9875, 0.9608, 0.9106}
-\definecolor{kit-orange5}{rgb}{0.9937, 0.9804, 0.9553}
+\colorlet{kit-orange100}{kit-orange}
+\colorlet{kit-orange90}{kit-orange!90!white}
+\colorlet{kit-orange80}{kit-orange!80!white}
+\colorlet{kit-orange70}{kit-orange!70!white}
+\colorlet{kit-orange60}{kit-orange!60!white}
+\colorlet{kit-orange50}{kit-orange!50!white}
+\colorlet{kit-orange40}{kit-orange!40!white}
+\colorlet{kit-orange30}{kit-orange!30!white}
+\colorlet{kit-orange25}{kit-orange!25!white}
+\colorlet{kit-orange20}{kit-orange!20!white}
+\colorlet{kit-orange15}{kit-orange!15!white}
+\colorlet{kit-orange10}{kit-orange!10!white}
+\colorlet{kit-orange5}{kit-orange!5!white}
 
 % KIT color  lightgreen :
 \definecolor{kit-lightgreen}{RGB}{140, 182, 60}
-\definecolor{kit-lightgreen100}{RGB}{140, 182, 60}
-\definecolor{kit-lightgreen90}{rgb}{0.5941, 0.7424, 0.3118}
-\definecolor{kit-lightgreen80}{rgb}{0.6392, 0.771, 0.3882}
-\definecolor{kit-lightgreen75}{rgb}{0.6618, 0.7853, 0.4265}
-\definecolor{kit-lightgreen70}{rgb}{0.6843, 0.7996, 0.4647}
-\definecolor{kit-lightgreen60}{rgb}{0.7294, 0.8282, 0.5412}
-\definecolor{kit-lightgreen50}{rgb}{0.7745, 0.8569, 0.6176}
-\definecolor{kit-lightgreen40}{rgb}{0.8196, 0.8855, 0.6941}
-\definecolor{kit-lightgreen30}{rgb}{0.8647, 0.9141, 0.7706}
-\definecolor{kit-lightgreen25}{rgb}{0.8873, 0.9284, 0.8088}
-\definecolor{kit-lightgreen20}{rgb}{0.9098, 0.9427, 0.8471}
-\definecolor{kit-lightgreen15}{rgb}{0.9324, 0.9571, 0.8853}
-\definecolor{kit-lightgreen10}{rgb}{0.9549, 0.9714, 0.9235}
-\definecolor{kit-lightgreen5}{rgb}{0.9775, 0.9857, 0.9618}
+\colorlet{kit-lightgreen100}{kit-lightgreen}
+\colorlet{kit-lightgreen90}{kit-lightgreen!90!white}
+\colorlet{kit-lightgreen80}{kit-lightgreen!80!white}
+\colorlet{kit-lightgreen70}{kit-lightgreen!70!white}
+\colorlet{kit-lightgreen60}{kit-lightgreen!60!white}
+\colorlet{kit-lightgreen50}{kit-lightgreen!50!white}
+\colorlet{kit-lightgreen40}{kit-lightgreen!40!white}
+\colorlet{kit-lightgreen30}{kit-lightgreen!30!white}
+\colorlet{kit-lightgreen25}{kit-lightgreen!25!white}
+\colorlet{kit-lightgreen20}{kit-lightgreen!20!white}
+\colorlet{kit-lightgreen15}{kit-lightgreen!15!white}
+\colorlet{kit-lightgreen10}{kit-lightgreen!10!white}
+\colorlet{kit-lightgreen5}{kit-lightgreen!5!white}
 
 
 % KIT color  purple :
 \definecolor{kit-purple}{RGB}{163, 16, 124}
-\definecolor{kit-purple100}{RGB}{163, 16, 124}
-\definecolor{kit-purple90}{rgb}{0.6753, 0.1565, 0.5376}
-\definecolor{kit-purple80}{rgb}{0.7114, 0.2502, 0.589}
-\definecolor{kit-purple75}{rgb}{0.7294, 0.2971, 0.6147}
-\definecolor{kit-purple70}{rgb}{0.7475, 0.3439, 0.6404}
-\definecolor{kit-purple60}{rgb}{0.7835, 0.4376, 0.6918}
-\definecolor{kit-purple50}{rgb}{0.8196, 0.5314, 0.7431}
-\definecolor{kit-purple40}{rgb}{0.8557, 0.6251, 0.7945}
-\definecolor{kit-purple30}{rgb}{0.8918, 0.7188, 0.8459}
-\definecolor{kit-purple25}{rgb}{0.9098, 0.7657, 0.8716}
-\definecolor{kit-purple20}{rgb}{0.9278, 0.8125, 0.8973}
-\definecolor{kit-purple15}{rgb}{0.9459, 0.8594, 0.9229}
-\definecolor{kit-purple10}{rgb}{0.9639, 0.9063, 0.9486}
-\definecolor{kit-purple5}{rgb}{0.982, 0.9531, 0.9743}
+\colorlet{kit-purple100}{kit-purple}
+\colorlet{kit-purple90}{kit-purple!90!white}
+\colorlet{kit-purple80}{kit-purple!80!white}
+\colorlet{kit-purple70}{kit-purple!70!white}
+\colorlet{kit-purple60}{kit-purple!60!white}
+\colorlet{kit-purple50}{kit-purple!50!white}
+\colorlet{kit-purple40}{kit-purple!40!white}
+\colorlet{kit-purple30}{kit-purple!30!white}
+\colorlet{kit-purple25}{kit-purple!25!white}
+\colorlet{kit-purple20}{kit-purple!20!white}
+\colorlet{kit-purple15}{kit-purple!15!white}
+\colorlet{kit-purple10}{kit-purple!10!white}
+\colorlet{kit-purple5}{kit-purple!5!white}
 
 % KIT color  brown :
 \definecolor{kit-brown}{RGB}{167, 130, 46}
-\definecolor{kit-brown100}{RGB}{167, 130, 46}
-\definecolor{kit-brown90}{rgb}{0.6894, 0.5588, 0.2624}
-\definecolor{kit-brown80}{rgb}{0.7239, 0.6078, 0.3443}
-\definecolor{kit-brown75}{rgb}{0.7412, 0.6324, 0.3853}
-\definecolor{kit-brown70}{rgb}{0.7584, 0.6569, 0.4263}
-\definecolor{kit-brown60}{rgb}{0.7929, 0.7059, 0.5082}
-\definecolor{kit-brown50}{rgb}{0.8275, 0.7549, 0.5902}
-\definecolor{kit-brown40}{rgb}{0.862, 0.8039, 0.6722}
-\definecolor{kit-brown30}{rgb}{0.8965, 0.8529, 0.7541}
-\definecolor{kit-brown25}{rgb}{0.9137, 0.8775, 0.7951}
-\definecolor{kit-brown20}{rgb}{0.931, 0.902, 0.8361}
-\definecolor{kit-brown15}{rgb}{0.9482, 0.9265, 0.8771}
-\definecolor{kit-brown10}{rgb}{0.9655, 0.951, 0.918}
-\definecolor{kit-brown5}{rgb}{0.9827, 0.9755, 0.959}
+\colorlet{kit-brown100}{kit-brown}
+\colorlet{kit-brown90}{kit-brown!90!white}
+\colorlet{kit-brown80}{kit-brown!80!white}
+\colorlet{kit-brown70}{kit-brown!70!white}
+\colorlet{kit-brown60}{kit-brown!60!white}
+\colorlet{kit-brown50}{kit-brown!50!white}
+\colorlet{kit-brown40}{kit-brown!40!white}
+\colorlet{kit-brown30}{kit-brown!30!white}
+\colorlet{kit-brown25}{kit-brown!25!white}
+\colorlet{kit-brown20}{kit-brown!20!white}
+\colorlet{kit-brown15}{kit-brown!15!white}
+\colorlet{kit-brown10}{kit-brown!10!white}
+\colorlet{kit-brown5}{kit-brown!5!white}
 
 % KIT color  cyan :
 \definecolor{kit-cyan}{RGB}{35, 161, 224}
-\definecolor{kit-cyan100}{RGB}{35, 161, 224}
-\definecolor{kit-cyan90}{rgb}{0.2235, 0.6682, 0.8906}
-\definecolor{kit-cyan80}{rgb}{0.3098, 0.7051, 0.9027}
-\definecolor{kit-cyan75}{rgb}{0.3529, 0.7235, 0.9088}
-\definecolor{kit-cyan70}{rgb}{0.3961, 0.742, 0.9149}
-\definecolor{kit-cyan60}{rgb}{0.4824, 0.7788, 0.9271}
-\definecolor{kit-cyan50}{rgb}{0.5686, 0.8157, 0.9392}
-\definecolor{kit-cyan40}{rgb}{0.6549, 0.8525, 0.9514}
-\definecolor{kit-cyan30}{rgb}{0.7412, 0.8894, 0.9635}
-\definecolor{kit-cyan25}{rgb}{0.7843, 0.9078, 0.9696}
-\definecolor{kit-cyan20}{rgb}{0.8275, 0.9263, 0.9757}
-\definecolor{kit-cyan15}{rgb}{0.8706, 0.9447, 0.9818}
-\definecolor{kit-cyan10}{rgb}{0.9137, 0.9631, 0.9878}
-\definecolor{kit-cyan5}{rgb}{0.9569, 0.9816, 0.9939}
+\colorlet{kit-cyan100}{kit-cyan}
+\colorlet{kit-cyan90}{kit-cyan!90!white}
+\colorlet{kit-cyan80}{kit-cyan!80!white}
+\colorlet{kit-cyan70}{kit-cyan!70!white}
+\colorlet{kit-cyan60}{kit-cyan!60!white}
+\colorlet{kit-cyan50}{kit-cyan!50!white}
+\colorlet{kit-cyan40}{kit-cyan!40!white}
+\colorlet{kit-cyan30}{kit-cyan!30!white}
+\colorlet{kit-cyan25}{kit-cyan!25!white}
+\colorlet{kit-cyan20}{kit-cyan!20!white}
+\colorlet{kit-cyan15}{kit-cyan!15!white}
+\colorlet{kit-cyan10}{kit-cyan!10!white}
+\colorlet{kit-cyan5}{kit-cyan!5!white}
 
 % KIT color  gray :
 \definecolor{kit-gray}{RGB}{0, 0, 0}
-\definecolor{kit-gray100}{RGB}{0, 0, 0}
-\definecolor{kit-gray90}{rgb}{0.1, 0.1, 0.1}
-\definecolor{kit-gray80}{rgb}{0.2, 0.2, 0.2}
-\definecolor{kit-gray75}{rgb}{0.25, 0.25, 0.25}
-\definecolor{kit-gray70}{rgb}{0.3, 0.3, 0.3}
-\definecolor{kit-gray60}{rgb}{0.4, 0.4, 0.4}
-\definecolor{kit-gray50}{rgb}{0.5, 0.5, 0.5}
-\definecolor{kit-gray40}{rgb}{0.6, 0.6, 0.6}
-\definecolor{kit-gray30}{rgb}{0.7, 0.7, 0.7}
-\definecolor{kit-gray25}{rgb}{0.75, 0.75, 0.75}
-\definecolor{kit-gray20}{rgb}{0.8, 0.8, 0.8}
-\definecolor{kit-gray15}{rgb}{0.85, 0.85, 0.85}
-\definecolor{kit-gray10}{rgb}{0.9, 0.9, 0.9}
-\definecolor{kit-gray5}{rgb}{0.95, 0.95, 0.95}
+\colorlet{kit-gray100}{kit-gray}
+\colorlet{kit-gray90}{kit-gray!90!white}
+\colorlet{kit-gray80}{kit-gray!80!white}
+\colorlet{kit-gray70}{kit-gray!70!white}
+\colorlet{kit-gray60}{kit-gray!60!white}
+\colorlet{kit-gray50}{kit-gray!50!white}
+\colorlet{kit-gray40}{kit-gray!40!white}
+\colorlet{kit-gray30}{kit-gray!30!white}
+\colorlet{kit-gray25}{kit-gray!25!white}
+\colorlet{kit-gray20}{kit-gray!20!white}
+\colorlet{kit-gray15}{kit-gray!15!white}
+\colorlet{kit-gray10}{kit-gray!10!white}
+\colorlet{kit-gray5}{kit-gray!5!white}
 
-
-
-\setbeamercolor*{normal text}{fg=black}
+\setbeamercolor*{normal text}{fg=kit-royalblue}
 \setbeamercolor*{alerted text}{fg=kit-red100}
-\setbeamercolor*{example text}{fg=black}
-\setbeamercolor*{structure}{fg=black}
+\setbeamercolor*{example text}{fg=kit-royalblue}
+\setbeamercolor*{structure}{fg=kit-royalblue}
+\setbeamercolor*{frametitle}{fg=normal text.fg}
+\setbeamercolor*{framesubtitle}{fg=kit-iceblue50}
+\setbeamercolor*{footer}{fg=kit-iceblue50.fg}
 
-\setbeamercolor*{palette primary}{fg=black,bg=black!15}
-\setbeamercolor*{palette secondary}{fg=black,bg=black!15}
-\setbeamercolor*{palette tertiary}{fg=black,bg=black!15}
-\setbeamercolor*{palette quaternary}{fg=black,bg=black!15}
-
-\setbeamercolor*{palette sidebar primary}{fg=black!75}
-\setbeamercolor*{palette sidebar secondary}{fg=black!75}
-\setbeamercolor*{palette sidebar tertiary}{fg=black!75}
-\setbeamercolor*{palette sidebar quaternary}{fg=black!75}
+\setbeamercolor*{palette primary}{fg=normal text.fg,bg=black!15}
+\setbeamercolor*{palette secondary}{fg=normal text.fg,bg=black!15}
+\setbeamercolor*{palette tertiary}{fg=normal text.fg,bg=black!15}
+\setbeamercolor*{palette quaternary}{fg=normal text.fg,bg=black!15}
 
 \setbeamercolor*{item projected}{fg=white,bg=kit-green100}
+\setbeamercolor*{itemize item}{fg=kit-green100}
+\setbeamercolor*{itemize subitem}{fg=kit-green100}
+\setbeamercolor*{itemize subsubitem}{fg=kit-green100}
 
 \setbeamercolor*{block title}{fg=white,bg=kit-green100}
 \setbeamercolor*{block title alerted}{use=alerted text,fg=white,bg=alerted text.fg!75!black}
-\setbeamercolor*{block title example}{fg=white,bg=kit-blue100}
+\setbeamercolor*{block title example}{fg=white,bg=kit-royalblue}
 
-\setbeamercolor*{block body}{fg=black,bg=kit-green15}
+\setbeamercolor*{green block}{bg=kit-green100}
+\setbeamercolor*{white block}{bg=white}
+\setbeamercolor*{blue block}{bg=kit-royalblue100}
+
+\setbeamercolor*{title on green}{fg=kit-green20}
+\setbeamercolor*{title on white}{fg=kit-green100}
+
+\setbeamercolor*{subtitle on green}{fg=white}
+\setbeamercolor*{subtitle on white}{fg=normal text.fg}
+
+\setbeamercolor*{block body}{fg=normal text.fg,bg=kit-green15}
 \setbeamercolor*{block body alerted}{parent=normal text,use=block title alerted,bg=block title alerted.bg!10!bg}
-\setbeamercolor*{block body example}{fg=black,bg=kit-blue15}
+\setbeamercolor*{block body example}{fg=normal text.fg,bg=kit-blue15}
 
-\setbeamercolor*{separation line}{}
-\setbeamercolor*{fine separation line}{}
+\setbeamercolor*{standard box}{fg=white,bg=kit-green100}%
+\setbeamercolor*{highlight box}{fg=white,bg=kit-royalblue100}%
+\setbeamercolor*{highlight box gray}{fg=normal text.fg,bg=kit-iceblue50}%
+\setbeamercolor*{highlight box lightgray}{fg=normal text.fg,bg=kit-iceblue30}%
+
+\setbeamercolor*{standard box framed}{fg=kit-green100,bg=}%
+\setbeamercolor*{highlight box framed}{fg=kit-royalblue100,bg=}%
+\setbeamercolor*{highlight box gray framed}{fg=kit-iceblue50,bg=}%
 
 \setbeamercolor*{background canvas}{bg=white}
 
-%% -----------
-%% | /Farben |
-%% -----------
+\setbeamercolor*{footer}{fg=kit-royalblue100!50!white}
 
-%% -----------------------------------
-%% | halbgerundete Aufzählungspunkte |
-%% -----------------------------------
+\setbeamercolor*{mini frame}{fg=kit-royalblue100!50!white}
+\setbeamercolor{section in head/foot}{fg=kit-royalblue100!50!white}
 
-% KIT-Aufzählungszeichen
-\newcommand{\KITmark}{%
-	\begin{pgfpicture}{0mm}{0mm}{1ex}{1ex}
-		{\pgfsetcornersarced{\pgfpoint{.3ex}{.3ex}} 
-			\pgfpathmoveto{\pgfpoint{0cm}{1ex}} 
-			\pgfpathlineto{\pgfpoint{1ex}{1ex}}
-			\pgfpathlineto{\pgfpoint{1ex}{0cm}}}
-		{\pgfsetcornersarced{\pgfpoint{.3ex}{.3ex}}
-			\pgfpathmoveto{\pgfpoint{1ex}{0cm}}
-			\pgfpathlineto{\pgfpointorigin}
-			\pgfpathlineto{\pgfpoint{0cm}{1ex}}}
-		\color{kit-green100}
-		\pgfusepath{fill}
-	\end{pgfpicture}%
+%% ┏━━━━━━━━━┓
+%% ┃ /Farben ┃
+%% ┗━━━━━━━━━┛
+
+\setbeamertemplate{section in toc}{{\inserttocsectionnumber.~\inserttocsection}\\[.2em]}
+\setbeamercolor{section in toc}{fg=kit-royalblue}
+\setbeamerfont{section in toc}{size=\huge, series=\bfseries}
+\setbeamerfont{subsection in toc}{size=\large}
+
+%% ┏━━━━━━━━━━━━━━━━━━━━┓
+%% ┃ Block-Definitionen ┃
+%% ┗━━━━━━━━━━━━━━━━━━━━┛
+
+% Original von tex/latex/beamer/beamerinnerthemedefault.sty
+% colsep* durch colsep ersetzt, damit die Blöcke nicht über das Raster herausragen
+\defbeamertemplate*{block begin}{KIT 2025}
+{
+  \par\vskip\medskipamount%
+  \begin{beamercolorbox}[colsep=.75ex]{block title}
+    \usebeamerfont*{block title}\insertblocktitle%
+  \end{beamercolorbox}%
+  {\parskip0pt\par}%
+  \ifbeamercolorempty[bg]{block title}
+  {}
+  {\ifbeamercolorempty[bg]{block body}{}{\nointerlineskip\vskip-0.5pt}}%
+  \usebeamerfont{block body}%
+  \begin{beamercolorbox}[colsep=.75ex,vmode]{block body}%
+    \ifbeamercolorempty[bg]{block body}{\vskip-.25ex}{\vskip-.75ex}\vbox{}%
+}
+\defbeamertemplate*{block end}{KIT 2025}  
+{\end{beamercolorbox}\vskip\smallskipamount}
+
+\defbeamertemplate*{block alerted begin}{KIT 2025}
+{
+  \par\vskip\medskipamount%
+  \begin{beamercolorbox}[colsep=.75ex]{block title alerted}
+    \usebeamerfont*{block title alerted}\insertblocktitle%
+  \end{beamercolorbox}%
+  {\parskip0pt\par}%
+  \ifbeamercolorempty[bg]{block title alerted}
+  {}
+  {\ifbeamercolorempty[bg]{block body alerted}{}{\nointerlineskip\vskip-0.5pt}}%
+  \usebeamerfont{block body alerted}%
+  \begin{beamercolorbox}[colsep=.75ex,vmode]{block body alerted}%
+    \ifbeamercolorempty[bg]{block body alerted}{\vskip-.25ex}{\vskip-.75ex}\vbox{}%
 }
 
-\setbeamertemplate{itemize items}{\raisebox{.2ex}{\KITmark}}
+\defbeamertemplate*{block alerted end}{KIT 2025}
+{\end{beamercolorbox}\vskip\smallskipamount}
 
-%% ----------------------
-%% | Inhaltsverzeichnis |
-%% ----------------------
-
-\setbeamertemplate{section in toc}{\normalsize\textbf{\textcolor{kit-blue}{\inserttocsectionnumber.~\inserttocsection}}\par}
-\setbeamertemplate{subsection in toc}{\small\hspace{1.2em}\raisebox{.2ex}{\KITmark}\hspace{\labelsep}\inserttocsubsection\par}
-
-%% ------------------------------
-%% | halbgerundete Beamer-Boxen |
-%% ------------------------------
-
-\renewcommand\beamerboxesrounded[2][]{%
-  \global\let\beamer@firstlineitemizeunskip=\relax%
-  \vbox\bgroup%
-  \setkeys{beamerboxes}{upper=block title,lower=block body,width=\textwidth,shadow=false}%
-  \setkeys{beamerboxes}{#1}%
-  {%
-    \usebeamercolor{\bmb@lower}%
-    \globalcolorstrue%
-    \colorlet{lower.bg}{bg}%
-  }%
-  {%
-    \usebeamercolor{\bmb@upper}%
-    \globalcolorstrue%
-    \colorlet{upper.bg}{bg}%
-  }%
-  %
-  % Typeset head
-  %
-  \vskip4bp
-  \setbox\bmb@box=\hbox{%
-    \begin{minipage}[b]{\bmb@width}%
-      \usebeamercolor[fg]{\bmb@upper}%
-      #2%
-    \end{minipage}}%
-  \ifdim\wd\bmb@box=0pt%
-    \setbox\bmb@box=\hbox{}%
-    \ht\bmb@box=1.5pt%
-    \bmb@prevheight=-4.5pt%
-  \else%
-    \wd\bmb@box=\bmb@width%
-    \bmb@temp=\dp\bmb@box%
-    \ifdim\bmb@temp<1.5pt%
-      \bmb@temp=1.5pt%
-    \fi%
-    \setbox\bmb@box=\hbox{\raise\bmb@temp\hbox{\box\bmb@box}}%
-    \dp\bmb@box=0pt%
-    \bmb@prevheight=\ht\bmb@box%
-  \fi%
-  \bmb@temp=\bmb@width%
-  \bmb@dima=\bmb@temp\advance\bmb@dima by2.2bp%
-  \bmb@dimb=\bmb@temp\advance\bmb@dimb by4bp%
-  \hbox{%
-    \begin{pgfpicture}{0bp}{+-\ht\bmb@box}{0bp}{+-\ht\bmb@box}
-      \ifdim\wd\bmb@box=0pt%
-        \color{lower.bg}%
-      \else%        
-        \color{upper.bg}%
-      \fi%  
-      \pgfpathqmoveto{-4bp}{-1bp}
-      % Adaption for "KIT-Design"
-      \pgfpathlineto{\pgfpoint{-4bp}{3bp}}
-      %\pgfpathqcurveto{-4bp}{1.2bp}{-2.2bp}{3bp}{0bp}{3bp}
-      \pgfpathlineto{\pgfpoint{\bmb@temp}{3bp}}
-      \pgfpathcurveto%
-      {\pgfpoint{\bmb@dima}{3bp}}%
-      {\pgfpoint{\bmb@dimb}{1.2bp}}%
-      {\pgfpoint{\bmb@dimb}{-1bp}}%
-      \bmb@dima=-\ht\bmb@box%
-      \advance\bmb@dima by-2pt%
-      \pgfpathlineto{\pgfpoint{\bmb@dimb}{\bmb@dima}}
-      \pgfpathlineto{\pgfpoint{-4bp}{\bmb@dima}}
-      \pgfusepath{fill}
-    \end{pgfpicture}%
-    \copy\bmb@box%
-  }%
-  \nointerlineskip%
-  \vskip-1pt%
-  \ifdim\wd\bmb@box=0pt%
-  \else%
-  \hbox{%
-    \begin{pgfpicture}{0pt}{0pt}{\bmb@width}{6pt}
-      \bmb@dima=\bmb@width%
-      \advance\bmb@dima by8bp%
-      \pgfpathrectangle{\pgfpoint{-4bp}{-1bp}}{\pgfpoint{\bmb@dima}{8bp}}
-      \pgfusepath{clip}
-      {\pgftransformshift{\pgfpoint{-4bp}{0bp}}\pgftext[left,base]{\pgfuseshading{bmb@transition}}}%
-    \end{pgfpicture}%
-  }%
-  \nointerlineskip%
-  \vskip-0.5pt%
-  \fi%
-  \ifbmb@shadow%
-    \setbox\bmb@boxshadow=\hbox{\pgfuseshading{bmb@shadow}}%
-    \setbox\bmb@boxshadowball=\hbox{\pgfuseshading{bmb@shadowball}}%
-    \setbox\bmb@boxshadowballlarge=\hbox{\pgfuseshading{bmb@shadowballlarge}}%
-  \fi%
-  \setbox\bmb@colorbox=\hbox{{\pgfpicturetrue\pgfsetcolor{lower.bg}}}%
-  \setbox\bmb@box=\hbox\bgroup\begin{minipage}[b]{\bmb@width}%
-    \vskip2pt%
-    \usebeamercolor[fg]{\bmb@lower}%
-    \colorlet{beamerstructure}{upper.bg}%
-    \colorlet{structure}{upper.bg}%
-    %\color{.}%
-  }
-
-\def\endbeamerboxesrounded{%
-  \end{minipage}\egroup%
-  \wd\bmb@box=\bmb@width%
-  \bmb@temp=\dp\bmb@box%
-  \advance\bmb@temp by.5pt%
-  \setbox\bmb@box=\hbox{\raise\bmb@temp\hbox{\box\bmb@box}}%
-  \dp\bmb@box=0pt%
-  \bmb@temp=\wd\bmb@box%
-  \bmb@dima=\bmb@temp\advance\bmb@dima by2.2bp%
-  \bmb@dimb=\bmb@temp\advance\bmb@dimb by4bp%
-  \hbox{%
-    \begin{pgfpicture}{0bp}{0bp}{0bp}{0bp}
-      \ifbmb@shadow%
-      {\pgftransformshift{\pgfpoint{4bp}{-3bp}}\pgftext{\copy\bmb@boxshadowball}}
-      \begin{pgfscope}
-        {%
-        \advance\bmb@temp by-1bp%
-        \pgfpathrectangle{\pgfpoint{\bmb@temp}{-7bp}}{\pgfpoint{9bp}{9bp}}%
-        \pgfusepath{clip}
-        }%
-        {\pgftransformshift{\pgfpoint{\bmb@temp}{1bp}}\pgftext{\box\bmb@boxshadowballlarge}}
-      \end{pgfscope}
-      \begin{pgfscope}
-        \advance\bmb@temp by-4bp%
-        \pgfpathrectangle{\pgfpoint{4bp}{-7bp}}{\pgfpoint{\bmb@temp}{5bp}}
-        \pgfusepath{clip}
-        {\pgftransformshift{\pgfpoint{4bp}{-7bp}}\pgftext[left,base]{\copy\bmb@boxshadow}}%
-      \end{pgfscope}
-      \begin{pgfscope}
-        \advance\bmb@temp by 4bp%
-        \bmb@dima=\ht\bmb@box%
-        \advance\bmb@dima by\bmb@prevheight%
-        \advance\bmb@dima by 4bp%
-        \pgfpathrectangle{\pgfpoint{\bmb@temp}{1bp}}{\pgfpoint{4bp}{\bmb@dima}}
-        \pgfusepath{clip}
-        \advance\bmb@dima by-4bp%
-        {\pgftransformshift{\pgfpoint{\bmb@temp}{\bmb@dima}}\pgftext{\box\bmb@boxshadowball}}
-        \advance\bmb@dima by-1bp%
-        \pgfpathrectangle{\pgfpoint{\bmb@temp}{1bp}}{\pgfpoint{4bp}{\bmb@dima}}
-        \pgfusepath{clip}
-        \advance\bmb@temp by4bp%
-        {\pgftransformshift{\pgfpoint{\bmb@temp}{-3bp}}%
-          \pgftransformrotate{90}%
-          \pgftext[left,base]{\box\bmb@boxshadow}}%
-      \end{pgfscope}
-      \fi%
-      \unhbox\bmb@colorbox%
-      \pgfpathqmoveto{-4bp}{1bp}
-      \pgfpathqcurveto{-4bp}{-1.2bp}{-2.2bp}{-3bp}{0bp}{-3bp}
-      \pgfpathlineto{\pgfpoint{\the\bmb@dimb}{-3bp}}
-      {
-      \bmb@dima=\ht\bmb@box%
-      \pgfpathlineto{\pgfpoint{\bmb@dimb}{\bmb@dima}}
-      \pgfpathlineto{\pgfpoint{-4bp}{\bmb@dima}}
-      \pgfusepath{fill}
-      }
-      \ifbmb@shadow%
-      {
-        \color{black!50!bg}
-        \pgfsetlinewidth{0pt}
-        \pgfpathmoveto{\pgfpoint{\bmb@dimb}{-.5bp}}
-        \bmb@dima=\ht\bmb@box%
-        \advance\bmb@dima by\bmb@prevheight%
-        \advance\bmb@dima by 1bp%
-        \pgfpathlineto{\pgfpoint{\bmb@dimb}{\bmb@dima}}
-        \pgfusepath{stroke}
-        \bmb@temp=\bmb@dima
-        \advance\bmb@dima by 1bp%
-        \color{black!31!bg}
-        \pgfpathmoveto{\pgfpoint{\bmb@dimb}{\bmb@temp}}
-        \pgfpathlineto{\pgfpoint{\bmb@dimb}{\bmb@dima}}
-        \pgfusepath{stroke}
-        \advance\bmb@dima by 1bp%
-        \advance\bmb@temp by 1bp%
-        \color{black!19!bg}
-        \pgfpathmoveto{\pgfpoint{\bmb@dimb}{\bmb@temp}}
-        \pgfpathlineto{\pgfpoint{\bmb@dimb}{\bmb@dima}}
-        \pgfusepath{stroke}
-        \advance\bmb@dima by 1bp%
-        \advance\bmb@temp by 1bp%
-        \color{black!6!bg}
-        \pgfpathmoveto{\pgfpoint{\bmb@dimb}{\bmb@temp}}
-        \pgfpathlineto{\pgfpoint{\bmb@dimb}{\bmb@dima}}
-        \pgfusepath{stroke}
-        \advance\bmb@dima by 1.5bp%
-        \advance\bmb@temp by 1bp%
-        \color{bg}
-        \pgfpathmoveto{\pgfpoint{\bmb@dimb}{\bmb@temp}}
-        \pgfpathlineto{\pgfpoint{\bmb@dimb}{\bmb@dima}}
-        \pgfusepath{stroke}
-      }
-      \fi
-    \end{pgfpicture}%
-    \box\bmb@box%
-  }%
-  \ifbmb@shadow%
-    \vskip4bp minus 2bp%
-  \else%
-    \vskip2bp%
-  \fi%
-  \egroup% of \vbox\bgroup
+\defbeamertemplate*{block example begin}{KIT 2025}
+{
+  \par\vskip\medskipamount%
+  \begin{beamercolorbox}[colsep=.75ex]{block title example}
+    \usebeamerfont*{block title example}\insertblocktitle%
+  \end{beamercolorbox}%
+  {\parskip0pt\par}%
+  \ifbeamercolorempty[bg]{block title example}
+  {}
+  {\ifbeamercolorempty[bg]{block body example}{}{\nointerlineskip\vskip-0.5pt}}%
+  \usebeamerfont{block body example}%
+  \begin{beamercolorbox}[colsep=.75ex,vmode]{block body example}%
+    \ifbeamercolorempty[bg]{block body example}{\vskip-.25ex}{\vskip-.75ex}\vbox{}%
 }
+\defbeamertemplate*{block example end}{KIT 2025}
+{\end{beamercolorbox}\vskip\smallskipamount}
 
-
-%% -------------------------------
-%% | /halbgerundete Beamer-Boxen |
-%% -------------------------------
-
-
-%% ----------------------
-%% | Block-Definitionen |
-%% ----------------------
+\setbeamertemplate{block begin}[KIT 2025]
+\setbeamertemplate{block end}[KIT 2025]
+\setbeamertemplate{block alerted begin}[KIT 2025]
+\setbeamertemplate{block alerted end}[KIT 2025]
+\setbeamertemplate{block example begin}[KIT 2025]
+\setbeamertemplate{block example end}[KIT 2025]
 
 % Content environment for structuring. Basically a headline followed by text
 \newenvironment<>{contentblock}[1]{\begingroup%
   \setbeamertemplate{blocks}[default]
-	\setbeamercolor{block body}{fg=black,bg=}%
-  \setbeamercolor{block title}{fg=black,bg=}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=}%
+  \setbeamercolor{block title}{fg=normal text.fg,bg=}%
   \setbeamerfont*{block title}{family=\sffamily,series=\bfseries,size=\large}
 	\begin{block}#2{#1}%
 	}{\end{block}%
 \endgroup}
 
+\newenvironment<>{royalblueblock}[1]{\begingroup%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-iceblue30!50}%
+	\setbeamercolor{block title}{fg=white,bg=kit-royalblue100}%
+	\begin{block}#2{#1}%
+	}{\end{block}%
+\endgroup}
+
+\newenvironment<>{grayblock}[1]{\begingroup%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-iceblue30!50}%
+	\setbeamercolor{block title}{fg=normal text.fg,bg=kit-iceblue50}%
+	\begin{block}#2{#1}%
+	}{\end{block}%
+\endgroup}
+
+\newenvironment<>{lightgrayblock}[1]{\begingroup%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-iceblue30!50}%
+	\setbeamercolor{block title}{fg=normal text.fg,bg=kit-iceblue30}%
+	\begin{block}#2{#1}%
+	}{\end{block}%
+\endgroup}
 
 \newenvironment<>{greenblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-green15}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-green15}%
 	\setbeamercolor{block title}{fg=white,bg=kit-green100}%
 	\begin{block}#2{#1}%
 	}{\end{block}
 \endgroup}
 
 \newenvironment<>{blueblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-blue15}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-blue15}%
 	\setbeamercolor{block title}{fg=white,bg=kit-blue100}%
 	\begin{block}#2{#1}%
 	}{\end{block}
 \endgroup}
 
 \newenvironment<>{redblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-red15}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-red15}%
 	\setbeamercolor{block title}{fg=white,bg=kit-red100}%
 	\begin{block}#2{#1}%
 	}{\end{block}%
 \endgroup}
 
 \newenvironment<>{brownblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-brown15}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-brown15}%
 	\setbeamercolor{block title}{fg=white,bg=kit-brown100}%
 	\begin{block}#2{#1}%
 	}{\end{block}%
 \endgroup}
 
 \newenvironment<>{purpleblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-purple15}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-purple15}%
 	\setbeamercolor{block title}{fg=white,bg=kit-purple100}%
 	\begin{block}#2{#1}%
 	}{\end{block}%
 \endgroup}
 
-\newenvironment<>{grayblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-gray15}%
-	\setbeamercolor{block title}{fg=white,bg=kit-gray70}%
-	\begin{block}#2{#1}%
-	}{\end{block}%
-\endgroup}
-
 \newenvironment<>{yellowblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-yellow30}%
-	\setbeamercolor{block title}{fg=black,bg=kit-yellow100}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-yellow30}%
+	\setbeamercolor{block title}{fg=normal text.fg,bg=kit-yellow100}%
 	\begin{block}#2{#1}%
 	}{\end{block}%
 \endgroup}
 
 \newenvironment<>{lightgreenblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-lightgreen15}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-lightgreen15}%
 	\setbeamercolor{block title}{fg=white,bg=kit-lightgreen100}%
 	\begin{block}#2{#1}%
 	}{\end{block}%
 \endgroup}
 
 \newenvironment<>{orangeblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-orange15}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-orange15}%
 	\setbeamercolor{block title}{fg=white,bg=kit-orange100}%
 	\begin{block}#2{#1}%
 	}{\end{block}%
 \endgroup}
 
 \newenvironment<>{cyanblock}[1]{\begingroup%
-	\setbeamercolor{block body}{fg=black,bg=kit-cyan15}%
+	\setbeamercolor{block body}{fg=normal text.fg,bg=kit-cyan15}%
 	\setbeamercolor{block title}{fg=white,bg=kit-cyan100}%
 	\begin{block}#2{#1}%
 	}{\end{block}%
 \endgroup}
-%% ------------------------------
-%% | /Block-Definitionen |
-%% ------------------------------
 
-%% use this for setting the total page number
+%%
+%% Boxen
+%%
+
+\newenvironment<>{standardbox}{%
+  \begin{beamercolorbox}[sep=1em,center,vmode]{standard box}%
+  \usebeamerfont{standard box}%
+}{%
+  \end{beamercolorbox}%
+}
+
+\newenvironment<>{highlightbox}{%
+  \begin{beamercolorbox}[sep=1em,center,vmode]{highlight box}
+  \usebeamerfont{highlight box}%
+}{%
+  \end{beamercolorbox}%
+}
+
+\newenvironment<>{grayhighlightbox}{%
+  \begin{beamercolorbox}[sep=1em,center,vmode]{highlight box gray}
+  \usebeamerfont{highlight box}%
+}{%
+  \end{beamercolorbox}%
+}
+
+\newenvironment<>{lightgrayhighlightbox}{%
+  \begin{beamercolorbox}[sep=1em,center,vmode]{highlight box lightgray}
+  \usebeamerfont{highlight box}%
+}{%
+  \end{beamercolorbox}%
+}
+
+%% ┏━━━━━━━━━━━━━━━━━━━━━┓
+%% ┃ /Block-Definitionen ┃
+%% ┗━━━━━━━━━━━━━━━━━━━━━┛
+
+%% Appendix-Seiten zählen nicht in die Gesamtfolienzahl
+
 \newcommand{\beginbackup}{
    \newcounter{framenumbervorappendix}
    \setcounter{framenumbervorappendix}{\value{framenumber}}
