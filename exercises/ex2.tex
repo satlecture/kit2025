@@ -93,4 +93,20 @@ The best performing solution is awarded double the points.
 \textbf{Some benchmark instances:} \url{https://github.com/satlecture/kit2025/tree/main/exercises/sdvstp}
 
 
+\section{CDCL (3+6 Points)}
+\subsection{a)}
+Simulate the CDCL algorithm by hand on the formula F. Select branching literals in the order $x_1,x_2,x_3, ...$. Draw the implication graph once a conflict occurs, learn the 1-UIP clause and continue CDCL search with the variable implied by the asserting learned clause. If everything goes right you should only encounter a single conflict before arriving a satisfying assignment. To emphasize the structure, each variable $x_i$ is just written as~$i$ and it's negation $\bar x_i$ as $-i$. So for example, $\bar x_4$ is written as $-4$ and $x_8$ as 8.
+\begin{align}
+	F = \{\{-1,-2,-4\}, \{-3, 6\}, \{-5,-6, 8\}, \{4,-8,10\}, \\ \{7,9\}, \{-2, -8, 9\}, \{-1,-9-10\},  \{-5,8,9\}\}
+\end{align}
+
+\subsection{b)}
+Repeat the CDCL algorithm for the larger formula $F'$. Again, select branching literals again in the order $x_1,x_2,x_3, ...$. Draw the implication graph at every conflict and give the learned 1-UIP clause. Provide the final assignment.
+\begin{align}
+	\centering
+	F' = &\{\{1, 13\}, \{-1, -2, 14\}, \{3, 15\}, \{4, 16\},\{-5, -3, 6\},  \notag \\
+	\quad & \{-5, -7\}, \{-6, 7, 8\}, \{-4, -8, -9\}, \{-1, 9, -10\},\notag \\
+	\quad & \{9, 11, -14\}, \{10, -11, 12\}, \{-2, -11, -12\}\}
+\end{align}
+
 \end{document}
