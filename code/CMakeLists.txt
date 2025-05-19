@@ -28,6 +28,6 @@ target_link_libraries(pigeonhole cadical)
 add_executable(graphcol src/graphcol.cc)
 target_link_libraries(graphcol cadical)
 
-add_executable(sdvstp src/sdvstp/sdvstp.cc src/util/cardinality/cardinality_encoding.cc src/util/cardinality/enc_adder.cc)
-add_executable(sdvstp_gen src/sdvstp/sdvstp_gen.cc)
+add_executable(sdvstp src/sdvstp/sdvstp.cc src/util/pb/cardinality_encoding.cc src/util/pb/enc_adder.cc)
+add_executable(sdvstp_gen src/sdvstp/sdvstp_gen.cc) # for generating benchmark problems
 target_link_libraries(sdvstp cadical)
