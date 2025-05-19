@@ -2,6 +2,8 @@
 build/
 .vscode/
 
+.idea/	
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -198,7 +200,6 @@ _minted*
 
 # pdfpcnotes
 *.pdfpc
-
 # sagetex
 *.sagetex.sage
 *.sagetex.py
