@@ -87,8 +87,7 @@ The best performing solution is awarded double the points.
 
 \vspace*{3mm}
 \noindent
-\textbf{Code skeleton:} \url{https://github.com/satlecture/kit2025/blob/main/code/src/sdvstp/sdvstp.cc}
-
+\textbf{Code skeleton:} \url{https://github.com/satlecture/kit2025/blob/main/code/src/sdvstp/sdvstp.cc}~\\[1ex]
 \noindent
 \textbf{Some benchmark instances:} \url{https://github.com/satlecture/kit2025/tree/main/exercises/sdvstp}
 
@@ -109,5 +108,26 @@ Repeat the CDCL algorithm, now for the larger formula $F'$. Again, select branch
 	\quad & \{-5, -7\}, \{-6, 7, 8\}, \{-4, -8, -9\}, \{-1, 9, -10\},\notag \\
 	\quad & \{9, 11, -14\}, \{10, -11, 12\}, \{-2, -11, -12\}\}
 \end{align}
+
+~\\[1em]
+\section{Local Search Competition (7(+7) Points)}
+
+Using the methods from the lecture, as well as any others you find in the literature or invent yourself, implement an efficient local search SAT solver.
+The solver should accept one argument, which is the path to an input file in DIMACS format.
+Easy-to-solve, satisfiable instances can be found in the Global Benchmark Database~(GBD)~[1].
+You can use the parser provided in the lecture~[2].
+The output format of your solver should adhere to the format used in the SAT competition which is specified online~[3].
+Solvers will be evaluated on a random set of satisfiable instances, and we will verify that the model is correct.
+Additionally, we will test your solver on unsatifiable instances.~\\[1em]
+
+\noindent
+[1] \textbf{Benchmark Instances:} \url{https://benchmark-database.de/?minisat1m=yes&result=sat}.\\[1ex]
+\noindent
+[2] \textbf{CNF Parser:} \url{https://github.com/satlecture/kit2025/blob/main/code/src/util/CNFFormula.h}.\\[1ex]
+\noindent
+[3] \textbf{Output Format:} \url{https://satcompetition.github.io/2025/output.html}.\\[1em]
+
+\noindent
+You will receive seven points for a local search solver that can correctly solve easy instances in a few minutes. The solution with the best performance will receive double the points.
 
 \end{document}
