@@ -37,7 +37,7 @@ See also [the page from last year](https://github.com/satlecture/kit2024).
 This is our tentative plan for exercises:
 
 * **Tuesday, May 6**: E0 - getting started, announcement of [assignment 1 (A1) (introduction, algorithms, encodings)](exercises/ex1.pdf) _[DS]_
-* **Tuesday, May 20**: E1 - discussion of A1, announcement of A2 (modern SAT solving 1+2)
+* **Tuesday, May 20**: E1 - discussion of A1, announcement of [assignment 2 (A2) (classic and modern SAT solving)](exercises/ex2.pdf) _[MI]_
 * **Tuesday, June 3**: E2 - discussion of A2, announcement of A3 (preprocessing, PR, proofs)
 * **Tuesday, June 17**: E3 - discussion of A3, announcement of A4 (parallel SAT)
 * **Tuesday, July 1**: E4 - discussion of A4, announcement of A5 (distributed SAT, proof pragmatics)
