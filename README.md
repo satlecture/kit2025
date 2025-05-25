@@ -22,8 +22,8 @@ See also [the page from last year](https://github.com/satlecture/kit2024).
 * **Monday, May 5**: [L3 - Local Search, Resolution, DP Algorithm, DPLL Algorithm](slides/l03-sls-dpll.pdf) _[DS]_
 * **Monday, May 12**: [L4 - Branching Heuristics, Restart Strategies, Clause Learning, Backtracking](slides/l04-heuristics-cdcl.pdf) _[MI]_
 * **Monday, May 19**: [L5 - Efficient Unit Propagation, Clause Forgetting, Community Structure, VSIDS](slides/l05-cdcl.pdf) _[MI]_
-* **Monday, May 26**: L6 - Preprocessing, Algorithm Selection _[MI]_
-* **Monday, June 2**: L7 - Propagation-based Redundancy and Proof Systems _[MI]_
+* **Monday, May 26**: [L6 - Preprocessing and Propagation-based Redundancy](slides/l06-preprocessing.pdf) _[MI]_
+* **Monday, June 2**: L7 -  Redundancy and Proof Systems, Algorithm Selection _[MI]_
 * **Monday, June 16**: L8 - Parallel SAT Solving: Search space partitioning, Portfolios, Clause sharing, massively parallel basics _[DS]_
 * **Monday, June 23**: L9 - Frontiers of distributed SAT solving _[DS]_
 * **Monday, June 30**: L10 - Pragmatics of proofs of unsatisfiability, parallel proof & distributed technology _[DS]_

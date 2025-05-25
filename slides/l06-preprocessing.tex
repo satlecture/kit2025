@@ -1,0 +1,456 @@
+\documentclass[t]{sdqbeamer}
+%\documentclass[c]{sdqbeamer}
+
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{tabulary}
+\usepackage{colortbl}
+\usepackage{tikzsymbols}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,shapes}
+\usepackage[lined,linesnumbered,ruled,noend]{algorithm2e}
+\usepackage{bm}
+
+\hypersetup{
+	colorlinks=true,
+	urlcolor=kit-orange
+}
+
+% set sdqbeamer options
+\titleimage{blender-render}
+\groupname{} % rendered at the bottom center of each slide
+\grouplogo{ae+satres}
+\selectlanguage{english}
+
+% define title etc.pp.
+\title{Practical SAT Solving}
+\subtitle{Lecture 6 \unimp{\normalfont -- Preprocessing}}
+\author{\underline{Markus Iser}, Dominik Schreiber}
+\date{May 26, 2025}
+
+% define commands
+\input{l00-commands.tex}
+
+
+\begin{document}
+
+\begin{frame}[title white horizontal, picture=logos/blender-render, kitlogo=rgb]
+	\titlepage
+\end{frame}
+
+
+\begin{frame}{Conflict-driven Clause Learning (CDCL)}
+\vspace*{-1em}
+\begin{columns}[T]
+\begin{column}{.3\linewidth}
+~\\[1em]
+\highl{Recap: Last Time}
+\begin{itemize}%\setlength{\itemsep}{1em}
+    \item Efficient Unit Propagation
+    \item Clause Forgetting
+    \item Modern Decision Heuristics
+\end{itemize}~\\[1em]
+\visible<2->{
+    \highlo{Today}
+    \begin{itemize}
+        \item Preprocessing
+    \end{itemize}
+}
+\end{column}
+\begin{column}{.6\linewidth}
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \caption{CDCL(CNF Formula $F$, \&Assignment A $\leftarrow \emptyset$)}
+    
+    \SetKwFunction{propagation}{\highl{UNIT PROPAGATION}}
+    \SetKwFunction{branching}{\highl{BRANCHING}}
+    \SetKwFunction{conflictanalysis}{CONFLICT-ANALYSIS}
+    \SetKwFunction{restart}{RESTART}
+    \SetKwFunction{cleanup}{\highl{CLEANUP}}
+    \SetKwFunction{preprocessing}{\highlo{PREPROCESSING}}
+
+    \SetKwData{UNSAT}{UNSAT}
+    \SetKwData{SAT}{SAT}
+    
+    \lIf {not \preprocessing} {
+        \Return \UNSAT
+    }
+    \BlankLine
+    \While {A is not complete} {
+        \propagation\;
+        \If {A falsifies a clause in $F$} {
+            \lIf {decision level is $0$} {
+                \Return \UNSAT
+            }
+            \Else {
+                (clause, level) $\leftarrow$ \conflictanalysis\;
+                add clause to $F$ and backtrack to level\;
+                \textbf{continue}\;
+            }
+        }
+        \lIf {\restart} {
+            backtrack to level $0$
+        }
+        \lIf {\cleanup} {
+            forget some learned clauses
+        }
+        \branching\;
+    }
+    \Return \SAT\;
+\end{algorithm}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{Preprocessing}
+Preprocessing takes place between problem encoding and its solution.\\[1ex]
+\begin{block}{Preprocessing is \dots}
+\begin{itemize}
+    \item a form of \highlo{reencoding} a problem: to fix bad encodings
+    \item a form of \highlo{reasoning} itself: inprocessing
+\end{itemize}
+\end{block}
+\textbf{Conjecture:} Smaller problems are easier to solve 
+$\Longrightarrow$ Try to reduce the size of the formula.\\[1ex]
+\begin{exampleblock}{Classic Preprocessing Techniques}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item Subsumption
+    \item Self-subsuming Resolution
+    \item (Bounded) Variable Elimination (BVE)
+\end{itemize}
+\end{exampleblock}
+\end{frame}
+
+
+\begin{frame}{Subsumption}
+A clause $C$ is subsumed by $D$ iff $D \subseteq C$.\\[1ex]
+Subsumed clauses can be removed from the formula without changing satisfiability: $\forall D \subseteq C, D \models C$
+\begin{exampleblock}{Example}
+    $\{a, b\}$ subsumes $\{a, b, c\}$ and $\{a, b, d\}$
+\end{exampleblock}
+\pause
+\begin{block}{Implementation 1: Forward Subsumption}
+Select clause $C$ and \highlo{check if it is subsumed} by any other clause $D \subseteq C$.
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item Temporarily mark all literals in $C$ as unsatifisfied, and use \highl{one-watched literal data-structure} to find subsumed clauses
+    \item \textbf{Optimization 1:} Watch literals with the fewest occurrences
+    \item \textbf{Optimization 2:} Keep literals sorted and perform merge-sort style subset check
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Subsumption}
+\begin{block}{Implementation 2: Backward Subsumption}
+\begin{columns}[T]
+\begin{column}{.45\linewidth}~\\
+    Select clause $D$ and \highlo{check if it subsumes} any other clause $C \supseteq D$.\\[1ex]
+    \highl{Learned clauses} are never subsumed but \highl{can subsume other clauses}, e.g., recently learned clauses
+    \begin{itemize}\setlength{\itemsep}{1ex}
+        \item \textbf{Optimization 1:} Check the clauses of the variable with the fewest occurrences (scales to large formulas)
+        \item \textbf{Optimization 2:} Use signatures to skip the majority of subsumption checks (cf. Bloom filters)
+    \end{itemize}
+\end{column}
+\begin{column}{.5\linewidth}
+    \begin{algorithm}[H]
+        \DontPrintSemicolon
+        \caption{Signature-based Subsumption Check}
+        \tcp{Initialization:}
+        \For {$clause \in formula$} {
+            clause.signature = 0\;
+            \For {$lit \in *clause$} {
+                clause.signature |= $1\text{ull} << \bigl(\mathop{id}(lit) \% 64\bigr)$\;
+            }
+        }
+        \BlankLine
+        \tcp{Subsumption Check:}
+        \If {$D.signature~ \& \mathop{invert}(C.signature) == 0$} {
+            \tcp{Check if $D$ subsumes $C$}
+        }
+    \end{algorithm}
+\end{column}
+\end{columns}
+\end{block}
+\end{frame}
+    
+    
+\begin{frame}{Self-Subsuming Resolution}
+Applicable if the resolvent of $C$ and another clause $D$ subsumes $C$.\\[1ex]
+If $C \otimes_x D \subseteq C$ then $C$ can be replaced by $C \otimes_x D$.
+\begin{exampleblock}{Example}
+    Let $\otimes_f$ be the resolution operator on variable $f$.\\[1ex]
+    $C := \{ \lnot b, \lnot e, {\color{myblue} f}, \lnot h \}$ \qquad
+    $D := \{ \lnot b, \lnot e, {\color{myblue} \lnot f} \}$ \qquad
+    $E := C \otimes_f D = \{ \lnot b, \lnot e, \lnot h \}$ \\[1ex]
+    $\bm\longrightarrow$ Replace $C$ by $E$ (``clause strengthening'')
+\end{exampleblock}
+\begin{block}{Implementation}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item \textbf{Integrate with subsumption:} Allow at most one literal of D to occur negated in C
+    \item \textbf{Variant:} On-the-fly subsumption/strengthening of reason clauses during conflict analysis
+\end{itemize}
+\end{block}
+\end{frame}
+    
+    
+\begin{frame}{Bounded Variable Elimination}
+Let $S_x, S_{\overline x} \subseteq F$ be the sets of all clauses containing $x$ resp. ${\overline x}$, and let $R = \{ C \otimes_x D ~|~ C \in S_x, D \in S_{\overline x} \}$ be the set of all resolvents on $x$.
+%
+The formulas $F$ and \highl{$F' := (F \setminus (S_x \cup S_{\overline x})) \cup R$} are \highlo{equisatisfiable} but not equivalent.\\[1ex]
+%
+Most important preprocessing technique in practical SAT solving
+\begin{block}{Bounded Variable Elimination (BVE)}
+Eliminate variable only if the formula \highlo{size does not increase} (too much).
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item \textbf{Note 1:} Variables of removed clauses have to be rescheduled for further elimination attempts
+    \item \textbf{Note 2:} Resolvent can trigger further subsumptions and vice versa
+    \item Particularly effective in presence of functional definitions (cf. Tseitin encoding)
+    \item \textbf{Variant:} Incrementally Relaxed BVE: Increase bound each round if formula size did not increase too much
+    \item \textbf{Optimizations:} Perform check only for bounded clause size, resolvent size, or variable occurrence count
+\end{itemize}
+\end{block}
+\end{frame}
+
+    
+\begin{frame}{Blocked Clause Elimination (BCE)}
+A clause $\{ x \} \cup C$ is blocked in $F$ by $x$ if either $x$ is \highlo{pure} in $F$ or\\
+for every clause $\{ \lnot x \} \cup D$ in $F$ the resolvent $C \cup D$ is a \highlo{tautology}.\\[1ex]
+$\rightarrow$ Dead ends in the resolution graph, no proof beyond this point.\\[1ex]
+Blocked clause elimination (BCE) has a unique fixpoint, and \highlo{preserves satisfiability}.
+\begin{exampleblock}{Example}
+$F := (a \lor b) \land (a \lor \lnot b \lor \lnot c) \land (\lnot a \lor c)$\\[1ex]
+First clause is not blocked, second is blocked by both $a$ and $\lnot c$, third is blocked by $c$.
+\end{exampleblock}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item Effectiveness of BVE can be increased by interleaving it with BCE
+    \item Relationship with \href{https://doi.org/10.1007/s10817-011-9239-9}{circuit-level simplification techniques}
+    \item \textbf{Generalization: Covered Clauses}\\
+    A clause is covered if it can be \highlo{turned into a blocked clause} by adding a covered literal.
+    A literal $x$ is covered by a clause $C$, if it contains a literal $y$ such that all non-tautological resolvents of $C$ on $y$ contain $x$.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Solution Reconstruction}
+Many preprocessing techniques remove clauses or variables from a formula in a mere satisfiability-preserving way, such that the solution to the preprocessed formula might not be a solution to the original formula.\\[1ex]
+\begin{block}{Reconstruction Algorithm}
+\begin{columns}[T]
+\begin{column}{.35\linewidth}
+~\\
+Keep track of eliminated variables (BVE) and clauses (BCE) in a solution reconstruction stack $S$, and if a model is found, use it to reconstruct a solution to the original formula.
+\end{column}
+\begin{column}{.55\linewidth}
+\begin{algorithm}[H]
+\caption{Solution Reconstruction}
+\KwData{Assignment $A$, Stack $S$}
+\While {$S$ is not empty} {
+    remove the last literal-clause pair $(l,C)$ from $S$\;
+    \If {$C$ is not satisfied by $A$} {
+        $A := (A \setminus \{l = 0\}) \cup \{l = 1\}$
+    }
+}
+\BlankLine
+If variables remain unassigned in $A$, then assign them an arbitrary value.
+\end{algorithm}
+\end{column}
+\end{columns}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Recap.}
+\begin{block}{Classic Techniques}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item Subsumption and Self-subsuming Resolution
+    \item Bounded Variable Elimination
+    \item Blocked Clause Elimination
+    \item Solution Reconstruction
+\end{itemize}
+\end{block}
+\begin{block}{Next Up}
+Relationship between preprocessing techniques and gate encodings
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Relationship with Gate Encodings}
+Tseitin encoding $E$ of a gate with output $o$, function $g$, and input literals $x_1, \dots, x_n$: $$E \equiv o \leftrightarrow g(x_1, \dots, x_n)$$ 
+\vspace*{-1em}
+\begin{block}{Properties of Gate Encodings}
+Let a Tseitin encoding $E \equiv o \leftrightarrow g(x_1, \dots, x_n)$ be given, and let $A(X) := \{ T \cup \{ \overline x \mid x \in X \setminus T \} \mid T \in 2^X \}$ denote the set of all assignments to variables in $X$.\\[1ex]
+For each input assignment $I \in A(\{x_1, \dots, x_n\})$, \\[1ex]
+\begin{enumerate}\setlength{\itemsep}{1ex}
+\item there exists \highlo{at least one} output assignment $O \in \{o, \overline o\}$ such that $I \cup O \models E$ \quad (left-totality)
+\item there exists \highlo{at most one} output assignment $O \in \{o, \overline o\}$ such that $I \cup O \models E$ \quad (right-uniqueness)\\[1ex]
+\end{enumerate}
+$\bm\rightarrow$ The output is uniquely determined by the input, such that either $I, o \models E$ and $I, \overline o \not\models E$ or vice versa.
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Relationship with Gate Encodings}
+From the left-totality it follows that a Tseitin encoding $E$ is a satisfiable set of blocked clauses.\\[1em]
+\begin{block}{Left-Totality of Gate Encodings}
+Let a \highlo{Tseitin encoding $E \equiv o \leftrightarrow g(x_1, \dots, x_n)$} be given, it holds that\\[1em]
+\begin{enumerate}\setlength{\itemsep}{1ex}
+\item for \highlo{each clause $C \in E$}, either $o \in C$ or $\overline o \in C$\\[1ex]
+\textbf{Proof:} The existence of a clause $C \in E$ such that $o \not\in \vars{C}$ would contradict left-totality, because the assignment falsifiying $C$, falsifies $E$ for any assignment to $o$.
+\item and \highlo{all resolvents $R \in E_o \otimes_o E_{\overline o}$} are tautological.\\[1ex]
+\textbf{Proof:} The existence of a non-tautological resolvent $R \in E_o \otimes_o E_{\overline o}$ would contradict left-totality, because $E \models R$ and $o \not\in \vars{R}$, such that the assignment falsifying $R$, falsifies $E$ for any assignment to $o$.
+\end{enumerate}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Relationship with Gate Encodings}
+From the left-totality it follows that a Tseitin encoding $E$ is a satisfiable set of blocked clauses.\\[1em]
+\begin{example}[Tseitin encoding $E \equiv o \leftrightarrow x \land y$]
+Let a Tseitin encoding $E := \bigl\{\{ \lnot o, x \}, \{ \lnot o, y \}, \{ o, \lnot x, \lnot y \} \bigr\} \equiv o \leftrightarrow x \land y$ be given, it holds that\\[1em]
+\begin{enumerate}\setlength{\itemsep}{1ex}
+\item all resolvents in $E_o \otimes_o E_{\overline o} = \bigl\{ \{ x, \lnot x, \lnot y \}, \{ y, \lnot x, \lnot y \} \bigr\} \equiv \top$ are tautological,
+\item and Blocked Clause Elimination (BCE) would remove all clauses from $E$.\\[1ex]
+\end{enumerate}
+\end{example}~\\[-1ex]
+\textbf{Questions:}\\[1ex]
+\begin{itemize}\setlength{\itemsep}{1ex}
+\item What does BCE do to $F = \bigl\{ \{ o \} \bigr\} \cup E$?
+\item What does BCE do to $F = \bigl\{ \{ \lnot o \} \bigr\} \cup E$?
+\item What does BCE do to $F = \bigl\{ \{ q \}, \{ \lnot q, o, p \}, \{ \lnot q, \lnot o, \lnot p \} \bigr\} \cup E$?
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Relationship with Gate Encodings}
+Resolving the clauses of a gate encoding on the output literal $o$ results in a set of tautological clauses.\\[1em]
+\begin{block}{Idea: Optimized Variable Elimination for Gate Encodings $E$}
+Let a formula $F = E \cup R$ with gate clauses $E$ and remainder $R$ be given.\\
+Apply variable elimination as follows:
+\vspace*{-1ex}
+\begin{align*}
+( E_x \cup R_x) \otimes (E_{\overline x} \cup R_{\overline x}) 
+%[1ex]
+&\equiv (E_x \otimes R_{\overline x}) \cup (R_x \otimes E_{\overline x}) \cup (R_x \otimes R_{\overline x}) \cup (E_x \otimes E_{\overline x})\\[1ex]
+%
+&\equiv (E_x \otimes R_{\overline x}) \cup (R_x \otimes E_{\overline x}) \cup (R_x \otimes R_{\overline x}) \tag{$E_x \otimes E_{\overline x} \equiv \top$}\\[1ex]
+&\equiv (E_x \otimes R_{\overline x}) \cup (R_x \otimes E_{\overline x})
+\tag{$(E_x \otimes R_{\overline x}) \cup (R_x \otimes E_{\overline x}) \models R_x \otimes R_{\overline x}$}
+\end{align*}
+\end{block}~\\[-1ex]
+\textbf{Proof Idea:} Each clause $c \in R_x \otimes R_{\overline x}$, derived by resolving $c_x \in R_x$ and $c_{\overline x} \in R_{\overline x}$, can also be derived by resolving clauses in $R_{\overline x} \otimes E_x$ and $E_{\overline x} \otimes R_x$.
+\end{frame}
+
+\begin{frame}{Recap.}
+\begin{block}{Recap.}
+\begin{itemize}
+    \item Classic Preprocessing Techniques: Subsumption, Self-subsuming Resolution, Bounded Variable Elimination, Blocked Clause Elimination
+    \item Relationship between Preprocessing Techniques and Gate Encodings
+\end{itemize}
+\end{block}
+\begin{block}{Next Up}
+Propagation-based Redundancy Notions
+\end{block}
+\end{frame}
+
+\begin{frame}{Propagation-based Redundancy Notions}
+Let a formula $F$, and a literal $x$ be given.
+\begin{block}{Failed Literal Probing}
+If $F \land x \vdash_{\mathop{UP}} \bot$, then $F \models \lnot x$\\[1ex]
+$\implies$ add $\{ \lnot x \}$ to $F$
+\end{block}
+\begin{example}[Failed Literal Probing]
+Let $F := \bigl\{ \{a, b\}, \{a, \lnot b\} \bigr\}$,\\[1ex]
+then probing $\lnot a$ results in a conflict: $F \land \lnot a \vdash_{\mathop{UP}} \bot$,\\[1ex]
+such that we can deduce $F \equiv F \land a$.
+\end{example}
+\end{frame}
+    
+
+\begin{frame}{Propagation-based Redundancy Notions}
+Let a formula $F$, a clause $C \in F$, and a literal $x \in C$ be given.
+\begin{block}{Asymmetric Literal Elimination (ALE)}
+If $F \setminus C \land \overline{C \setminus \{ x \}} \vdash_{\mathop{UP}} \overline x$, then $F \models C \setminus \{ x \}$.\\[1ex]
+$\implies$ strengthen $C$ to $C \setminus \{ x \}$
+\end{block}
+\begin{example}[Asymmetric Literal Elimination (ALE)]
+Let $F := \bigl\{ \{a, b\}, \{\lnot b, \lnot c\}, \{a, c, d\} \bigr\}$,\\[1ex]
+and let $C := \{a, c, d\}$ and $x := c$,\\[1ex]
+then $\bigl\{ \{a, b\}, \{\lnot b, \lnot c\}, \{\lnot a \}, \{\lnot d\} \bigr\} \vdash_{\mathop{UP}} \lnot c$,\\[1ex]
+such that we can deduce $F \models \{a, d\}$.
+\end{example}
+$F$ can not have a model which satisfies $\{a, c, d\}$, but not $\{a, d\}$.
+\end{frame}
+    
+
+\begin{frame}{Propagation-based Redundancy Notions}
+Let a formula $F$, a clause $C \in F$, and a literal $x \in C$ be given.
+\begin{block}{Asymmetric Tautology Elimination (ATE)}
+If $F \setminus C \land \overline C \vdash_{\mathop{UP}} \bot$, then $F \models C$.\\[1ex]
+$\implies$ remove $C$ from $F$
+\end{block}
+\begin{example}[Asymmetric Tautology Elimination (ATE)]
+Let $F := \bigl\{ \{a, b, c\}, \{\lnot b, d\}, \{a, c, d\} \bigr\}$,\\[1ex]
+and let $C := \{a, c, d\}$,\\[1ex]
+then $\bigl\{ \{a, b, c\}, \{\lnot b, d\}, \{\lnot a\}, \{\lnot c\}, \{\lnot d\}\} \bigr\} \vdash_{\mathop{UP}} \bot$,\\[1ex]
+such that we can deduce $F \equiv F \setminus \{a,c,d\}$.
+\end{example}
+$\{a,c,d\}$ follows from the other clauses in $F$.
+\end{frame}
+
+
+\begin{frame}{Propagation-based Redundancy Notions}
+\begin{block}{Variants and Optimizations}~\\
+\begin{itemize}\setlength{\itemsep}{1em}
+    \item \textbf{Hidden Tautology Elimination (HTE) / Hidden Literal Elimination (HLE)}\\[1pt]
+    Restricted forms of ATE/ALE which only propagate over binary clauses.
+    \item \textbf{Distillation / Vivification}\\[1pt]
+    Interleave assignment and propagation to detect ATs / ALs early on.
+    \item \textbf{Avoidance of Redundant Propagations}\\[1pt]
+    Sort literals and clauses in a formula to simulate a trie, and reuse propagations that share the same prefix.
+    % \item \textbf{Unhiding}\footnote{\href{https://link.springer.com/chapter/10.1007/978-3-642-21581-0_17}{2011, Heule et al., Efficient CNF Simplification Based on Binary Implication Graphs}}\\[1pt] Avoid quadratic runtime of repeated unit propagation through randomized depth-first traversal of
+    the binary implication graph and application of the \emph{parenthesis theorem}.
+\end{itemize}~\\
+\end{block}
+\end{frame}
+
+\begin{frame}{Scheduling of Preprocessing Techniques}
+At a point where one technique is unable to make further progress, another technique might be applicable and even modify the problem in a way that the first technique can make further progress.\\[1ex]
+
+\begin{block}{Scheduling of Preprocessing Techniques}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item \textbf{Heuristic Limits}\\[1pt]
+    Bound the number of applications of a technique.
+    \item \textbf{Scheduling of Techniques}\\[1pt]
+    Non-trivial, benefit of techniques depends on the formula.
+    \item \textbf{Interleaving of Techniques}\\[1pt]
+    Apply techniques in a round-robin fashion.
+    \item \textbf{Inprocessing}\\[1pt]
+    Interleave search and preprocessing.
+\end{itemize}
+\end{block}
+\end{frame}
+    
+\begin{frame}{Autarkies}
+Let a formula $F$ and a partial assignment $A$ be given.\\[1ex]
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item A clause $C \in F$ is \highlo{touched} by $A$ if it contains a variable assigned in $A$
+    \item A clause $C \in F$ is \highlo{satisfied} by $A$ if it contains a literal assigned to $\true$ by $A$
+\end{itemize}
+An autarky is a partial assignment $A$ such that \highlo{all touched clauses are satisfied}.
+\begin{exampleblock}{Autarky}
+The partial assignment $A = \{ \lnot a, \lnot c \}$ is an autarky for $F := \bigl\{\{ \lnot a, b \}, \{ \lnot a, c \}, \{ a, \lnot b, \lnot c \}\bigr\}$
+\end{exampleblock}
+\begin{block}{Autarky-based Clause Removal}
+All clauses touched by an autarky can be removed.\\[1ex]
+\textbf{Edge Case:} Pure Literals and Satisfying Assignments are Autarkies\\[1ex]
+\textbf{Example Usage:} Kissat analyses assignments found by sprints of local search to find autarkies.
+\end{block}
+\end{frame}
+
+\begin{frame}{Recap.}
+\end{frame}
+
+\end{document}
