@@ -357,79 +357,6 @@ Apply variable elimination as follows:
 Each clause $c \in R_x \otimes R_{\overline x}$, derived by resolving $c_x \in R_x$ and $c_{\overline x} \in R_{\overline x}$,\\ can also be derived by resolving clauses in $R_{\overline x} \otimes E_x$ and $E_{\overline x} \otimes R_x$.
 \end{frame}
 
-\begin{frame}{Recap.}
-\begin{block}{Recap.}
-\begin{itemize}\itemsep1em
-    \item Classic Preprocessing Techniques:\\ 
-    Subsumption, Self-subsuming Resolution, Bounded Variable Elimination, Blocked Clause Elimination
-    \item Relationship between Preprocessing Techniques and Gate Encodings
-\end{itemize}
-\end{block}~\\
-\begin{block}{Next Up}
-Propagation-based Redundancy Notions
-\end{block}
-\end{frame}
-
-\begin{frame}{Propagation-based Redundancy Notions}
-Let a formula $F$, and a literal $x$ be given.\\[1ex]
-\begin{block}{Failed Literal Probing}
-If $F \land x \vdash_{\mathop{UP}} \bot$, then $F \models \lnot x$\\[1ex]
-$\implies$ add $\{ \lnot x \}$ to $F$
-\end{block}~\\
-\begin{example}[Failed Literal Probing]
-Let $F := \bigl\{ \{a, b\}, \{a, \lnot b\} \bigr\}$.\\[1ex]
-Probing with $\lnot a$ results in a conflict, i.e., $F \land \lnot a \vdash_{\mathop{UP}} \bot$.\\[1ex]
-Ergo, we can deduce $F \equiv F \land a$.
-\end{example}
-\end{frame}
-    
-
-\begin{frame}{Propagation-based Redundancy Notions}
-Let a formula $F$, a clause $C \in F$, and a literal $x \in C$ be given.~\\[1ex]
-\begin{block}{Asymmetric Literal Elimination (ALE)}
-If $F \setminus C \land \overline{C \setminus \{ x \}} \vdash_{\mathop{UP}} \overline x$, then $F \models C \setminus \{ x \}$.\\[1ex]
-$\implies$ strengthen $C$ to $C \setminus \{ x \}$
-\end{block}~\\
-%
-\begin{example}[Asymmetric Literal Elimination (ALE)]
-Let $F := \bigl\{ \{a, b\}, \{\lnot b, \lnot c\}, \{a, c, d\} \bigr\}$, $C := \{a, c, d\}$, and $x := c$.\\[1ex]
-ALE results in the following propagation: $\bigl\{ \{a, b\}, \{\lnot b, \lnot c\}, \{\lnot a \}, \{\lnot d\} \bigr\} \vdash_{\mathop{UP}} \lnot c$.\\[1ex]
-Ergo, we can deduce $F \models \{a, d\}$.
-\end{example}~\\
-$F$ can not have a model which satisfies $\{a, c, d\}$, but not $\{a, d\}$.
-\end{frame}
-    
-
-\begin{frame}{Propagation-based Redundancy Notions}
-Let a formula $F$, a clause $C \in F$, and a literal $x \in C$ be given.\\[1ex]
-\begin{block}{Asymmetric Tautology Elimination (ATE)}
-If $F \setminus C \land \overline C \vdash_{\mathop{UP}} \bot$, then $F \models C$.\\[1ex]
-$\implies$ remove $C$ from $F$
-\end{block}~\\
-%
-\begin{example}[Asymmetric Tautology Elimination (ATE)]
-Let $F := \bigl\{ \{a, b, c\}, \{\lnot b, d\}, \{a, c, d\} \bigr\}$, and $C := \{a, c, d\}$.\\[1ex]
-ATE results in the following propagation: $\bigl\{ \{a, b, c\}, \{\lnot b, d\}, \{\lnot a\}, \{\lnot c\}, \{\lnot d\} \bigr\} \vdash_{\mathop{UP}} \bot$,\\[1ex]
-Ergo, we can deduce $F \equiv F \setminus \{a,c,d\}$.
-\end{example}~\\
-$\{a,c,d\}$ follows from the other clauses in $F$.
-\end{frame}
-
-
-\begin{frame}{Propagation-based Redundancy Notions}
-\begin{block}{Variants and Optimizations}~\\
-\begin{itemize}\setlength{\itemsep}{1em}
-    \item \textbf{Hidden Tautology Elimination (HTE) / Hidden Literal Elimination (HLE)}\\[1pt]
-    Restricted forms of ATE/ALE which only propagate over binary clauses.
-    \item \textbf{Distillation / Vivification}\\[1pt]
-    Interleave assignment and propagation to detect ATs / ALs early on.
-    \item \textbf{Avoidance of Redundant Propagations}\\[1pt]
-    Sort literals and clauses in a formula to simulate a trie, and reuse propagations that share the same prefix.
-    % \item \textbf{Unhiding}\footnote{\href{https://link.springer.com/chapter/10.1007/978-3-642-21581-0_17}{2011, Heule et al., Efficient CNF Simplification Based on Binary Implication Graphs}}\\[1pt] Avoid quadratic runtime of repeated unit propagation through randomized depth-first traversal of the binary implication graph and application of the \emph{parenthesis theorem}.
-\end{itemize}~\\
-\end{block}
-\end{frame}
-
 \begin{frame}{Scheduling of Preprocessing Techniques}
 At a point where one technique is unable to make further progress, another technique might be applicable and even modify the problem in a way that the first technique can make further progress.\\[1ex]
 
@@ -453,14 +380,11 @@ At a point where one technique is unable to make further progress, another techn
     \item Classic Preprocessing Techniques:\\
     Subsumption, Self-subsuming Resolution, Bounded Variable Elimination, Blocked Clause Elimination
     \item Relationship between Preprocessing Techniques and Gate Encodings
-    \item Propagation-based Redundancy Notions:\\ 
-    Failed Literal Probing, Asymmetric Literal Elimination, Asymmetric Tautology Elimination
-    \item Variants and Optimizations of Redundancy Notions
     \item Scheduling of Preprocessing Techniques
 \end{itemize}
 \end{block}~\\
 \begin{block}{Next Session}
-    Redundancy Notions in the Context of Proof Systems
+    Propagation-based Redundancy Notions and Proof Systems
 \end{block}
 \end{frame}
 

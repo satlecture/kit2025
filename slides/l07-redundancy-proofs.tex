@@ -1,0 +1,450 @@
+\documentclass[t]{sdqbeamer}
+%\documentclass[c]{sdqbeamer}
+
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{tabulary}
+\usepackage{colortbl}
+\usepackage{tikzsymbols}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,shapes}
+\usepackage[lined,linesnumbered,ruled,noend]{algorithm2e}
+\usepackage{bm}
+
+\hypersetup{
+	colorlinks=true,
+	urlcolor=kit-orange
+}
+
+% set sdqbeamer options
+\titleimage{blender-render}
+\groupname{} % rendered at the bottom center of each slide
+\grouplogo{ae+satres}
+\selectlanguage{english}
+
+% define title etc.pp.
+\title{Practical SAT Solving}
+\subtitle{Lecture 7 \unimp{\normalfont -- Redundancy Notions and Proofs of Unsatisfiability}}
+\author{\underline{Markus Iser}, Dominik Schreiber}
+\date{June 2, 2025}
+
+% define commands
+\input{l00-commands.tex}
+
+
+\begin{document}
+
+\begin{frame}[title white horizontal, picture=logos/blender-render, kitlogo=rgb]
+	\titlepage
+\end{frame}
+
+
+\begin{frame}{Conflict-driven Clause Learning (CDCL)}
+\vspace*{-1em}
+\begin{columns}[T]
+\begin{column}{.4\linewidth}
+~\\[1em]
+\highl{Recap: Preprocessing}\\[1ex]
+\begin{itemize}\itemsep1ex
+    \item Subsumption
+    \item Self-subsuming Resolution
+    \item Bounded Variable Elimination
+    \item Blocked Clause Elimination
+    \item Relationship with Tseitin Encoding
+    \item Scheduling\\[1ex]
+    \begin{itemize}\itemsep1ex
+        \item Heuristic Bounds
+        \item Interleaving of Techinques (f.ex. Round Robin)
+        \item \highlo{Inprocessing}: Interleave with solving
+    \end{itemize}
+\end{itemize}
+\end{column}
+\begin{column}{.55\linewidth}
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \caption{CDCL(CNF Formula $F$, \&Assignment A $\leftarrow \emptyset$)}
+    
+    \SetKwFunction{preprocessing}{\highl{PREPROCESSING}}
+    \SetKwFunction{inprocessing}{\highlo{INPROCESSING}}
+    \SetKwFunction{propagation}{UNIT PROPAGATION}
+    \SetKwFunction{branching}{BRANCHING}
+    \SetKwFunction{conflictanalysis}{CONFLICT-ANALYSIS}
+    \SetKwFunction{restart}{RESTART}
+    \SetKwFunction{cleanup}{CLEANUP}
+
+    \SetKwData{UNSAT}{UNSAT}
+    \SetKwData{SAT}{SAT}
+    
+    \lIf {not \preprocessing} {
+        \Return \UNSAT
+    }
+    \BlankLine
+    \While {A is not complete} {
+        \propagation\;
+        \If {A falsifies a clause in $F$} {
+            \lIf {decision level is $0$} {
+                \Return \UNSAT
+            }
+            \Else {
+                (clause, level) $\leftarrow$ \conflictanalysis\;
+                add clause to $F$ and backtrack to level\;
+                \textbf{continue}\;
+            }
+        }
+        \lIf {\restart} {
+            backtrack to level $0$
+        }
+        \lIf {\cleanup} {
+            forget some learned clauses
+        }
+        \lIf {not \inprocessing} {
+            \Return \UNSAT
+        }
+        \branching\;
+    }
+    \Return \SAT\;
+\end{algorithm}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{Propagation-based Redundancy Notions}
+Let a formula $F$, and a literal $x$ be given.\\[1ex]
+\begin{block}{Failed Literal Probing}
+If $F \land x \vdash_{\mathop{UP}} \bot$, then $F \models \lnot x$\\[1ex]
+$\implies$ add $\{ \lnot x \}$ to $F$
+\end{block}~\\
+\begin{example}[Failed Literal Probing]
+Let $F := \bigl\{ \{a, b\}, \{a, \lnot b\} \bigr\}$.\\[1ex]
+Probing with $\lnot a$ results in a conflict, i.e., $F \land \lnot a \vdash_{\mathop{UP}} \bot$.\\[1ex]
+Ergo, we can deduce $F \equiv F \land a$.
+\end{example}
+\end{frame}
+    
+
+\begin{frame}{Propagation-based Redundancy Notions}
+Let a formula $F$, a clause $C \in F$, and a literal $x \in C$ be given.~\\[1ex]
+\begin{block}{Asymmetric Literal Elimination (ALE)}
+If $F \setminus C \land \overline{C \setminus \{ x \}} \vdash_{\mathop{UP}} \overline x$, then $F \models C \setminus \{ x \}$.\\[1ex]
+$\implies$ strengthen $C$ to $C \setminus \{ x \}$
+\end{block}~\\
+%
+\begin{example}[Asymmetric Literal Elimination (ALE)]
+Let $F := \bigl\{ \{a, b\}, \{\lnot b, \lnot c\}, \{a, c, d\} \bigr\}$, $C := \{a, c, d\}$, and $x := c$.\\[1ex]
+ALE results in the following propagation: $\bigl\{ \{a, b\}, \{\lnot b, \lnot c\}, \{\lnot a \}, \{\lnot d\} \bigr\} \vdash_{\mathop{UP}} \lnot c$.\\[1ex]
+Ergo, we can deduce $F \models \{a, d\}$.
+\end{example}~\\
+$F$ can not have a model which satisfies $\{a, c, d\}$, but not $\{a, d\}$.
+\end{frame}
+    
+
+\begin{frame}{Propagation-based Redundancy Notions}
+Let a formula $F$, a clause $C \in F$, and a literal $x \in C$ be given.\\[1ex]
+\begin{block}{Asymmetric Tautology Elimination (ATE)}
+If $F \setminus C \land \overline C \vdash_{\mathop{UP}} \bot$, then $F \models C$.\\[1ex]
+$\implies$ remove $C$ from $F$
+\end{block}~\\
+%
+\begin{example}[Asymmetric Tautology Elimination (ATE)]
+Let $F := \bigl\{ \{a, b, c\}, \{\lnot b, d\}, \{a, c, d\} \bigr\}$, and $C := \{a, c, d\}$.\\[1ex]
+ATE results in the following propagation: $\bigl\{ \{a, b, c\}, \{\lnot b, d\}, \{\lnot a\}, \{\lnot c\}, \{\lnot d\} \bigr\} \vdash_{\mathop{UP}} \bot$,\\[1ex]
+Ergo, we can deduce $F \equiv F \setminus \{a,c,d\}$.
+\end{example}~\\
+$\{a,c,d\}$ follows from the other clauses in $F$.
+\end{frame}
+
+
+\begin{frame}{Propagation-based Redundancy Notions}
+\begin{block}{Variants: Efficient Algorithms and Implementations}~\\
+\begin{itemize}\setlength{\itemsep}{1em}
+    \item \textbf{Hidden Tautology Elimination (HTE) / Hidden Literal Elimination (HLE)}\\[3pt]
+    Restricted forms of ATE/ALE which only propagate over binary clauses.\\[3pt]
+    Efficient HLE algorithm based on randomized DFS and application of paranthesis theorem: \textbf{Unhiding}%
+    \footnote{\href{https://link.springer.com/chapter/10.1007/978-3-642-21581-0_17}{2011, Heule et al., Efficient CNF Simplification Based on Binary Implication Graphs}}
+    \item \textbf{Distillation / Vivification}\\[3pt]
+    Interleave assignment and propagation to detect ATs / ALs early on.
+    \item \textbf{Avoidance of Redundant Propagations}\\[3pt]
+    Sort literals and clauses in a formula to simulate a trie, and reuse propagations that share the same prefix.
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Recap.}
+\begin{block}{Propagation-based Preprocessing}
+    \begin{itemize}\setlength{\itemsep}{1em}
+        \item Propagation-based Redundancy Notions:\\[1ex]
+        Failed Literal Probing, Asymmetric Literal Elimination, Asymmetric Tautology Elimination
+        \item Efficient Implementation of Propagation-based Redundancy Removal
+        \item Autarkies: Partial assignments that satisfy all touched clauses
+    \end{itemize}
+\end{block}
+\begin{block}{Next Up}
+    Proofs of Unsatisfiability
+\end{block}
+\end{frame}
+
+\begin{frame}{Relationship with Proof Checking}
+\begin{block}{Generalizations of Blocked Clauses}~\\
+\begin{itemize}\setlength{\itemsep}{1em}
+    \item \textbf{Reverse Unit Propagation (RUP)}\\[1pt]
+    A clause has the property RUP if and only if it is an Asymmetric Tautology (AT).\\[1ex]
+    In CDCL, learned clauses are RUP at the moment of their learning.
+    \item \textbf{Resolution Asymetric Tautologies (RATs)}\\[1pt]
+    A clause $C$ is a RAT in a formula $F$ if it contains a literal $x$ such that\\
+    \highlo{each resolvent in $C \otimes_x F_{\overline x}$ is an asymmetric tautology}.\\[1ex]
+    Blocked Sets in particular are RATs.
+\end{itemize}
+~\\
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Proof Checking}
+\vspace*{-2em}
+SAT Solvers are complex software systems, and bugs are not uncommon.
+\begin{block}{Trustworthiness of SAT Solvers}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item For satisfiable instances, SAT solvers can output the found assignment
+    \item For unsatisfiable instances, SAT solvers can output a proof of unsatisfiability
+    \item Both can be checked independently from the solver by much simpler, and \textbf{formally verified program}.
+\end{itemize}
+\end{block}
+\begin{example}[Applications of Proof Checking]
+Unsatisfiability of a formula might proof important properties of the problem at hand, such as:\\
+\begin{itemize}
+    \item Absence of certain bugs in a hardware design or software verification, 
+    \item Optimality of a certain makespan in planning
+    \item etc. pp.
+\end{itemize} 
+\end{example}
+\begin{block}{Feasibility of Proof Checking}
+    RAT proof checking is polynomial in the proof-size, but proof-size is worst-case exponential in the formula-size.\\[1ex]
+    \textbf{Pragmatics:}  if we could generate it, we can also check it.
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Proof Systems: Motivating Example}
+\begin{example}[Mutilated Chessboards]
+Let a chessboard be given with two diagonally opposite corners removed.\\
+Is it possible to cover the remaining board with dominoes?\\[1ex]
+\visible<2>{\textbf{Human:} No, because each dominoe covers exactly one black and one white field, and there are two more black fields than white fields.}
+\begin{center}
+\includegraphics[width=.2\linewidth]{figures/l07/mcb0.png}
+\end{center}
+\end{example}
+\end{frame}
+
+
+\begin{frame}{Proof Systems: Motivating Example}
+\begin{example}[Mutilated Chessboards]
+Let a chessboard be given with two diagonally opposite corners removed.\\
+Is it possible to cover the remaining board with dominoes?\\[1ex]
+\textbf{SAT Solver:} Let's try and learn.\\
+\begin{tabularx}{\linewidth}{XXX}
+    \includegraphics[width=.8\linewidth]{figures/l07/mcb1.png} &
+    \includegraphics[width=.8\linewidth]{figures/l07/mcb2.png} &
+    \includegraphics[width=.8\linewidth]{figures/l07/mcb3.png}\\
+    \hline
+    Impasse Detected & $\rightarrow$ Resolution & $\rightarrow$ More powerful Proof-system%
+    \footnote{Example taken from SAT lecture of \href{https://www.cs.cmu.edu/~mheule/}{Marijn J.H. Heule}}
+\end{tabularx}
+\end{example}
+\end{frame}
+
+
+\begin{frame}{Proof Complexity}
+Proof complexity is the study of the size of proofs in different proof systems.\\[1ex]
+\begin{block}{Relationship with SAT Solving}
+\begin{itemize}\setlength{\itemsep}{1ex}
+\item Static analysis without algorithmic considerations
+\item Questions of automizability not addressed
+\item Lower bounds on proof size tell us how good a SAT solver can be in the best case 
+\item Upper bounds on proof size tell us how good a SAT solver should be
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Resolution}
+\begin{block}{Resolution}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item Preserves equivalence
+    \item CDCL is as powerful as General Resolution
+    \item Well-known Exponential Lower Bounds:\\[1ex]
+    For example, proofs of unsatisfiabilty of Pigeon Hole formulas,\\ 
+    are necessarily of exponential length in the resolution proof system (Haken 1985)
+    \item Heuristic for Finding Resolution Proofs: CDCL
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Blocked Clauses}
+\begin{block}{Extended Resolution (Tseitin 1966)}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item Preserves satisfiability
+    \item Extended Resolution:\\
+    incorporate extension rule $x \leftrightarrow a \land b$ for some $a,b$ in formula and a new variable $x$
+    \item No Lower Bounds known
+    \item (Cook 1967) polynomial sized ER proof for PH formulas
+\end{itemize}
+\end{block}
+\begin{block}{Blocked Clauses (Kullmann 1999)}
+\begin{itemize}\setlength{\itemsep}{1ex}
+    \item Preserves satisfiability
+    \item Generalization of ER Proof systems
+    \item Allows the addition and removal of blocked clauses
+    \item No Lower Bounds known
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Stronger Proof-Systems without new Variables}
+\vspace*{-1em}
+Can we get stronger without introducing new variables?\\
+In the following: $C$ is redundant with respect to $F$ means that $F$ and $F \land C$ are equisatisfiable.
+\begin{example}[Implication-based Redundancy]
+Given $F := \{\{x, y, z\}, \{\lnot x, y, z\}, \{x, \lnot y, z\}, \{\lnot x, \lnot y, z\}\}$, and $G := \{\{z\}\}$, \\
+$G$ is at least as satisfiable as $F$ since $F \models G$
+\end{example}
+%
+\begin{block}{Implication-based Redundancy Notion}
+A clause $C$ is redundant w.r.t. formula $F$ iff there exists an assignment $\omega$ such that $F \land \lnot C \models (F \land C)|_\omega$%
+\footnote{Given an assignment $\alpha$, the formula $F|_\alpha$ is the formula after removing from $F$ all clauses that are satisfied and all literals falsified by $\alpha$}
+~\\[1ex]
+\textbf{In other words:} Potential models of $F$ falsifiying $C$ are still models of $F$ and $C$ modulo an assignment $\omega$
+\end{block}
+%
+\begin{block}{In Practice: Propagation Redundancy}
+Approximate $F \land \lnot C \models (F \land C)|_\omega$ with unit propagation: $F \land \lnot C \vdash_{UP} (F \land C)|_\omega$\\[1ex]
+$\rightarrow$ Efficiently Checkable Proofs: \href{https://cakeml.org/tacas21.pdf}{Tan et al., Verified Propagation Redundancy Checking in CakeML, TACAS 21}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Theorem: Clause Redundancy via Implication}
+\vspace*{-2ex}
+Let $F$ be a formula, $C$ a non-empty clause, and $\alpha$ the assignment blocked by $C$.\\
+$C$ is redundant with respect to $F$ \emph{if and only if} there exists an assignment $\omega$ such that $\omega$ satisfies $C$ and $F|_\alpha \models F|_\omega$.%
+\footnote{\href{https://doi.org/10.1007/s10817-019-09516-0}{Heule et al., 2019, Strong Extension-Free Proof Systems}}
+
+\only<1>{
+\begin{block}{\textbf{Proof ``only if''}}
+\highl{Assume $F$ and $F \land C$ are equisatisfiable.} \highlo{Show that there exists an $\omega$ satisfying $C$ and $F|_\alpha \models F|_\omega$.}\\[1ex]
+If $F|_\alpha$ is unsatisfiable, then the semantic implication trivially holds.\\[1ex]
+Assume now that $F|_\alpha$ is satisfiable, implying that F is satisfiable.\\[1ex]
+Since $F$ and $F \land C$ are equisatisfiable, there exists an assignment $\omega$ that satisfies both $F$ and $C$.\\[1ex]
+Since $\omega$ satisfies F, it holds that $F|_\omega = \emptyset$ and so $F|_\alpha \models F|_\omega$.
+\end{block}
+}
+
+\only<2>{
+\begin{block}{\textbf{Proof ``if''}}
+\highl{Assume there exists an assignment $\omega$ satisfying $C$ and $F|_\alpha \models F|_\omega$.} \highlo{Show that $F$ and $F \land C$ are equisatisfiable.}\\[1ex]
+Let $\gamma$ be a (total) assignment that satisfies $F$ and falsifies $C$.\\
+Since $\gamma$ satisfies $F$, it must satisfy $F|_\alpha$ and since $F|_\alpha \models F|_\omega$, it must also satisfy $F|_\omega$.\\[1ex]
+Now, we can turn $\gamma$ into a satisfying assignment $\gamma'$ for $F \land C$ as follows:\\
+% As $\gamma$ falsifies $C$, it coincides with $\alpha$ on $\vars{C}$.\\
+$$
+\gamma'(x) = \begin{cases} 
+    \omega(x) & \text{if } x \in \vars{\omega}\\ 
+    \gamma(x) & \text{otherwise}
+\end{cases}
+$$
+Since $\omega$ satisfies $C$, $\gamma'$ satisfies $C$.\\[1ex]
+Since $\gamma$ satisfies $F|_\omega$, and $\vars{F|_\omega} \subseteq \vars{\gamma} \setminus \vars{\omega}$, $\gamma'$ satisfies $F$.\\[1ex]
+$\Rightarrow$ $\gamma'$ satisfies $F \land C$.
+\end{block}
+}
+\end{frame}
+
+
+\begin{frame}{Autarkies}
+\vspace*{-2ex}
+\begin{block}{Autarky}
+    Let a formula $F$ and a partial assignment $A$ be given. A clause $C \in F$ is \dots \\[1ex]
+    \begin{itemize}\setlength{\itemsep}{1ex}
+        \item \dots \highlo{touched} by $A$ if it contains a variable assigned in $A$
+        \item \dots \highlo{satisfied} by $A$ if it contains a literal assigned to $\true$ by $A$
+    \end{itemize}~\\[-1ex]
+    An autarky is a partial assignment $A$ such that \highlo{all touched clauses are satisfied}.
+\end{block}
+%
+Let $\alpha$ be an autarky of $F$. Then, $F$ and $F|_\alpha$ are equisatisfiable.%
+\footnote{The notion of \emph{autark assignments} dates back to \href{https://doi.org/10.1016/0166-218X(85)90050-2}{Monien and Speckenmeyer, Solving satisfiability in less than 2\({}^{\mbox{n}}\) steps, 1985}}\\[3pt]
+$\Rightarrow$ All clauses touched by an autarky can be removed.\\[1em]
+%
+\textbf{Edge Cases:} Pure Literals and Satisfying Assignments are Autarkies\\[1ex]
+\textbf{Application in Inprocessing:} Kissat analyses assignments found by sprints of local search to find autarkies.\\[1em]
+%
+\begin{exampleblock}{Example}
+    The partial assignment $A = \{ \lnot a, \lnot c \}$ is an autarky for $F := \bigl\{\{ \lnot a, b \}, \{ b, \lnot c \}, \{ a, \lnot b, \lnot c \}\bigr\}$
+\end{exampleblock}
+\end{frame}
+
+
+\begin{frame}{Pruning Branches with Conditional Autarkies}
+\begin{block}{Conditional Autarkies}
+An assignment $\alpha = \alpha_{con} \cup \alpha_{aut}$ is a conditional autarky of $F$ if $\alpha_{aut}$ is an autarky of $F|_{\alpha_{con}}$\\[1ex]
+Then $F$ and $F \land (\alpha_{con} \rightarrow \alpha_{aut})$ are equisatisfiable.\\[1ex]
+\end{block}
+\begin{example}[Pruning Branches with a Conditional Autarky]
+Let $F := \bigl\{\{x, y\}, \{x, \lnot y\}, \{\lnot y, \lnot z\}\bigr\}$, and let $\alpha_{con} = \{x\}$ and $\alpha_{aut} = \{\lnot y\}$.\\[1ex]
+Then $F|_{\alpha_{con}} = \bigl\{\{\lnot y, \lnot z\}\bigr\}$ and $\alpha_{aut} = \{\lnot y\}$ is an autarky of $F|_{\alpha_{con}}$, such that $\{x\} \cup \{\lnot y\}$ is a conditional autarky of $F$.\\[1ex]
+We can thus learn the clause $\{\lnot x, \lnot y\}$.
+\end{example}
+\end{frame}
+
+
+\begin{frame}{Satisfaction Driven Clause Learning (SDCL)}
+\textbf{Idea:} Also learn clauses if no conflict is detected, but a positive reduct is satisfiable.\\[1ex]
+
+\begin{block}{Positive Reduct}
+Let a formula $F$ and a partial, non-conflicting assignment $\alpha$ be given.\\[1ex]
+The positive reduct $p(F, \alpha)$ is the formula that contains all clauses of $F$ satisfied by $\alpha$ and a clause $C := \lnot \alpha$.\\[1ex]
+A satisfying assignment $\omega$ of the positive reduct $p(F,\alpha)$ is a conditional autarky of $F$.\\[1ex]
+$\Rightarrow$ if the positive reduct is satisfiable, then the branch $\alpha$ can be pruned.
+\end{block}~\\
+\textbf{Key Idea of SDCL:}\\[1ex]
+While solving a formula, check the positive reducts of current assignments $\alpha$ for satisfiability.\\[1ex]
+If $p(F, \alpha)$ is satisfiable, prune the branch $\alpha$.\\[1ex]
+Positive reducts are typically very easy to solve.%
+\footnote{\href{https://doi.org/10.1007/978-3-319-70389-3_12}{Heule et al., 2017, PRuning Through Satisfaction}}
+\end{frame}
+
+
+\begin{frame}{From Modern to ``Post-modern'' SAT Solving}
+Problem: Automizability, how to find such short proofs?~\\[1ex]
+\begin{block}{Solving the Problem of Automizability: Practical Approaches}
+\begin{itemize}\setlength{\itemsep}{1em}
+\item \textbf{Resolution}: Clause Learning\\[1ex]
+$\bm\rightarrow$ \emph{any classic CDCL implementation}
+\item \textbf{Extended Resolution}: Structural Boundend Variable Addiction (SBVA).\\[1ex]
+$\bm\rightarrow$ \texttt{SBVA-CaDiCaL}: Winner of SAT Competition 2023
+\item \textbf{PReLearning}: Preprocessing adds specific Propagation Redundant (PR) clauses\\[1ex]
+$\bm\rightarrow$ \texttt{KissatMAB-Prop}: Winner of SAT Competition 2023 on UNSAT instances
+\item \textbf{Symmetry Breaking Predicates}: Exclusion of Symmetric Solutions\\[1ex]
+$\bm\rightarrow$ \texttt{BreakId-Kissat}: Special Price at SAT Competition 2023
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Recap.}
+\begin{block}{Recap.}
+\begin{itemize}\setlength{\itemsep}{1em}
+    \item Propagation-based Redundancy Notions
+    \item Proof Systems: Resolution, Extended Resolution, Blocked Clauses, Implication-based Redundancy
+    \item Autarkies, Conditional Autarkies, and Satisfaction Driven Clause Learning (SDCL)
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{document}
