@@ -17,7 +17,7 @@
 \input{../slides/l00-commands.tex}
 
 \begin{document}
-\exhead{2}{2025-05-20}{2024-06-03}
+\exhead{3}{2024-06-03}{2024-06-17}
 
 \newcommand{\statetilled}{T}
 \newcommand{\statetobetilled}{$+$}
@@ -25,12 +25,19 @@
 
 
 \section{Competition: Autarkies ($7 (+7)$ Points)}
-Write an anytime algorithm that computes the maximal-size autarky (in terms of the number of satisfied clauses) for a given CNF formula.
-The algorithm should output the set of literals representing the autarky as soon as possible, followed by improved sets iteratively.
-Use the specified SAT competition output format for partial (or complete) solutions.
-Each solution should be output on a single line starting with ``v~'' followed by literals separated by spaces.
-After $k$ minutes, we will interrupt your algorithm and check the last output line, which should represent the best autarky yet.
-We will test its quality by computing the number of clauses satisfied by the autarky.
+Write an anytime algorithm that computes a maximal autarky for a given formula, i.e., an autarky that satisfies as many clauses as possible.
+The tool should accept a DIMACS file path as input and, as soon as possible, output a set of literals representing an autarky. 
+Then, it should output improved sets iteratively.
+For each autarky, use a single line that begins with "v~" and ends with a zero, with space-separated literals of the autarky in between. This format is similar to the SAT Competition Solution Output Format [1].\\
+
+\noindent
+We will run your submission on DIMACS files and evaluate the quality of the solutions found within a set time limit.
+We will stop each run after $k$ minutes.
+Then, we will check the last output line to see if it contains a valid autarky and compute the number of clauses satisfied by the autarky.
+The solution that finds the best autarkies on average will win the competition.\\
+
+\noindent
+[1] \textbf{Output Format:} \url{https://satcompetition.github.io/2025/output.html}
 
 
 \section{Variable Elimination ($3$ Points)}
@@ -47,7 +54,7 @@ Let the formula $S$ with gate encodings $E_1$ and $E_2$ be given.
 Apply variable elimination for gates for variables $a$ and $r$.
 Give the clause sets after each elimination step.
 Try the following two strategies.
-\vspace*{-1ex}
+
 \begin{enumerate}\setlength{\itemsep}{0pt}
 \item Eliminate variable $a$ first, and then $r$ if possible.
 \item Eliminate variable $r$ first, and then $a$ if possible.
@@ -63,7 +70,7 @@ S = \bigl\{ \underbrace{\{ \lnot x, \lnot y, a \}, \{ x, \lnot a \}, \{ y, \lnot
 \section{Blocked Clauses ($3\times 3$ Points)}
 If Blocked Clause Elimination (BCE) reduces a formula $F$ to the empty formula then $F$ is called a blocked set.
 Prove the following statements.
-\vspace*{-1ex}
+
 \begin{enumerate}\setlength{\itemsep}{0pt}
 	\item Any formula $F$ can be partitioned into two blocked sets $S$ and $L$ such that $F = S\cup L$.
     Design a linear algorithm that produces $L$ and $S$ from $F$.
