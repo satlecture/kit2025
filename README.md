@@ -24,8 +24,8 @@ See also [the page from last year](https://github.com/satlecture/kit2024).
 * **Monday, May 19**: [L5 - Efficient Unit Propagation, Clause Forgetting, Community Structure, VSIDS](slides/l05-cdcl.pdf) _[MI]_
 * **Monday, May 26**: [L6 - Preprocessing and Propagation-based Redundancy](slides/l06-preprocessing.pdf) _[MI]_
 * **Monday, June 2**: [L7 - Redundancy and Proof Systems](slides/l07-redundancy-proofs.pdf) _[MI]_
-* **Monday, June 16**: L8 - Parallel SAT Solving: Search space partitioning, Portfolios, Clause sharing, massively parallel basics _[DS]_
-* **Monday, June 23**: L9 - Frontiers of distributed SAT solving _[DS]_
+* **Monday, June 16**: [L8 - Parallel SAT Solving: Search space partitioning, Portfolios, Clause sharing, massively parallel basics](slides/l08-parallel.pdf) _[DS]_
+* **Monday, June 23**: [L9 - Frontiers of distributed SAT solving](slides/l08-parallel.pdf) _[DS]_
 * **Monday, June 30**: L10 - Pragmatics of proofs of unsatisfiability, parallel proof & distributed technology _[DS]_
 * **Monday, July 7**: L11 - Applications 1: Planning, model checking _[DS]_
 * **Monday, July 14**: L12 - Applications 2: Selected highlights _[DS]_
