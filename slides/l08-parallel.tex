@@ -1,4 +1,4 @@
-\documentclass[t]{sdqbeamer}
+\documentclass[t,english]{sdqbeamer}
 %\documentclass[c]{sdqbeamer}
 
 \usepackage{listings}
@@ -12,7 +12,8 @@
 
 \hypersetup{
 	colorlinks=true,
-	urlcolor=kit-green
+	urlcolor=kit-green,
+	citecolor=mygray
 }
 
 % set sdqbeamer options
@@ -29,6 +30,12 @@
 
 % define commands
 \input{l00-commands.tex}
+
+%\usepackage[english]{babel}
+\usepackage[citestyle=numeric,bibstyle=numeric,hyperref,backend=biber,language=auto]{biblatex}
+\addbibresource{references.bib}
+\bibhang1em
+\setbeamertemplate{navigation symbols}{}
 
 \setlength{\itemsep}{1em}
 
@@ -65,7 +72,7 @@
 
 \begin{frame}{Parallel Solving: An analogy}
 	\begin{minipage}{0.5\textwidth}
-		\begin{blueblock}{The Assembly of Nerds}
+		\begin{blueblock}{The Assembly of Nerds~\cite{schreiber2024mallobsat}}
 			\begin{itemize}
 				\item Complex and large \highl{logic puzzle}
 				\item \highl{$n$ puzzle experts} at your disposition\\
@@ -106,7 +113,7 @@
 
 \begin{frame}{Explicit Partitioning}
 	
-	\textbf{Böhm \& Speckenmeyer (1994)}: 1st Parallel DPLL Implementation\\[3mm]
+	\textbf{Böhm \& Speckenmeyer (1994-1996)}~\cite{bohm1996fast}: 1st Parallel DPLL Implementation\\[3mm]
 	
 	\begin{blueblock}{Explicit Load Balancing}
 		\begin{itemize}
@@ -125,7 +132,7 @@
 
 \begin{frame}{Explicit Partitioning}
 	
-	``\textbf{PSATO}: a Distributed Propositional Prover and its Application to Quasigroup Problems'', Zhang et al., 1996\\[3mm]
+	``\textbf{PSATO}: a Distributed Propositional Prover and its Application to Quasigroup Problems'', Zhang et al. (1996)~\cite{zhang1996psato}\\[3mm]
 	
 	\begin{blueblock}{Centralized leader-worker architecture}
 		\begin{itemize}
@@ -156,20 +163,20 @@
 
 \begin{frame}{Explicit Partitioning Solvers}
 	
-	\begin{blueblock}{{SATZ} (Jurkowiak et al., 2001): \emph{Work stealing} for workload balancing}
+	\begin{blueblock}{{SATZ} (Jurkowiak et al., 2001)~\cite{jurkowiak2001parallelizing}: \emph{Work stealing} for workload balancing}
 		\begin{itemize}
 			\item An idle worker \highl{requests work} from the leader
 			\item The leader \highl{splits the work} of the most loaded worker
 			\item The idle worker and most loaded worker get the parts
 		\end{itemize}
 	\end{blueblock}
-	\begin{blueblock}{PaSAT (Blochinger et al., 2001)} 
+	\begin{blueblock}{PaSAT (Blochinger et al., 2001-2003)~\cite{blochinger2003parallel}} 
 		\begin{itemize}
 			\item First parallel CDCL with \highl{clause sharing}
 			\item Similar to PSATO/SATZ: leader/worker, guiding path, work stealing
 		\end{itemize}
 	\end{blueblock}
-	\begin{blueblock}{ySAT (Feldman et al., 2004)} 
+	\begin{blueblock}{ySAT (Feldman et al., 2004)~\cite{feldman2005parallel}}
 		\begin{itemize}
 			\item First \highl{shared-memory parallel} solver
 			\item Multi-core processors started to be popular
@@ -186,7 +193,7 @@
 	%	\end{center}
 %\end{frame}
 
-\begin{frame}{Problems with Partitioning}
+\begin{frame}{Problems with Partitioning~\cite{schulz2010cooperate}}
 	\begin{minipage}{0.4\textwidth}
 		\centering
 		\only<1>{\includegraphics[width=0.8\textwidth,trim=1mm 1mm 1mm 1mm,clip,page=1]{figures/l08/formula-split.pdf}}%
@@ -220,7 +227,7 @@
 \end{frame}
 
 \begin{frame}{Cube and Conquer}
-	\begin{blueblock}{The Cube\&Conquer paradigm (Heule \& Biere, 2011)}
+	\begin{blueblock}{The Cube\&Conquer paradigm (Heule \& Biere, 2011)~\cite{heule2011cube}}
 		Generate a large amount (\highl{millions}) of \highl{partial assignments} (``\textbf{cubes}'')
 		and \highl{randomly assign} them to workers.		
 	\end{blueblock}
@@ -235,10 +242,10 @@
 		\vspace*{1mm}
 		\item State-of-the-art for \highl{hard combinatorial problems}
 		\begin{itemize}
-			\item Used to solve the ``Pythagorean Triples'' problem ($\sim$200TB proof)
-			\item ... or more recently ``Schur Number 5'' ($\sim$2PB proof)
+			\item Used to solve the ``Pythagorean Triples'' problem ($\sim$200TB proof)~\cite{heule2016solving}
+			\item ... or more recently ``Schur Number 5'' ($\sim$2PB proof)~\cite{heule2018schur}
 		\end{itemize}
-		\item Examples: March (Heule) + iLingeling (Biere) introduced in 2011; Treengeling (Biere)
+		\item Examples: March (Heule) + iLingeling (Biere) introduced in 2011; Treengeling (Biere)~\cite{biere2013lingeling}
 	\end{itemize}
 \end{frame}
 
@@ -279,9 +286,9 @@
 	\begin{itemize}
 		\item On idealized hardware, we \highl{``select'' best sequential solver} for each instance
 	\end{itemize}
-	\vspace*{0.2cm}
+	\vspace*{0.5cm}
 	\pause
-	\begin{blueblock}{Parallel speedup}
+	\begin{blueblock}{Parallel speedup~\cite{sanders2019sequential}}
 		Given parallel algorithm $P$ and input $x$, the \highl{speedup} of $P$ is defined as $s_P(x) = T_Q(x) / T_P(x)$\\
 		where $Q$ is the \highl{best available sequential algorithm}.
 	\end{blueblock}
@@ -294,7 +301,7 @@
 \end{frame}
 
 \begin{frame}{Pure SAT Portfolios}
-	\begin{blueblock}{ppfolio: Winner of Parallel Track in the 2011 SAT Competition}
+	\begin{blueblock}{ppfolio: Winner of Parallel Track in the 2011 SAT Competition~\cite{roussel2012description}}
 		\begin{itemize}
 			\item Just a bash script combining the \highl{best sequential solvers from 2010}:\\
 			\texttt{\~{}\$ ./solver1 f.cnf \& ./solver2 f.cnf \& ./solver3 f.cnf \& ./solver4 f.cnf}
@@ -365,7 +372,7 @@
 
 \begin{frame}{Early Clause Sharing Portfolios}
 	
-	\begin{blueblock}{ManySAT (Hamadi, Jabbour, and Sais 2009)}
+	\begin{blueblock}{ManySAT (Hamadi, Jabbour, and Sais 2009)~\cite{hamadi2010manysat}}
 		\begin{itemize}
 			\item Hand-crafted diversification of \highlo{four solver configurations}\\
 			--- Restart policy, variable + polarity selection heuristic, \ldots
@@ -373,7 +380,7 @@
 		\end{itemize}
 	\end{blueblock}
 	\pause
-	\begin{blueblock}{Plingeling (Biere 2010)}
+	\begin{blueblock}{Plingeling (Biere 2010)~\cite{biere2010lingeling}}
 		\begin{itemize}
 			\item Portfolio over \highl{Lingeling configurations} (shared-memory parallelism)
 			\item Lazy exchange of information over ``boss thread''\\
@@ -412,7 +419,7 @@
 			\item Diminishing returns due to \highlo{exhausted diversification} of solvers
 			\pause
 			\vspace*{1mm}
-			\item Some exchange schemes are \highlo{conceptually not scalable}
+			\item Some exchange schemes are \highlo{conceptually not scalable}~\cite{ehlers2014communication}
 			\begin{itemize}
 				\item ``\highlo{Star graph}'': Master process collects, serves all exported clauses
 				\item \highlo{Na{\"i}ve (quadratic) all-to-all exchange} of clauses
@@ -427,7 +434,7 @@
 \end{frame}
 
 \begin{frame}{Massively parallel SAT portfolio}
-	\begin{blueblock}{HordeSat (Balyo, Sanders, Sinz 2015)}
+	\begin{blueblock}{HordeSat (Balyo, Sanders, Sinz 2015)~\cite{balyo2015hordesat}}
 		\begin{itemize}
 			\item \highl{Decentralization}: No single leader node / process
 			\item \highl{Two-level (``hybrid'') parallelization}\\
@@ -453,7 +460,7 @@
 
 \begin{frame}{Clause Exchange in HordeSat}
 	\vspace*{-1cm}
-	\begin{minipage}{0.5\textwidth}
+	\begin{minipage}{0.51\textwidth}
 		\begin{blueblock}{HordeSat's sharing logic}
 			\vspace*{1.5mm}
 			\begin{itemize}
@@ -487,7 +494,7 @@
 		\end{itemize}
 		}
 	\end{minipage}\quad\quad%
-	\begin{minipage}{0.45\textwidth}
+	\begin{minipage}{0.44\textwidth}
 		\centering
 		\uncover<2->{
 		\includegraphics[width=\textwidth]{figures/l08/clause-sharing-horde.pdf}
@@ -518,7 +525,7 @@
 	\end{minipage}%
 	\begin{minipage}{0.5\textwidth}
 		\ \includegraphics[width=1.05\textwidth]{figures/l08/hordescaling.pdf}\\
-		\centering \unimp{Data extracted from HordeSat paper}
+		\centering \unimp{Data extracted from HordeSat paper~\cite{balyo2015hordesat}}
 	\end{minipage}%
 \end{frame}
 
@@ -533,9 +540,9 @@
 	\begin{blueblock}{Result: Mallob}
 		Mallob is a \highl{platform for SAT solving} (\emph{and other NP-hard problems}) with:
 		\begin{itemize}
-			\item multi-user, \highl{on-demand}, malleable scheduling and solving of \highl{many problems at once}
-			\item distributed SAT engine \textbf{MallobSat}: the HordeSat paradigm \highl{re-engineered and made efficient}
-			\item state-of-the-art SAT performance \highl{from dozens to thousands of cores}
+			\item multi-user, \highl{on-demand}, malleable scheduling and solving of \highl{many problems at once}~\cite{sanders2022decentralized}
+			\item distributed SAT engine \textbf{MallobSat}: the HordeSat paradigm \highl{re-engineered and made efficient}~\cite{schreiber2021scalable}
+			\item state-of-the-art SAT performance \highl{from dozens to thousands of cores}~\cite{schreiber2024mallobsat}
 		\end{itemize}
 	\end{blueblock}
 	\vspace*{7mm}
@@ -565,7 +572,7 @@
 %\end{frame}
 
 
-\begin{frame}{Design Decisions of \textsc{MallobSat}}
+\begin{frame}{Design Decisions of \textsc{MallobSat}~\cite{schreiber2024mallobsat}}
 	\begin{minipage}{0.45\textwidth}
 		\begin{itemize}
 			\item \textbf{Fundament:} \textsc{HordeSat}\\
@@ -596,9 +603,9 @@
 	\end{minipage}%
 \end{frame}
 
-\begin{frame}{Clause Exchange in Mallob}
+\begin{frame}{Clause Exchange in Mallob~\cite{schreiber2024mallobsat}}
 	\begin{minipage}{0.43\textwidth}
-		\textbf{Custom collective operation} \unimp{[SAT'21]}
+		\textbf{Custom collective operation}
 		\begin{itemize}
 			\item Aggregate information along\\
 			\highl{binary tree of processors}
@@ -634,14 +641,14 @@
 			$S$ has \highl{received or produced} $c$ before (recently).
 		\end{blueblock}
 		\vspace*{0.1cm}
-		\textbf{Previously:} \unimp{[HordeSat] [SAT'21]}
+		\textbf{Previously:}~\cite{balyo2015hordesat,schreiber2021scalable}
 		\begin{itemize}
 			\item Bloom filters: \highl{fixed size}, risk of \highlo{false positives}
 			%\item Option for periodic clearing of filters
 		\end{itemize}
 		\vspace*{0.1cm}
 		\pause
-		\textbf{Mallob'22+:} \highl{Exact distributed filter} \unimp{[ISC'22]}
+		\textbf{Mallob'22+:} \highl{Exact distributed filter}~\cite{schreiber2024mallobsat}
 		\begin{itemize}
 			\item Process $p$ remembers clauses \highl{it exported itself}\\
 			and \highl{tags their producing solver(s)}
@@ -658,7 +665,7 @@
 	\end{minipage}
 \end{frame}
 
-\begin{frame}{Enforcing a Sharing Volume}
+\begin{frame}{Enforcing a Sharing Volume~\cite{schreiber2024mallobsat}}
 	
 	\vspace*{-7mm}
 	We want to share $L$ literals per sharing but may only get $L' < L$ successfully shared literals. \highlo{Why?}
@@ -706,7 +713,7 @@
 		\end{itemize}
 		\vspace{0.3cm}
 		\pause
-		Sensible approach: \highl{Increment each LBD before import}
+		Possible approach: \highl{Increment each LBD before import}~\cite{schreiber2024mallobsat}
 		\begin{itemize}
 			\item Maintains \highl{LBD-based prioritization} of clauses
 			\item Solver keeps \highl{more control} over its \highl{LBD-2-clauses}
@@ -715,7 +722,7 @@
 		\vspace{0.3cm}
 		\uncover<4->{
 		\textbf{But:} Dropping LBD values alltogether performs \highl{just as well}\\
-		\phantom{\textbf{But:}} in latest experiments
+		\phantom{\textbf{But:}} in latest experiments~\cite{schreiber2025streamlining}
 		}
 	\end{minipage}%
 	\begin{minipage}{0.4\textwidth}
@@ -737,7 +744,7 @@
 	\end{minipage}%
 \end{frame}
 
-\begin{frame}{Scaling of MallobSat}
+\begin{frame}{Scaling of MallobSat~\cite{schreiber2024mallobsat}}
 	
 	\vspace*{-5mm}
 	% - geometric speedups plot of Mallob vs. Horde 
@@ -801,7 +808,7 @@
 	\unimp{768 cores $\times$ 349 ``solvable'' instances from ISC 2022 $\times$ 300\,s, with clause sharing}
 \end{frame}
 
-\begin{frame}{Diversification vs.\ Sharing @ 768 Cores\ \ \unimp{[JAIR'24]}}
+\begin{frame}{Diversification vs.\ Sharing @ 768 Cores~\cite{schreiber2024mallobsat}}
 	
 	\begin{minipage}{0.43\textwidth}
 		\vspace*{-4mm}
@@ -858,8 +865,8 @@
 \begin{frame}{MallobSat: A Portfolio Solver?}
 	\textbf{Prevalent concept} in literature: \highlo{\textbf{Portfolio solver}} \textit{with clause sharing}\ \ /\ \ \highlo{Clause-sharing portfolio}
 	\begin{itemize}
-		\item ``\textit{a problem instance is independently given to a collection of solvers \highlo{competing} for a solution in parallel}''\\\hfill\unimp{-- Fichte et al., 2023}
-		\item ``\textit{each thread runs a \highlo{different SAT solver} on the same instance[, which] \highlo{in combination with} clause-sharing leads to surprisingly good performance \highlo{for small portfolio sizes}}''\hfill\unimp{-- Ozdemir et al., 2021}
+		\item ``\textit{a problem instance is independently given to a collection of solvers \highlo{competing} for a solution in parallel}''\\\hfill\unimp{-- Fichte et al., 2023}~\cite{fichte2023silent}
+		\item ``\textit{each thread runs a \highlo{different SAT solver} on the same instance[, which] \highlo{in combination with} clause-sharing leads to surprisingly good performance \highlo{for small portfolio sizes}}''\hfill\unimp{-- Ozdemir et al., 2021}~\cite{ozdemir2021sat}
 	\end{itemize}
 	
 	\pause
@@ -891,7 +898,7 @@
 		\end{itemize}
 		\vspace{0.2cm}
 		\pause
-		\textbf{Best of both worlds?} \ \ \unimp{[EuroPar'22]}
+		\textbf{Best of both worlds?}~\cite{sanders2022decentralized}
 		\begin{itemize}
 			\item \highl{On demand scheduling} of incoming (SAT) jobs
 			\item \highl{Resize jobs during their execution} as needed
@@ -905,7 +912,7 @@
 	\end{minipage}
 \end{frame}
 
-\begin{frame}{Scheduling Many SAT Tasks\ \ \unimp{[JAIR'24]}}
+\begin{frame}{Scheduling Many SAT Tasks~\cite{schreiber2024mallobsat}}
 	\vspace*{-1cm}
 	\begin{minipage}[t]{0.55\textwidth}
 		\vspace*{-6.3cm}
@@ -978,14 +985,20 @@
 
 \begin{frame}{Current Frontiers}
 	\begin{itemize}
-		\item Streamlined \highl{clause-sharing solver} design, away from portfolios
-		\item Address \highlo{high main memory requirements}, especially for huge formulas
-		\item Preprocessing and Inprocessing in parallel SAT solving
+		\item Streamlined \highl{clause-sharing solver} design, away from portfolios~\cite{schreiber2025streamlining}
+		\vspace*{2mm}
+		\item Address \highlo{high main memory requirements}, especially for huge formulas (cf.~\cite{biere2022scalable})
+		\vspace*{2mm}
+		\item Preprocessing and Inprocessing in parallel SAT solving (cf.~\cite{osama2023certified})
+		\vspace*{2mm}
 		\item Applying technology to related tools, applications
 		\\-- \highl{Verification} (Bounded Model Checking, SMT Solving)
 		\\-- \highl{Optimization} (MaxSAT Solving)
-		\\-- Crucial piece of technology: Distributed \highl{incremental SAT solving}!
-		\item \highlo{Uses of GPUs ??} (Stochastic Local Search, Inprocessing offloading, \ldots)
+		\\-- Crucial piece of technology: Distributed \highl{incremental SAT solving}!~\cite{schreiber2025distributed}
+		\vspace*{2mm}
+		\item \highlo{Uses of GPUs ??} (Stochastic Local Search~\cite{cen2025massively}, Inprocessing offloading~\cite{osama2023certified}, \ldots)
+		\vspace*{2mm}
+		\item \highl{Proofs of unsatisfiability} (next lecture!)
 	\end{itemize}
 \end{frame}
 
@@ -1019,6 +1032,12 @@
 			\item Bringing proof technology to parallel and distributed SAT solving
 		\end{itemize}
 	\end{block}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]{References}
+	\renewcommand*{\bibfont}{\footnotesize}
+	\printbibliography[heading=subbibliography]
 \end{frame}
 
 \end{document}
