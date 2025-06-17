@@ -1,0 +1,88 @@
+\documentclass[a4paper]{article}
+
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{tikzsymbols}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[margin=2cm]{geometry}
+
+\usepackage{titlesec}
+\titleformat*{\section}{\large\bfseries}
+
+\definecolor{kit-blue}{RGB}{70, 100, 170}
+\input{../slides/l00-commands.tex}
+
+\begin{document}
+\exhead{4}{2024-06-17}{2024-07-01}
+
+\newcommand{\statetilled}{T}
+\newcommand{\statetobetilled}{$+$}
+\newcommand{\statenottobetilled}{$-$}
+
+
+\section{Competition: Clause Sharing Selection Heuristic ($3 (+7)$ Points)}
+
+Manipulate Mallob's clause sharing by modifying the class \texttt{ClausePrefilter} (see below), whose method \texttt{prefilterClause} is called whenever a solver thread produces a clause that passes a number of basic checks.
+The method can return \texttt{false} to completely drop a clause;
+if the method returns \texttt{true}, the calling solver thread will subsequently attempt to write the clause to an export buffer.
+You can change a (non unit) clause's priority by manipulating its LBD value to make it more or less likely that a clause ``survives'' subsequent selection stages and is shared successfully.
+For a clause of length $\ell \geq 2$, LBD values of 2 (``best'') through $\ell$ (``worst'') are valid.
+If needed, you may perform precomputations in \texttt{notifyFormula($\cdot$)}, where you may also access the input formula (as a C-style array of zero-separated clause literals).
+
+You get 3 points for submitting a functional version of \texttt{clause\_prefilter.hpp} with some non-trivial change.
+The submissions that result in the best performance with a Kissat portfolio at 64 cores on diverse benchmarks get up to 7/5/3 additional points.
+We will, in particular, set the non-default parameters \texttt{-lbdpi=1 -lbdpo=1 -pbbm=1} to consistently prioritize clauses by ``LBD'' first and by clause length second (i.e., as a tiebreaker only) and \texttt{-rlbd=1 -ilbd=0} to reset each incoming clause's LBD value to $\ell$ before a solver thread imports it.
+\\
+\textbf{Mallob:} \url{https://github.com/domschrei/mallob/tree/experimental}
+\\
+--- \texttt{ClausePrefilter}: see \texttt{src/app/sat/sharing/filter/clause\_prefilter.hpp}
+\\
+--- Contact Dominik $\langle$\href{mailto:dominik.schreiber@kit.edu}{dominik.schreiber@kit.edu}$\rangle$ in case of technical questions or issues.
+
+%\section{Competition: Preprocessing before Parallel Solving}
+
+%For this exercise we consider Mallob's SATWITHPRE mode of execution, where a dedicated preprocessor is run while all of the parallel cores already perform parallel SAT solving on the non-preprocessed formula.
+%Modify the preprocessor by preprocessing methods to your liking.
+
+\section{Parallel Resolution ($3+3$ Points)}
+
+Consider a parallel setup with $p$ resolution procedures in a ``bulk synchronous parallel'' (BSP) model:
+Each procedure performs a single resolution step; then, all resolvents are shared across all procedures. This is repeated until the empty clause is found.
+
+(a) Provide an unsatisfiable CNF formula where the above setup \emph{can} speed up the derivation of the empty clause by a factor of $p / \log{p}$ (or better) compared to the shortest sequential resolution order.
+
+(b) Provide an unsatisfiable CNF formula where the derivation of the empty clause can only ever be sped up by a factor of $1 + \varepsilon$ (where $0 \leq \varepsilon \ll 1$) compared to the shortest sequential resolution order.
+
+\section{VBS and Speedups ($4+6$ Points)}
+
+Analyze the results of the 2024 SAT Competition.
+
+(a) Compute a VBS of all sequential main track solvers.
+Compare its performance to the best cloud track solver in the competition.
+Interpret the results, also considering any peculiar instance families.
+
+(b) Compute the geometric mean and median speedup of each parallel track solver relative to the best performing sequential solver \texttt{kissat-sc2024}, only considering instances which both the sequential solver \emph{and} the parallel solver were able to solve.
+Then do the same while considering \textit{all} instances solved by the parallel solver -- ``generously'' attributing a running time of 5\,000\,s to each such instance that the sequential solver did not solve.
+Interpret and compare the results.
+
+\noindent
+\textbf{Competition results:} \url{https://satcompetition.github.io/2024/downloads/detailed_results.zip}\\
+\textbf{Benchmark meta data:}
+\url{https://satcompetition.github.io/2024/downloads/meta.csv}
+
+
+\section{Clause Filtering in Distributed SAT ($5$ Points)}
+
+Distributed clause-sharing solvers like \textsc{MallobSat} filter a repeated clause based on \textit{exact syntactical equivalence} (i.e., if a clause $c$ is shared successfully, then clause $c$ will be blocked for some period).
+Find a way to generalize this approach to \textit{subsumed} clauses, i.e., if clause $c$ is shared, then all clauses $c' \supseteq c$ are blocked for some period.
+Provide a rough analysis of the running time complexity and the memory footprint of your approach.
+
+
+
+
+
+\end{document}
