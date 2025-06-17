@@ -31,17 +31,17 @@ The method can return \texttt{false} to completely drop a clause;
 if the method returns \texttt{true}, the calling solver thread will subsequently attempt to write the clause to an export buffer.
 You can change a (non unit) clause's priority by manipulating its LBD value to make it more or less likely that a clause ``survives'' subsequent selection stages and is shared successfully.
 For a clause of length $\ell \geq 2$, LBD values of 2 (``best'') through $\ell$ (``worst'') are valid.
-If needed, you may perform precomputations in \texttt{notifyFormula($\cdot$)}, where you may also access the input formula (as a C-style array of zero-separated clause literals).
-
+If needed, you may perform precomputations and access the formula in the body of \texttt{notifyFormula($\cdot$)}.
+\\[1em]
 You get 3 points for submitting a functional version of \texttt{clause\_prefilter.hpp} with some non-trivial change.
 The submissions that result in the best performance with a Kissat portfolio at 64 cores on diverse benchmarks get up to 7/5/3 additional points.
 We will, in particular, set the non-default parameters \texttt{-lbdpi=1 -lbdpo=1 -pbbm=1} to consistently prioritize clauses by ``LBD'' first and by clause length second (i.e., as a tiebreaker only) and \texttt{-rlbd=1 -ilbd=0} to reset each incoming clause's LBD value to $\ell$ before a solver thread imports it.
-\\
-\textbf{Mallob:} \url{https://github.com/domschrei/mallob/tree/experimental}
+\\[1em]
+\textbf{Mallob version to use:} \url{https://github.com/domschrei/mallob/tree/experimental}
 \\
 --- \texttt{ClausePrefilter}: see \texttt{src/app/sat/sharing/filter/clause\_prefilter.hpp}
-\\
---- Contact Dominik $\langle$\href{mailto:dominik.schreiber@kit.edu}{dominik.schreiber@kit.edu}$\rangle$ in case of technical questions or issues.
+\\[1em]
+Contact Dominik $\langle$\href{mailto:dominik.schreiber@kit.edu}{dominik.schreiber@kit.edu}$\rangle$ in case of technical questions or issues.
 
 %\section{Competition: Preprocessing before Parallel Solving}
 
@@ -52,22 +52,22 @@ We will, in particular, set the non-default parameters \texttt{-lbdpi=1 -lbdpo=1
 
 Consider a parallel setup with $p$ resolution procedures in a ``bulk synchronous parallel'' (BSP) model:
 Each procedure performs a single resolution step; then, all resolvents are shared across all procedures. This is repeated until the empty clause is found.
-
-(a) Provide an unsatisfiable CNF formula where the above setup \emph{can} speed up the derivation of the empty clause by a factor of $p / \log{p}$ (or better) compared to the shortest sequential resolution order.
-
-(b) Provide an unsatisfiable CNF formula where the derivation of the empty clause can only ever be sped up by a factor of $1 + \varepsilon$ (where $0 \leq \varepsilon \ll 1$) compared to the shortest sequential resolution order.
+\begin{itemize}
+	\item[(a)] Provide an unsatisfiable CNF formula where the above setup \emph{can} speed up the derivation of the empty clause by a factor of $p / \log{p}$ (or better) compared to the shortest sequential resolution order.
+	\item[(b)] Provide an unsatisfiable CNF formula where the derivation of the empty clause can only ever be sped up by a factor of $1 + \varepsilon$ (where $0 \leq \varepsilon \ll 1$) compared to the shortest sequential resolution order.
+\end{itemize}
 
 \section{VBS and Speedups ($4+6$ Points)}
 
 Analyze the results of the 2024 SAT Competition.
-
-(a) Compute a VBS of all sequential main track solvers.
-Compare its performance to the best cloud track solver in the competition.
-Interpret the results, also considering any peculiar instance families.
-
-(b) Compute the geometric mean and median speedup of each parallel track solver relative to the best performing sequential solver \texttt{kissat-sc2024}, only considering instances which both the sequential solver \emph{and} the parallel solver were able to solve.
-Then do the same while considering \textit{all} instances solved by the parallel solver -- ``generously'' attributing a running time of 5\,000\,s to each such instance that the sequential solver did not solve.
-Interpret and compare the results.
+\begin{itemize}
+	\item[(a)] Compute a VBS of all sequential main track solvers.
+	Compare its performance to the best cloud track solver in the competition.
+	Interpret the results, also considering any peculiar instance families.
+	\item[(b)] Compute the geometric mean and median speedup of each parallel track solver relative to the best performing sequential solver \texttt{kissat-sc2024}, only considering instances which both the sequential solver \emph{and} the parallel solver were able to solve.
+	Then do the same while considering \textit{all} instances solved by the parallel solver -- ``generously'' attributing a running time of 5\,000\,s to each such instance that the sequential solver did not solve.
+	Interpret and compare the results.
+\end{itemize}
 
 \noindent
 \textbf{Competition results:} \url{https://satcompetition.github.io/2024/downloads/detailed_results.zip}\\
