@@ -744,6 +744,43 @@
 	\end{minipage}%
 \end{frame}
 
+\begin{frame}{Parallel Solver Evaluation Methodology}
+	Benchmark ``best'' sequential solver \unimp{(e.g., SAT Competition winner)} and parallel solver\\
+	on \highl{recent competition instances}, with a fixed time limit $T$ per instance.
+	\\
+	\vspace*{6mm}
+	\highl{Speedup} for a single instance $i$ is $s(i) := {T_{\textit{seq}}(i)} / {T_{\textit{par}}(i)}$.
+	How do we compute \highl{overall speedups} over inputs $\mathcal{I}$?
+	\pause
+	\vspace*{2mm}
+	\begin{itemize}
+		\item \highlo{Arithmetic mean} $S_{\textit{arit}} = 1/|\mathcal{I}| \cdot \sum_{i \in \mathcal{I}} s(i)$~?\pause\quad\quad\highlo{No statistical meaning!}
+		\pause
+		\item \textbf{Median} $S_{\textit{med}}$: central item in sorted list of speedups
+		\quad\quad\unimp{-- Meaningful, very conservative}
+		\pause
+		\item \textbf{Geometric mean} $S_{\textit{geo}} = \sqrt[|\mathcal{I}|]{\big(\prod_{i \in \mathcal{I}} s(i)\big)}$
+		\quad\quad\unimp{-- Meaningful, conservative, only for running times $> 0$}
+		\pause
+		\item \textbf{Total} $S_{\textit{tot}} = \frac{\sum_{i \in \mathcal{I}} T_{\textit{seq}}(i)}{\sum_{i \in \mathcal{I}} T_{\textit{par}}(i)}$
+		\quad\quad\unimp{-- Meaningful (``ratio of time saved''), emphasizes difficult inputs}
+	\end{itemize}
+	\vspace*{6mm}
+	\pause
+	How do we handle instances with $T_{\textit{seq}} =$ \highlo{TIMEOUT}?
+	\pause
+	\vspace*{2mm}
+	\begin{itemize}
+		\item \highl{Reduce such occurrences} by running sequential solver \highl{(much) longer} than parallel solver
+		\pause
+		\item ``Generously'' \highl{assume as solved} in time $T$, or apply penalty $k \cdot T$
+		\quad\quad\unimp{-- makes speedups difficult to interpret}
+		\pause
+		\item \highl{Omit} from speedup calculation
+		\quad\quad\unimp{-- clean separation of speedups from \# solved instances}
+	\end{itemize}
+\end{frame}
+
 \begin{frame}{Scaling of MallobSat~\cite{schreiber2024mallobsat}}
 	
 	\vspace*{-5mm}
@@ -984,20 +1021,29 @@
 
 
 \begin{frame}{Current Frontiers}
+	\vspace*{-5mm}
 	\begin{itemize}
 		\item Streamlined \highl{clause-sharing solver} design, away from portfolios~\cite{schreiber2025streamlining}
+		\\
 		\vspace*{2mm}
+		\includegraphics[width=0.9\textwidth]{figures/l08/streamlined-design.pdf}
+		\\\unimp{Clause sharing portfolio with ``language barriers'' \textbf{vs.}~streamlined parallel CDCL}
+		\vspace*{2mm}
+		\pause
 		\item Address \highlo{high main memory requirements}, especially for huge formulas (cf.~\cite{biere2022scalable})
 		\vspace*{2mm}
 		\item Preprocessing and Inprocessing in parallel SAT solving (cf.~\cite{osama2023certified})
 		\vspace*{2mm}
+		\pause
 		\item Applying technology to related tools, applications
 		\\-- \highl{Verification} (Bounded Model Checking, SMT Solving)
 		\\-- \highl{Optimization} (MaxSAT Solving)
 		\\-- Crucial piece of technology: Distributed \highl{incremental SAT solving}!~\cite{schreiber2025distributed}
 		\vspace*{2mm}
+		\pause
 		\item \highlo{Uses of GPUs ??} (Stochastic Local Search~\cite{cen2025massively}, Inprocessing offloading~\cite{osama2023certified}, \ldots)
 		\vspace*{2mm}
+		\pause
 		\item \highl{Proofs of unsatisfiability} (next lecture!)
 	\end{itemize}
 \end{frame}
@@ -1017,7 +1063,7 @@
 			%\item Mallob \highl{scales up and down} --- best at large scale, very competitive at shared-memory scale!
 			\item \highl{All-to-all clause sharing} can be very useful and scalable (\highl{up and down}) \highlo{if implemented well} %Schreiber \& Sanders: Scalable SAT Solving in the Cloud. SAT 2021\\
 			\\
-			--- huge for unsatisfiable, nice-to-have for satisfiable problems\\
+			%--- huge for unsatisfiable, nice-to-have for satisfiable problems\\
 			--- \highl{diversifies solvers} effectively in and of itself
 			%Also see: \url{https://youtu.be/DuM5hkSX-58}
 			%\item Sanders \& Schreiber: Decentralized Online Scheduling of Malleable NP-hard Jobs. Euro-Par 2022 (in press)

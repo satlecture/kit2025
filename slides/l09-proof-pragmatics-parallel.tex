@@ -79,7 +79,7 @@
 
 
 
-\begin{frame}{Back To Basics}
+\begin{frame}{Proofs: Back To Basics}
 	\begin{itemize}
 		\item Solver on \highlo{unsatisfiable} formula $F$ produces \highl{sequence of clauses} $P := \langle c_1, c_2, \ldots, c_n \rangle$ with $c_n = \emptyset$
 		\item Goal: \highl{Justify} for $i=1, \ldots, n$ that $F \models c_{i}$, i.e., that \highl{$c_i$ follows from $F$}\\[1mm]
@@ -108,7 +108,8 @@
 		unit propagation on $(C \cup \{\overline{c}\})$, where $\overline{c} := \{ \neg l\ :\ l \in c \}$, produces the \highlo{empty clause}.
 	\end{blueblock}
 	\begin{itemize}\setlength{\itemsep}{3mm}
-		\item Is a clause $c$ with RUP property w.r.t.\ a checker's clause set $B$ a sound addition to $B$?\\
+		\item Is a clause $c$ with RUP property w.r.t.\ a checker's clause set $B$ a \highl{sound addition} to $B$?\\
+		\pause
 		-- \highl{Yes}:\ \ \ $B \wedge \bigwedge_{l \in c} \neg l$ is unsatisfiable\ \ \ $\rightarrow$\ \ \ No way to satisfy $B$ without satisfying $c$\ \ \ $\rightarrow$\ \ \ $B \models c$
 		\pause
 		\item What kinds of clauses \highl{have} the RUP property?
@@ -128,6 +129,9 @@
 	\end{itemize}
 \end{frame}
 
+\newcommand{\beginalgo}{\hrule\vspace*{2mm}}
+\newcommand{\finishalgo}{\vspace*{2mm}\hrule}
+
 \begin{frame}{RUP Proof Checking}
 	
 	\vspace*{-3mm}
@@ -135,7 +139,8 @@
 		\textbf{Solving}: Solver just \highl{logs each produced $c_i$} to a file\ \ \ $\Rightarrow$\ \ $\mathcal{P} = P$.\\
 		
 		\textbf{Checking}:\\[2mm]
-		\hspace*{0.5cm}\begin{minipage}{10cm}
+		\hspace*{0.5cm}\begin{minipage}{16cm}
+			\beginalgo
 			$B := F$\\
 			\textbf{for} $i=1,\ldots,n$:\\
 			\hspace*{1cm} propagate $\neg l$ in $B$ for each $l \in c_i$ \\
@@ -144,6 +149,7 @@
 			\hspace*{1cm} undo propagations in $B$ \\
 			\hspace*{1cm} \highl{$B := B \cup c_i$} \\
 			\textbf{return} \textbf{\highl{VALIDATED}}
+			\finishalgo
 		\end{minipage}
 	\end{blueblock}
 	
@@ -160,7 +166,7 @@
 		\item $\mathcal{P} = (o_1, \ldots, o_N)$ where $o_i = (op_i, c_i)$\\
 		-- $op_i \in \{\texttt{add}, \texttt{delete}\}$\\
 		-- \texttt{delete}:\ \ $c_i$ is a clause added by some $o_j$, $j<i$, and \highlo{not \texttt{delete}d} by any $o_k$, $j<k<i$\\
-		-- \highl{multi-set semantics} possible where a clause may be added (+ deleted) multiple times
+		-- commonly uses \highl{multi-set semantics}: a clause may be added (+ deleted) multiple times
 	\end{itemize}
 	
 	\pause
@@ -194,7 +200,8 @@
 
 \begin{frame}{DRUP}
 	\begin{blueblock}{Approach 3: DRUP (Deletion RUP) Proof}
-		\vspace*{2mm}\hspace*{0.5cm}\begin{minipage}{10cm}
+		\vspace*{2mm}\hspace*{0.5cm}\begin{minipage}{12cm}
+			%\beginalgo
 			$B := F$\\
 			\textbf{for} $i=1,\ldots,$\highl{$N$}:\\
 			\hspace*{1cm} \highl{\textbf{if} $op_i =$ \texttt{delete}:} \\
@@ -202,6 +209,7 @@
 			\hspace*{2cm} \highl{\textbf{continue}} \\
 			\hspace*{1cm} propagate $\neg l$ in $B$ for each $l \in c_i$ \\
 			\hspace*{1cm} \ldots\ \ \ \textcolor{gray}{// continue as in RUP Proof}
+			%\finishalgo
 		\end{minipage}
 	\end{blueblock}
 	
@@ -224,7 +232,7 @@
 		-- $id_i \in \mathbb{N}^+$,\ \ $d_i = \langle d_{i1}, \ldots, d_{ik_i} \rangle$ where $d_{ij} \in \mathbb{N}^+$, $k_i \in \mathbb{N}^+$\\
 		%-- $c_i$ and $d_i$ are unused if $op_i = \textit{delete}$
 		%\item Each clause has an \highl{ID}: 1, \ldots, $|V|$ for original clauses, $|V|+1, \ldots$ for derived clauses
-		\item With $d_i$, solver references earlier clauses which \highl{UP needs to look at} to arrive at the empty clause\\
+		\item $d_i$ references earlier clauses which \highl{UP needs to look at} to arrive at the empty clause\\
 		-- for $1 \leq j < k_i$, clause \highl{\#\,$d_{ij}$} (i.e., the clause referred to by $d_{ij}$) must \highl{break down into a unit}\\
 		-- clause \#\,$d_{ik_i}$ must \highl{break down into $\emptyset$}
 	\end{itemize}
@@ -291,7 +299,7 @@
 	\pause
 	\vspace*{1mm}
 	$\Rightarrow$ \highlo{Larger proofs} but \highl{much more efficient checking} (often $10\times$ or more)\\
-	$\Rightarrow$ Optional: \highlo{Backward search} from empty clause $\rightarrow$ \highl{prune all irrelevant proof lines}
+	$\Rightarrow$ Allows for \highlo{backward search} from empty clause to \highl{prune all irrelevant proof lines}
 \end{frame}
 
 \begin{frame}{From (D|L)RUP to (D|L)RAT~\cite{heule2016drat}}
@@ -317,7 +325,7 @@
 		\item DRUP $\rightarrow$ \textbf{DRAT}: \ \ For each added clause $c_i$, find \highl{pivot literal $x \in c_i$} and confirm that $c_i$ is RAT in $B$ w.r.t.\ $x$
 		\begin{itemize}
 			\item Convention: \highl{1st literal of $c_i$} must be valid pivot
-			\item Find all resolvents, check RUP for every one of them
+			\item Generate all resolvents, check RUP for every one of them
 		\end{itemize}
 		\pause
 		\vspace*{1mm}
@@ -376,7 +384,7 @@
 	\vspace*{2mm}
 	\textbf{DRAT:} \ \ \pause\highl{super simple!}
 	\begin{itemize}
-		\item Create an (empty) proof file at upstart
+		\item Create an (empty) proof file
 		\item Log each new redundant clause {\small (including the empty clause)} into the proof file
 		\item Log each discarded clause into the proof file, prepended with ``\texttt{d}''
 		%\item For UNSAT, the final learned clause should be the empty clause
@@ -425,11 +433,11 @@
 
 \newcounter{animcount}
 \begin{frame}{Distributed Proof Production (1/2) \ \ \cite{michaelson2023unsatisfiability}}%
-	\hspace{0.73cm} --- Produced Clauses $\rightarrow$\\[0.2cm]
+	\hspace{1.5cm} --- Produced Clauses $\rightarrow$\\[0.2cm]
 	\begin{minipage}{0.05\textwidth}%
-		\noindent $S_1$\\[0.7cm]%
-		\noindent $S_2$\\[0.7cm]%
-		\noindent $S_3$\\[0.7cm]%
+		\noindent $S_1$\\[1.6cm]%
+		\noindent $S_2$\\[1.6cm]%
+		\noindent $S_3$\\[1.6cm]%
 		\noindent $S_4$
 	\end{minipage}%
 	\begin{minipage}{0.95\textwidth}
@@ -440,7 +448,7 @@
 	\end{minipage}
 	
 	\vspace*{1mm}
-	\hfill\unimp{\footnotesize Random 3-SAT formula, 180 variables.\ \ 4 notebook cores $\times$ 1.7\,s.\ \ 300k dependencies (w/o orig.\ clauses).}
+	\hfill\unimp{\small Random 3-SAT formula, 180 variables.\ \ 4 notebook cores $\times$ 1.7\,s.\ \ 300k dependencies (w/o orig.\ clauses).}
 	
 	\vspace{0.35cm}
 	\only<-8>{\textbf{Solving}: Each thread \highl{derives and shares} clauses, logs to \highl{partial proof file}} %\highl{Angleichen von Klausel-IDs} an jeder \highl{Klauselaustausch-Epoche}}%
@@ -481,7 +489,7 @@
 
 \begin{frame}{Distributed Proof Production: Discussion}
 
-\textbf{Results~\cite{michaelson2025producing}:}
+\textbf{Results~\cite{michaelson2025producing}:}\quad\quad \unimp{(using a hand-tailored LRUP checker \highl{operating on the inverted proof})}
 \\[2mm]
 \begin{itemize}
 	\item Mean speedup of proof-emitting solver @ 1520 cores over sequential solver (solving times only): \highl{17.5}
@@ -598,7 +606,7 @@
 	}
 \end{frame}
 
-\begin{frame}{Real-time Checking: Scalability\ \ \cite{schreiber2024trusted}}
+\begin{frame}{Parallel Proof Tech: Scalability\ \ \cite{schreiber2024trusted}}
 
 \vspace*{-2mm}
 \begin{minipage}{0.67\textwidth}
