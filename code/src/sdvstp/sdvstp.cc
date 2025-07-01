@@ -13,6 +13,7 @@
 extern "C" {
     #include "../ipasir.h"
 }
+#include "standardsolution.h"
 
 // TODO Implement a SAT-based SDVSTP solver that finds an optimal solution.
 std::vector<Action> solveSDVSTP(const Grid& grid) {
@@ -65,7 +66,7 @@ int main(int argc, char* argv[]) {
     grid.print();
 
     // Find optimal solution
-    auto solution = solveSDVSTP(grid);
+    auto solution = solveSDVSTPStandardSolution(grid);
 
     // Obtain the grid resulting from applying all actions.
     auto vGrid = grid;
