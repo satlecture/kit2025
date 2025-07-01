@@ -27,7 +27,7 @@
 \title{Practical SAT Solving}
 \subtitle{Lecture 9 \unimp{\normalfont -- Proof Pragmatics \& Parallel Proof Technology}}
 \author{{Markus Iser}, \underline{Dominik Schreiber}}
-\date{June 23, 2025}
+\date{June 30, 2025}
 
 % define commands
 \input{l00-commands.tex}
@@ -341,7 +341,7 @@
 	
 	\vspace*{0mm}
 	\centering
-	\includegraphics[height=9cm]{figures/l09/proof-formats.pdf}\\[2mm]
+	\includegraphics[height=10cm]{figures/l09/proof-formats.pdf}\\[2mm]
 	
 	\unimp{These proofs only feature RUP additions. \ \ In an LRAT addition, each $r_{ij}$ is written as the negated ID of $\tilde{c}$\\
 		followed by IDs for the RUP steps of $c'$.}
@@ -352,7 +352,7 @@
 	\begin{exampleblock}{DRAT-based solving and checking: Common tool chain}
 		\texttt{\textbf{./solver} input.cnf proof.drat\ \ \ \unimp{// solve, output DRAT proof}}	
 		
-		\texttt{\textbf{./drat-trim} input.cnf proof.drat -L proof.lrat\ \ \ \unimp{// transform DRAT proof to LRAT}}
+		\texttt{\textbf{./drat-trim} input.cnf proof.drat -L proof.lrat\ \ \ \unimp{// transform DRAT proof to LRAT -- \textbf{\highl{fast}}}}
 		
 		\texttt{\textbf{./cake-lpr} input.cnf proof.lrat\ \ \ \unimp{// validate LRAT proof -- \textbf{\highlo{trusted / verified}}}}		
 	\end{exampleblock}
@@ -385,8 +385,8 @@
 	\textbf{DRAT:} \ \ \pause\highl{super simple!}
 	\begin{itemize}
 		\item Create an (empty) proof file
-		\item Log each new redundant clause {\small (including the empty clause)} into the proof file
-		\item Log each discarded clause into the proof file, prepended with ``\texttt{d}''
+		\item Log each derivation of a redundant clause {\small (including the empty clause)} into the proof file
+		\item Log each deletion of a clause into the proof file, prepended with ``\texttt{d}''
 		%\item For UNSAT, the final learned clause should be the empty clause
 	\end{itemize}
 	
@@ -558,7 +558,7 @@
 		\item Run one checker process \highl{for each solver thread}, mirroring its reasoning
 		\item What about incoming \highlo{shared clauses from another solver thread}?
 		\pause
-		\\-- \highlo{Cannot check external clause} because its prerequisites are unknown and (probably) not even present
+		\\[1mm]-- \highlo{Cannot check external clause} because its prerequisites are unknown and (probably) not even present
 		\\-- \highl{No need to check} since the clause was \highl{checked by the sender's checker!}
 		\pause
 		\item[$\Rightarrow$] Forward each incoming external clause to your checker \highlo{as an axiom}, i.e., without re-checking
@@ -568,11 +568,11 @@
 		How do we account for \highlo{incorrect shared clauses}? {\small \unimp{Memory bug, network error, race condition, \ldots}}
 		\pause
 		\vspace*{5mm}
-		\item Checkers \highl{sign} each successfully checked clause $c$ with \highl{cryptographic signature} based on
+		\item Checkers \highl{sign} each successfully checked clause $c$ with \highl{cryptographic checksum} based on
 		\highl{shared secret $K$}:\\[1mm]
 		$\mathcal{S}_K(c) = H_K(\texttt{LRUP\_ID}(c)\ ||\ c\ ||\ \mathcal{S}_K(F))$
 		\\-- $H_K$: \highl{Message Authentication Code} (MAC),	specifically 128-bit \textbf{SipHash}~\cite{aumasson2012siphash}
-		\item Clauses are shared \highl{together with their signatures}
+		\item Clauses are shared \highl{together with their checksums}
 		\item Each incoming clause $c$ is forwarded to checker \highl{together with $\mathcal{S}_K(c)$}\\
 		$\Rightarrow$ Checker can validate that \highl{another trusted instance checked this clause}!
 		%\item<4-> Stable run-time-overhead \highl{$\leq 42\%$}\\over normal solving ($\leq$ 2560 cores)\\
@@ -601,7 +601,7 @@
 	\end{minipage}
 	\uncover<7->{
 		\\[1.5cm]
-	$\Rightarrow$ \textbf{We \highl{only} need to trust our signatures and our parser, checkers, and confirmer.}
+	$\Rightarrow$ \textbf{We \highl{only} need to trust our checksums and our parser, checkers, and confirmer.}
 	\\\phantom{$\Rightarrow$} Not the SAT solvers, not the sharing logic, not the communication, \ldots
 	}
 \end{frame}

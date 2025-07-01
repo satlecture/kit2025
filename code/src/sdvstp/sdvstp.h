@@ -37,6 +37,12 @@ const std::vector<Pattern> PATTERNS = {P_BASE, P_COPPER, P_IRON, P_GOLD, P_IRIDI
 // (x,y) is the coordinate of the top left corner of the pattern (after rotating).
 struct Action { Pattern p; bool rotate; int x; int y; };
 
+// Template for an action in the SDVSTPP framework (with player movement).
+struct SDVSTPPAction {
+    enum Type {MOVE, TILL_1, TILL_2, TILL_3, TILL_4, TILL_5} type;
+    enum Direction {UP, DOWN, LEFT, RIGHT} dir;
+};
+
 // Class for the problem grid
 struct Grid {
 private:
@@ -51,8 +57,8 @@ public:
     // contained in the grid.
     bool applicable(Action a) const {
         if (a.rotate) a.p.rotate(); // rotate pattern if necessary
-        return a.x + a.p.width <= width()
-            && a.y + a.p.height <= height();
+        return a.x >= 0 && a.x + a.p.width <= width()
+            && a.y >= 0 && a.y + a.p.height <= height();
     }
     // Apply the action, transforming all concerned cells into the provided state
     // (TILLED by default).
@@ -65,6 +71,38 @@ public:
                 at(a.x + offsetX, a.y + offsetY) = targetState;
             }
         }
+    }
+    // Apply the provided action given the provided player position.
+    // Returns the new player position.
+    std::pair<int, int> apply(int posX, int posY, SDVSTPPAction a) {
+        int destX = posX + (a.dir == SDVSTPPAction::RIGHT) - (a.dir == SDVSTPPAction::LEFT);
+        int destY = posY + (a.dir == SDVSTPPAction::DOWN) - (a.dir == SDVSTPPAction::UP);
+        if (a.type == SDVSTPPAction::MOVE) {
+            return {destX, destY};
+        }
+
+        // Tilling action
+        bool horizontal = a.dir == SDVSTPPAction::LEFT || a.dir == SDVSTPPAction::RIGHT;
+        Action tillAction;
+        if (a.type == SDVSTPPAction::TILL_1) tillAction.p = P_BASE;
+        if (a.type == SDVSTPPAction::TILL_2) tillAction.p = P_COPPER;
+        if (a.type == SDVSTPPAction::TILL_3) tillAction.p = P_IRON;
+        if (a.type == SDVSTPPAction::TILL_4) tillAction.p = P_GOLD;
+        if (a.type == SDVSTPPAction::TILL_5) tillAction.p = P_IRIDIUM;
+        if (horizontal) tillAction.p.rotate();
+        tillAction.x = destX;
+        tillAction.y = destY;
+        // Move anchor of the tilling pattern so that the pattern is centered at the destination
+        if (horizontal) {
+            if (a.dir == SDVSTPPAction::LEFT) tillAction.x -= tillAction.p.width - 1;
+            tillAction.y -= (tillAction.p.height / 2);
+        } else {
+            if (a.dir == SDVSTPPAction::UP) tillAction.y -= tillAction.p.height - 1;
+            tillAction.x -= (tillAction.p.width / 2);
+        }           
+        tillAction.rotate = false;
+        apply(tillAction);
+        return {posX, posY};
     }
     // Output the grid to the provided output stream (std::cout by default).
     // If "comment" is true, prepend "c " to each line and add a header also beginning with "c ".

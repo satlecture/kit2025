@@ -31,3 +31,6 @@ target_link_libraries(graphcol cadical)
 add_executable(sdvstp src/sdvstp/sdvstp.cc src/util/pb/cardinality_encoding.cc src/util/pb/enc_adder.cc)
 add_executable(sdvstp_gen src/sdvstp/sdvstp_gen.cc) # for generating benchmark problems
 target_link_libraries(sdvstp cadical)
+
+add_executable(sdvstpp src/sdvstp/sdvstpp.cc src/util/pb/cardinality_encoding.cc src/util/pb/enc_adder.cc)
+target_link_libraries(sdvstpp cadical)
