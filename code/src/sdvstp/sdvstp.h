@@ -35,7 +35,7 @@ const std::vector<Pattern> PATTERNS = {P_BASE, P_COPPER, P_IRON, P_GOLD, P_IRIDI
 // Template for a single action. "p" should be one of the five patterns above,
 // then "rotate" indicates whether the pattern should still be rotated.
 // (x,y) is the coordinate of the top left corner of the pattern (after rotating).
-struct Action { Pattern p; bool rotate; int x; int y; };
+struct Action { Pattern p; bool rotate {false}; int x; int y; };
 
 // Template for an action in the SDVSTPP framework (with player movement).
 struct SDVSTPPAction {
@@ -72,7 +72,7 @@ public:
             }
         }
     }
-    // Apply the provided action given the provided player position.
+    // Apply the provided SDVSTPP action given the provided player position.
     // Returns the new player position.
     std::pair<int, int> apply(int posX, int posY, SDVSTPPAction a) {
         int destX = posX + (a.dir == SDVSTPPAction::RIGHT) - (a.dir == SDVSTPPAction::LEFT);
@@ -81,26 +81,34 @@ public:
             return {destX, destY};
         }
 
-        // Tilling action
-        bool horizontal = a.dir == SDVSTPPAction::LEFT || a.dir == SDVSTPPAction::RIGHT;
+        // We internally construct a basic (SDVSTP) tilling action and then apply it.
+
         Action tillAction;
+        // Set the base pattern of the action.
         if (a.type == SDVSTPPAction::TILL_1) tillAction.p = P_BASE;
         if (a.type == SDVSTPPAction::TILL_2) tillAction.p = P_COPPER;
         if (a.type == SDVSTPPAction::TILL_3) tillAction.p = P_IRON;
         if (a.type == SDVSTPPAction::TILL_4) tillAction.p = P_GOLD;
         if (a.type == SDVSTPPAction::TILL_5) tillAction.p = P_IRIDIUM;
+        // A horizontal orientation of the pattern means we have to rotate it explicitly.
+        bool horizontal = a.dir == SDVSTPPAction::LEFT || a.dir == SDVSTPPAction::RIGHT;
         if (horizontal) tillAction.p.rotate();
+        // Set the pattern's initial anchor position to the action's destination cell.
         tillAction.x = destX;
         tillAction.y = destY;
-        // Move anchor of the tilling pattern so that the pattern is centered at the destination
+        // Move the anchor so that the pattern is at the correct location relative to the player.
         if (horizontal) {
+            // If the pattern goes to the left, shift it to the left accordingly.
             if (a.dir == SDVSTPPAction::LEFT) tillAction.x -= tillAction.p.width - 1;
+            // Center the pattern vertically at the destination position.
             tillAction.y -= (tillAction.p.height / 2);
         } else {
+            // If the pattern goes to the top, shift it to the top accordingly.
             if (a.dir == SDVSTPPAction::UP) tillAction.y -= tillAction.p.height - 1;
+            // Center the pattern horizontally at the destination position.
             tillAction.x -= (tillAction.p.width / 2);
-        }           
-        tillAction.rotate = false;
+        }
+        // Apply the action, return the unchanged prior position of the player.
         apply(tillAction);
         return {posX, posY};
     }
