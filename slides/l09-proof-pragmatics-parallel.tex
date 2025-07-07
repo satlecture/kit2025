@@ -421,11 +421,11 @@
 	\vspace*{2mm}
 	\textbf{Before 2023:} \highlo{Large gap of trustworthiness} between best sequential and best parallel (clause-sharing) solvers\\[2mm]
 	\pause
-	\textbf{2023:} \highl{LRAT-based proofs from clause-sharing solvers} \cite{michaelson2023unsatisfiability}
+	\textbf{2023:} \highl{LRUP-based proofs from clause-sharing solvers} \cite{michaelson2023unsatisfiability}
 	\begin{itemize}
 		\item \highl{Globally unique clause IDs} without communication\\
 		-- for $o$ original clauses and $p$ solver threads, the $i$-th thread assigns clause IDs \highl{$o + i + kp$} ($k \in \mathbb{N}_0$)
-		\item After solving, \highl{rewind the procedure}, using ``hints'' of LRAT to \highl{trace dependencies of empty clause}
+		\item After solving, \highl{rewind the procedure}, using ``hints'' of LRUP to \highl{trace dependencies of empty clause}
 		\item Funnel all clauses marked as required into a \highl{single, ordered proof file}
 	\end{itemize}
 \end{frame}
@@ -501,7 +501,7 @@
 		\item Mean overhead of DRAT proof checking over sequential solving: $\approx 1\times$
 	\end{itemize}
 	\item Pruning irrelevant clause additions \highl{reduces proof size by $\approx$ 30--40$\times$}
-	\item LRAT proof size: median 3.1\,GB, mean 11.6\,GB, \highlo{maximum 233.9\,GB}
+	\item LRUP proof size: median 3.1\,GB, mean 11.6\,GB, \highlo{maximum 233.9\,GB}
 \end{itemize}
 
 \vspace*{2mm}
@@ -570,7 +570,7 @@
 		\vspace*{5mm}
 		\item Checkers \highl{sign} each successfully checked clause $c$ with \highl{cryptographic checksum} based on
 		\highl{shared secret $K$}:\\[1mm]
-		$\mathcal{S}_K(c) = H_K(\texttt{LRUP\_ID}(c)\ ||\ c\ ||\ \mathcal{S}_K(F))$
+		$\mathcal{S}_K(c) = H_K(id(c)\ ||\ c\ ||\ \mathcal{S}_K(F))$
 		\\-- $H_K$: \highl{Message Authentication Code} (MAC),	specifically 128-bit \textbf{SipHash}~\cite{aumasson2012siphash}
 		\item Clauses are shared \highl{together with their checksums}
 		\item Each incoming clause $c$ is forwarded to checker \highl{together with $\mathcal{S}_K(c)$}\\

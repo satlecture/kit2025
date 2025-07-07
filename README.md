@@ -27,7 +27,7 @@ See also [the page from last year](https://github.com/satlecture/kit2024).
 * **Monday, June 16**: [L8.1 - Parallel SAT Solving: Search space partitioning, Portfolios, Clause sharing, massively parallel basics](slides/l08-parallel.pdf) _[DS]_
 * **Monday, June 23**: [L8.2 - Frontiers of distributed SAT solving](slides/l08-parallel.pdf) _[DS]_
 * **Monday, June 30**: [L9.1 - Pragmatics of proofs of unsatisfiability](slides/l09-proof-pragmatics-parallel.pdf) _[DS]_
-* **Monday, July 7**: [L9.2 - Parallel proof & distributed technology](slides/l09-proof-pragmatics-parallel.pdf) ; L10 - Applications 1: Planning, model checking _[DS]_
+* **Monday, July 7**: [L9.2 - Parallel proof & distributed technology](slides/l09-proof-pragmatics-parallel.pdf) ; [L10 - Applications 1: Planning, model checking](slides/l10-planning-model-checking.pdf) _[DS]_
 * **Monday, July 14**: L11 - Applications 2: Selected highlights _[DS]_
 * **Monday, July 21**: L12 - Satisfiability Modulo Theories (SMT) solving _[DS]_
 * **Monday, July 28**: L13 - Maximum Satisfiability (MaxSAT) solving _[MI]_
