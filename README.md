@@ -41,7 +41,7 @@ This is our tentative plan for exercises:
 * **Tuesday, June 3**: E2 - discussion of A2, announcement of [A3 (preprocessing, proofs)](exercises/ex3.pdf) _[MI]_
 * **Tuesday, June 17**: E3 - discussion of A3, announcement of [A4 (parallel SAT)](exercises/ex4.pdf) _[MI]_
 * **Tuesday, July 1**: E4 - discussion of A4, announcement of [A5 (proof pragmatics, planning)](exercises/ex5.pdf) _[DS]_
-* **Tuesday, July 15**: E5 - discussion of A5, announcement of A6 (applications) _[DS]_
+* **Tuesday, July 15**: E5 - discussion of A5, announcement of [A6 (applications, SMT)](exercises/ex6.pdf) _[DS]_
 * **Tuesday, July 29**: E6 - discussion of A6, exam questions
 
 ## Code
