@@ -1,0 +1,62 @@
+\documentclass[a4paper]{article}
+
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{tikzsymbols}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[margin=2cm]{geometry}
+
+\usepackage{titlesec}
+\titleformat*{\section}{\large\bfseries}
+
+\definecolor{kit-blue}{RGB}{70, 100, 170}
+\input{../slides/l00-commands.tex}
+
+\begin{document}
+\exhead{6}{2024-07-15}{2024-07-29}
+
+
+\section{Application-specific Analysis (8 Points)}
+
+Pick \textbf{one} of the 20 largest benchmark families of SAT Competition 2022 (see lecture 11 slide 5).
+Research the following points:
+\begin{itemize}
+	\item Where does the family originate from and which people authored it?
+	\item What is the purpose of the benchmark family? (concrete application, exposing pathological solver behavior, highlighting certain techniques, \ldots)
+	\item Are the instances advertised to have any special properties? (e.g., clause length distribution, proof complexity, only SAT / only UNSAT, structural particularities, \ldots)
+	\item How did solvers in the 2022 anniversary track perform on the family? Are there discrepancies between the globally best solver(s) and the best solver(s) for that family? If so, can you find an explanation?
+	\item Are the instances good to parallelize, i.e., what is the distribution over the speedups which 2022 parallel solvers can achieve on the family?
+\end{itemize}
+Use Markus' GBD tool\footnote{
+	Basic online functionality: \url{https://benchmark-database.de}; local installation via \texttt{pip}: \url{https://github.com/Udopia/gbd}
+}, performance data of the 2022 anniversary track,\footnote{
+	\url{https://satcompetition.github.io/2022/downloads.html}
+} and the proceedings of past SAT Competitions, where you should find one or several abstracts describing the instances.
+\textit{You should not need to run a SAT solver nor download/open a SAT instance for this task.}
+
+
+\section{Automated Planning (6+3 Points)}
+
+\begin{itemize}
+	\item[(a)] Show that classical automated planning is PSPACE-complete.\\
+	Hint: This entails that (a) classical automated planning is in PSPACE and (b) any polynomially space-bounded Turing machine program can be reduced to classical automated planning.
+	\item[(b)] Consider the connection between classical automated planning domains and Turing machines that follows from this result.
+	What is the correspondence of a Turing machine operating deterministically vs.~non-deterministically in a classical automated planning domain?
+\end{itemize}
+
+
+\section{Using SMT Solvers (4 Points)}
+
+Use an SMT solver to prove that adding 1 to an unsigned 32-bit integer variable with the value 4\,294\,967\,295 leads to a result of 0.\\
+\textit{You have to be prepared to demonstrate and reproduce this result live.}
+
+
+\section{Exam Questions (0 Points)}
+
+Examine the lecture material and prepare any concrete questions you may still have.
+
+\end{document}
