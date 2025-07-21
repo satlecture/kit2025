@@ -11,6 +11,14 @@ No particular prior knowledge beyond basic foundations of computer science is re
 All lectures and exercises take place at **15:45 in building 50.34 room 301**.
 Our first appointment is the lecture on **Tuesday, April 22**.
 
+## Exam Dates
+We tentatively offer the following exam dates:
+
+* Thursday, July 31
+* Wednesday, September 24
+
+If neither of these options suit you, please let us know!
+
 ## Lectures
 
 The below lecture plan is tentative and subject to changes.
@@ -29,7 +37,7 @@ See also [the page from last year](https://github.com/satlecture/kit2024).
 * **Monday, June 30**: [L9.1 - Pragmatics of proofs of unsatisfiability](slides/l09-proof-pragmatics-parallel.pdf) _[DS]_
 * **Monday, July 7**: [L9.2 - Parallel proof & distributed technology](slides/l09-proof-pragmatics-parallel.pdf) ; [L10 - Applications 1: Automated planning](slides/l10-planning-model-checking.pdf) _[DS]_
 * **Monday, July 14**: [L11 - Selected application highlights](slides/l11-application-highlights.pdf) _[DS]_
-* **Monday, July 21**: L12 - Satisfiability Modulo Theories (SMT) solving _[DS]_
+* **Monday, July 21**: [L12 - Satisfiability Modulo Theories (SMT) solving](slides/l12-smt.pdf) _[DS]_
 * **Monday, July 28**: L13 - Maximum Satisfiability (MaxSAT) solving _[MI]_
 
 ## Exercises
