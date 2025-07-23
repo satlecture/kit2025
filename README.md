@@ -12,9 +12,10 @@ All lectures and exercises take place at **15:45 in building 50.34 room 301**.
 Our first appointment is the lecture on **Tuesday, April 22**.
 
 ## Exam Dates
-We tentatively offer the following exam dates:
+We tentatively offer the following exam dates (last updated July 23):
 
-* Thursday, July 31
+* ~~Thursday, July 31~~
+* Monday, August 25
 * Wednesday, September 24
 
 If neither of these options suit you, please let us know!
