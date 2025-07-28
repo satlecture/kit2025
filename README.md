@@ -39,7 +39,7 @@ See also [the page from last year](https://github.com/satlecture/kit2024).
 * **Monday, July 7**: [L9.2 - Parallel proof & distributed technology](slides/l09-proof-pragmatics-parallel.pdf) ; [L10 - Applications 1: Automated planning](slides/l10-planning-model-checking.pdf) _[DS]_
 * **Monday, July 14**: [L11 - Selected application highlights](slides/l11-application-highlights.pdf) _[DS]_
 * **Monday, July 21**: [L12 - Satisfiability Modulo Theories (SMT) solving](slides/l12-smt.pdf) _[DS]_
-* **Monday, July 28**: L13 - Maximum Satisfiability (MaxSAT) solving _[MI]_
+* **Monday, July 28**: [L13 - Maximum Satisfiability (MaxSAT) solving](slides/l13-maxsat.pdf) _[MI]_
 
 ## Exercises
 
