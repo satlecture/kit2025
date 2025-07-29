@@ -107,22 +107,22 @@ Most real-world problems involve an optimization component. There is a high dema
 \vspace{-2em}
 \emph{Given a conjunction of constraints} of the form $\sum\limits_{i=1}^n c_i x_i \leq b$ (with constant coefficients $c_i$ and bound $b$),\\
 \emph{find an assignment} to the variables $x_i$ that satisfies all constraints\\
-\emph{and that maximizes} the objective function $\sum\limits_{i=1}^n c_i x_i$.~\\[1em]
+\emph{and that maximizes} the objective function $\sum\limits_{i=1}^n d_i x_i$ (with constant coefficients $d_i$).~\\[1em]
 \begin{block}{Constrained Optimization Paradigms}
 \begin{itemize}\itemsep1em
 	\item Integer-Linear Programming (ILP)
 	\begin{itemize}\itemsep1ex
-		\item Variables $x_i$, Coefficients $c_i$, and Bounds $b$ are Integers
+		\item Variables $x_i$, Coefficients $c_i, d_i$, and Bounds $b$ are Integers
 		\item Algorithms: e.g. Branch-and-Cut with Simplex
 	\end{itemize}
 	\item Pseudo-Boolean Optimization (PBO)
 	\begin{itemize}\itemsep1ex
-		\item Variables $x_i$ are Boolean, Coefficients $c_i$, and Bound $b$ are Integers
+		\item Variables $x_i$ are Boolean, Coefficients $c_i, d_i$, and Bound $b$ are Integers
 		\item Algorithms: e.g. CDCL-based
 	\end{itemize}
 	\item Maximum Satisfiability (MaxSAT)
 	\begin{itemize}\itemsep1ex
-		\item Variables $x_i$ are Boolean, Coefficients $c_i \in \{-1, 1\}$, Bound $b=-1$
+		\item Variables $x_i$ are Boolean, Coefficients $c_i, d_i \in \{-1, 0, 1\}$, Bound $b=-1$
 		\item Algorithms: e.g. CDCL-based
 	\end{itemize}
 \end{itemize}
