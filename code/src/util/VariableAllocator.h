@@ -1,6 +1,6 @@
 /**
  * @brief Simple class to allocate variables in a structured way.
- * @author Markus Iser
+ * @author Ashlin Iser
  * @license MIT
  */
 
