@@ -1,6 +1,6 @@
 /**
  * @brief Trail class
- * @author Markus Iser
+ * @author Ashlin Iser
  * @license MIT
  */
 
