@@ -1,65 +1,91 @@
-% !TeX TXS-program:bibliography = txs:///biber
-
-\documentclass[t,english]{sdqbeamer}
+\documentclass[en,t]{sdqbeamer}
 %\documentclass[c]{sdqbeamer}
 
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{tabulary}
+\usepackage{colortbl}
 \usepackage{tikzsymbols}
+\usepackage{tikz}
 \usepackage{booktabs}
-\usepackage{forloop}
-
+\usetikzlibrary{positioning,fit,shapes}
 \usepackage[lined,linesnumbered,ruled,noend]{algorithm2e}
-\renewcommand{\thealgocf}{}
+\usepackage{bm}
+\usepackage{forloop}
 
 \hypersetup{
 	colorlinks=true,
-	urlcolor=kit-green,
-	citecolor=mygray
+	urlcolor=kit-orange
 }
 
 % set sdqbeamer options
 \titleimage{blender-render}
-\groupname{} % rendered at the bottom center of each slide
-\grouplogo{ae+satres}
-\selectlanguage{english}
+\groupname{Algorithm Engineering}
+\grouplogo{ae}
+%\selectlanguage{english}
+
+
+\usepackage[backend=biber,style=numeric-comp,sorting=none]{biblatex}
+\addbibresource{references.bib}
 
 % define title etc.pp.
-\title{Practical SAT Solving}
-\subtitle{Lecture 12 \unimp{\normalfont -- Satisfiability Modulo Theories (SMT)}}
-\author{{Markus Iser}, \underline{Dominik Schreiber}}
-\date{July 21, 2025}
+\title[SAT Solving]{Practical SAT Solving}
+\subtitle{Lecture 14: SMT Solving}
+\author{{Markus Iser}, \underline{Dominik Schreiber}, Tom\'a\v{s} Balyo}
+\date{July 22, 2024}
+
+% Existing KIT colors: kit-green, kit-blue, kit-red, kit-gray, kit-orange, kit-lightgreen, kit-brown, kit-purple, kit-cyan
+% configure appearance
+\setbeamercolor{block title}{bg=kit-blue}
+\setbeamercolor{block body}{bg=kit-blue!10}
+\setbeamercolor{block title example}{bg=kit-orange}
+\setbeamercolor{block body example}{bg=kit-orange!10}
+\setbeamertemplate{itemize item}{\color{kit-gray}\textbullet}
+\setbeamertemplate{itemize subitem}{\color{kit-gray}\textbullet}
+\setbeamercolor{item projected}{bg=kit-gray, fg=kit-gray}
+\renewcommand{\insertnavigation}[1]{} % remove navigation bar
 
 % define commands
 \input{l00-commands.tex}
 
-%\usepackage[english]{babel}
-\usepackage[citestyle=numeric,bibstyle=numeric,hyperref,backend=biber,language=auto]{biblatex}
-\addbibresource{references.bib}
-\bibhang1em
-\setbeamertemplate{navigation symbols}{}
 
-\setlength{\itemsep}{1em}
-%\setbeamertemplate{itemize subitem}{\normalsize\insertsubitem}
+\renewcommand{\highl}[1]{\textcolor{kit-blue}{#1}}
+\renewcommand{\highlo}[1]{\textcolor{kit-orange}{#1}}
+\newcommand{\unimp}[1]{\textcolor{gray}{#1}}
 
-\newcommand{\iflecture}[1]{#1}
-\newcommand{\ifresearchtalk}[1]{#1}
+% Redefine `\rowcolor` to allow a beamer overlay specifier
+% New syntax: \rewcolor<overlay>[color model]{color}[left overhang][right overhang]
+\makeatletter
+% Open `\noalign` and check for overlay specification:
+\def\rowcolor{\noalign{\ifnum0=`}\fi\bmr@rowcolor}
+\newcommand<>{\bmr@rowcolor}{%
+    \alt#1%
+        {\global\let\CT@do@color\CT@@do@color\@ifnextchar[\CT@rowa\CT@rowb}% Rest of original `\rowcolor`
+        {\ifnum0=`{\fi}\@gooble@rowcolor}% End `\noalign` and gobble all arguments of `\rowcolor`.
+}
+% Gobble all normal arguments of `\rowcolor`:
+\newcommand{\@gooble@rowcolor}[2][]{\@gooble@rowcolor@}
+\newcommand{\@gooble@rowcolor@}[1][]{\@gooble@rowcolor@@}
+\newcommand{\@gooble@rowcolor@@}[1][]{\ignorespaces}
+\makeatother
+
+% Redefine '\cellcolor' for beamer overlay use
+\renewcommand<>\cellcolor[1]{\only#2{\beameroriginal\cellcolor{#1}}}
 
 \begin{document}
 
-\begin{frame}[title white horizontal, picture=logos/blender-render, kitlogo=rgb]
+\begin{frame}
+	\thispagestyle{empty}
 	\titlepage
 \end{frame}
 
-
-
-
-
-
+% \begin{minipage}[c][8cm][t]{0.65\textwidth}
 
 \begin{frame}{Roadmap}
-	
+
 	\vspace*{-3mm}
 	\begin{itemize}
 		\item SMT: Motivation and definition
@@ -72,12 +98,12 @@
 		\end{itemize}
 		\item (Brief) pragmatics of SMT
 	\end{itemize}
-	
-	\vspace*{8mm}
-	
+
+	\vspace*{4mm}
+
 	\small
 	\textbf{Note:} This lecture is mostly based on the following slide sets:\\
-	
+
 	\vspace*{2mm}
 	\url{https://github.com/biotomas/sat-lecture-kit/blob/main/slides/l10.tex}\\
 	\hfill\unimp{(motivation, example theories, decidability, DPLL(T) example, bit vectors)}
@@ -108,9 +134,7 @@
 	\begin{block}{Satisfiability Modulo Theories (SMT)}
 		Decide the satisfiability of a \highl{First Order Logic (FOL) formula} with respect to a certain \highl{background theory}.
 	\end{block}
-	
-	\vspace*{4mm}
-	\begin{itemize}\setlength{\itemsep}{1ex}
+	\begin{itemize}
 		\item \textbf{Syntax:} in most cases, \highl{quantifier-free, ground} fragment of FOL
 		\begin{itemize}
 			\item Set of atomic \highl{constants} \hfill \unimp{e.g., 0, 1, \texttt{null}}
@@ -123,7 +147,6 @@
 			\vspace*{1mm}
 			\item Formula: Boolean expression featuring the above propositions as its ``variables''
 		\end{itemize}
-		\pause
 		\item \textbf{Semantics:} depends on chosen \highl{background theory}
 		\begin{itemize}
 			\item Many theories feature \highl{equality}, i.e., a special \highl{proposition} $P_=(x,y) \Leftrightarrow x=y$
@@ -141,27 +164,11 @@
 		4. \highl{Congruence}: $\forall k \, \forall f(x_1,\ldots,x_k) \, \forall x_1, \ldots, x_k \, \forall y_1, \ldots, y_k:\ $\\
 		\phantom{4. \highl{Congruence}:} $\bigwedge_{i=1}^k x_i = y_i \rightarrow f(x_1,\ldots,x_k) = f(y_1,\ldots,y_k)$
 		\item Functions are left \highl{uninterpreted} and thus carry \highl{no inherent meaning} apart from syntactical footprint
-		\pause
 		\item Examples:\\
 		\hspace*{1cm}$(z \neq x) \wedge (z \neq y)$ \hfill \highl{Satisfiable} for $\geq 3$ objects\\
 		\hspace*{1cm}$h(a, g(f(b),f(c))) = d \wedge h(b,g(f(a),f(c))) \neq d \wedge a=b$ \hfill \highlo{Unsatisfiable}
-		\pause
 		\item Useful to \highl{abstract away} non-supported constructions / operations
 		\item Also called \highl{Theory of Equality}
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Theory: Presburger Arithmetic}
-	\textbf{Arithmetic over natural numbers with addition only}
-	\begin{itemize}
-		\item Constants: $0, 1$\ \ \ \ $\cdot$\ \ \ \ Functions: $+$\ \ \ \ $\cdot$\ \ \ \ Predicates: $=$
-		\item Axioms:\\
-		1. EUF axioms\\
-		2. \highl{Null}: $\forall x:\ x+1 \neq 0$\\
-		3. \highl{Successor}: $\forall x, y:\ x+1 = y+1 \rightarrow x = y$\\
-		4. \highl{Induction}: $P(0) \wedge (\forall x:\ P(x) \rightarrow P(x+1)) \rightarrow (\forall x:\ P(x))$\\
-		5. \highl{Plus Zero}: $\forall x:\ x+0=x$\\
-		6. \highl{Plus successor}: $\forall x, y:\ x+(y+1) = (x+y)+1$\\
 	\end{itemize}
 \end{frame}
 
@@ -178,6 +185,20 @@
 		6. \highl{Plus successor}: $\forall x, y:\ x+(y+1) = (x+y)+1$\\
 		7. \highl{Times Zero}: $\forall x:\ x \times 0 = 0$\\
 		8. \highl{Times successor}: $\forall x,y:\ x \times (y+1) = (x \times y) + x$\\
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Theory: Presburger Arithmetic}
+	\textbf{Arithmetic over natural numbers with addition only}
+	\begin{itemize}
+		\item Constants: $0, 1$\ \ \ \ $\cdot$\ \ \ \ Functions: $+$\ \ \ \ $\cdot$\ \ \ \ Predicates: $=$
+		\item Axioms:\\
+		1. EUF axioms\\
+		2. \highl{Null}: $\forall x:\ x+1 \neq 0$\\
+		3. \highl{Successor}: $\forall x, y:\ x+1 = y+1 \rightarrow x = y$\\
+		4. \highl{Induction}: $P(0) \wedge (\forall x:\ P(x) \rightarrow P(x+1)) \rightarrow (\forall x:\ P(x))$\\
+		5. \highl{Plus Zero}: $\forall x:\ x+0=x$\\
+		6. \highl{Plus successor}: $\forall x, y:\ x+(y+1) = (x+y)+1$\\
 	\end{itemize}
 \end{frame}
 
@@ -223,10 +244,10 @@
 	\end{block}
 	
 	\vspace*{5mm}
-	\centering
+    \centering
 	\begin{tabular}{lccc}
 		\toprule
-		& & Quantor-free Fragment & Conjunction of literals \\
+		 & & Quantor-free Fragment & Conjunction of literals \\
 		Theory & Decidable? & decidable? & decidable?\\
 		\midrule
 		Uninterpreted Functions   & -- & $\checkmark$ & $\checkmark$ \\
@@ -238,21 +259,19 @@
 
 \begin{frame}{SMT Solving}
 	For SMT solving, we differentiate \textbf{two general approaches}:\\[4mm]
-	\pause
 	
 	\begin{itemize}
-		\item \textbf{Eager approach}: Find a \highl{direct translation} of $\mathcal{T} \cup F$ to propositional logic; perform \highl{SAT solving}~\cite{brummayer2009boolector}
+		\item \textbf{Eager approach}: Find a \highl{direct translation} of $\mathcal{T} \cup F$ to propositional logic; perform \highl{SAT solving}.
 		\begin{itemize}
 			\item Promising for ``\highl{Boolean theories}'' like arrays, bit vectors
 			\item Need to encode \highlo{full theory in advance}
 			\item \highlo{Theory-specific encodings} required
 		\end{itemize}
-		\pause
 		\vspace*{2mm}
 		\item \textbf{Lazy approach}: Perform propositional reasoning over the \highl{Boolean skeleton} of $F$;\\
 		lazily check whether a found propositional model is \highl{consistent with $\mathcal{T}$}.
 		\begin{itemize}
-			\item Known as \highl{DPLL($\mathcal{T}$)} in literature~\cite{nieuwenhuis2006solving}
+			\item Known as \highl{DPLL($T$)} in literature
 			\item Numerous optimizations lead to \highl{close interaction} between SAT solver and theory solver
 			\item \highl{Modular and flexible} architecture
 		\end{itemize}
@@ -274,19 +293,14 @@
 \begin{frame}{Lazy Approach: Example}
 	$\Sigma$-Formula $F$ (linear integer arithmetic):\\[-4mm]
 	\[ \propA{y \geq 1} \wedge (\propB{x < 0} \vee \propC{y < 1}) \wedge (\propD{x \geq 0} \vee \propE{y < 0}) \]
-	\pause
 	Boolean skeleton:\\[-4mm]
 	\[ \propA{A} \wedge (\propB{B} \vee \propC{C}) \wedge (\propD{D} \vee \propE{E}) \]	
-	\pause
 	Satisfying assignment found by SAT solver:\\[-4mm]
 	\[ \propA{A},\ \ \neg\propB{B},\ \ \propC{C},\ \ \neg\propD{D},\ \ \propE{E} \]
-	\pause
 	Inconsistent subset of according $\mathcal{T}$-literals:\\[-4mm]
 	\[ \propA{y \geq 1},\ \ \propC{y < 1},\ \ \propE{y < 0} \]
-	\pause
 	Exclude this inconsistency:\\[-4mm]
 	\[ \neg(\propA{y \geq 1}) \vee \neg(\propC{y < 1}) \]
-	\pause
 	Next Boolean skeleton:\\[-4mm]
 	\[ \propA{A} \wedge (\propB{B} \vee \propC{C}) \wedge (\propD{D} \vee \propE{E}) \wedge (\neg\propA{A} \vee \neg\propC{C}) \]	
 	\ldots
@@ -299,9 +313,8 @@
 		\item Let theory solver \highl{guide search} by returning \highl{consequences} implied by a partial assignment
 		\item Upon inconsistency, instead of a full restart, \highl{backtrack} to a point where the assignment was still consistent
 	\end{itemize}
-	
+
 	\vspace*{3mm}
-	\pause
 	DPLL($T$) follows \highl{modular approach}:
 	\begin{itemize}
 		\item SAT solver and theory solver communicate via relatively simple API\\
@@ -316,18 +329,18 @@
 \begin{frame}{Bit Vectors via Eager Approach: Motivation}
 	
 	\begin{center}
-		\begin{minipage}{0.25\textwidth}
-			\texttt{%
-				int x, y;\\
-				...\\
-				if (x - y > 0) \{\\
-				\hspace*{5mm}\textbf{assert}(x > y);\\
-				\hspace*{5mm}...\\
-				\}\\
-			}
-		\end{minipage}		
+	\begin{minipage}{0.25\textwidth}
+		\texttt{%
+			int x, y;\\
+			...\\
+			if (x - y > 0) \{\\
+			\hspace*{5mm}\textbf{assert}(x > y);\\
+			\hspace*{5mm}...\\
+			\}\\
+		}
+	\end{minipage}		
 	\end{center}
-	
+
 	\textbf{Can this assertion fail?} \pause
 	\\ -- Linear Integer Arithmetic: $x-y > 0 \wedge \neg(x > y)$ is \highl{unsatisfiable}. \pause
 	\\ -- Computer: \highlo{assertion fails} if \texttt{x = 2147483648} and \texttt{y = 1}!
@@ -344,7 +357,7 @@
 		\item \highl{Arithmetic operation} functions, like $\texttt{add}(a,b)$, $\texttt{sub}(a,b)$, $\texttt{mul}(a,b)$
 		\item \highl{Comparison predicates}, like $=$, $<_{\textrm{signed}}$, $<_{\textrm{unsigned}}$, etc.
 	\end{itemize}
-	
+
 	\vspace*{3mm}
 	Above assertion example: $(0_{(32)} <_{\textrm{signed}} \texttt{sub}(x,y)) \wedge (x \leq_{\textrm{signed}} y)$
 	
@@ -363,7 +376,7 @@
 		-- constraints for \highl{each term in $P$}\\
 		(using $n$ Boolean variables $v_0,\ldots,v_{n-1}$ for each term corresponding to a bit vector $v$ of length $n$)
 	\end{itemize}
-	
+
 	\vspace*{2mm}
 	Some (simple) examples for constraints:
 	\[ AV(x = y) \leftrightarrow \big(\bigwedge_{i=0}^{|x|-1} x_i \leftrightarrow y_i\big) \]
@@ -398,12 +411,12 @@
 			x = x - y;\\
 			\textbf{assert}(y == oldx \&\& x == oldy);
 		}\\
-		
+	
 		\unimp{Example from \url{https://smt-lib.org/examples.shtml}}
 	\end{minipage}%
 	\begin{minipage}{0.35\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{figures/l12/smt-example-bv.png}
+		\includegraphics[width=\textwidth]{figures/l14/smt-example-bv.png}
 	\end{minipage}
 \end{frame}
 
@@ -427,30 +440,15 @@
 	\end{minipage}%
 	\begin{minipage}{0.5\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{figures/l12/smtlib-logics.png}
+		\includegraphics[width=\textwidth]{figures/l14/smtlib-logics.png}
 	\end{minipage}
 \end{frame}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\begin{frame}[allowframebreaks]{References}
-	\renewcommand*{\bibfont}{\footnotesize}
-	\printbibliography[heading=subbibliography]
+\begin{frame}{References}
+	\renewcommand*{\bibfont}{\scriptsize}
+	\setlength\bibitemsep{3pt}
+	\vspace*{-3mm}
+	\printbibliography
 \end{frame}
 
 \end{document}
